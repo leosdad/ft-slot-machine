@@ -1,0 +1,115 @@
+
+#include "MotorDriver.h"
+#include "slots.h"
+
+// ----------------------------------------------------------------------- Types
+
+enum {
+	START = 0,
+	MEASURING,
+	COUNTING,
+	STOP,
+	WAITING,
+};
+
+// -------------------------------------------------------- Constants and macros
+
+#define BAUD_RATE 57600
+#define timeUp ((micros() - lastChange) > debouncePeriod)
+
+// ------------------------------------------------------------------- Variables
+
+MotorDriver motor1 = MotorDriver(motor1Ports, encoder1);
+MotorDriver motor2 = MotorDriver(motor2Ports, encoder2);
+MotorDriver motor3 = MotorDriver(motor3Ports, encoder3);
+
+uint16_t counter1;
+uint16_t counter2;
+uint16_t counter3;
+
+byte state = START;
+
+// Juh's code
+
+unsigned long lastChange = 0;
+byte currentSignal;
+
+// ----------------------------------------------------------------------- Setup
+
+void setup()
+{
+	Serial.begin(BAUD_RATE);
+	Serial.println("------------------------------------");
+	Serial.println("Motor test");
+
+	pinMode(leverButton, INPUT_PULLUP);
+	pinMode(coinIncrementButton, INPUT_PULLUP);
+
+	pinMode(posSensor1, INPUT_PULLUP);
+	pinMode(posSensor2, INPUT_PULLUP);
+	pinMode(posSensor3, INPUT_PULLUP);
+}
+
+// ------------------------------------------------------------------- Main loop
+
+void loop()
+{
+	switch(state) {
+		case START:
+			motor1.RotateCCW(minSpeed);
+			motor2.RotateCCW(minSpeed);
+			motor3.RotateCCW(minSpeed);
+			
+			while(
+				digitalRead(posSensor1) == LOW ||
+				digitalRead(posSensor2) == LOW ||
+				digitalRead(posSensor2) == LOW) {
+				// Wait until reed switches are opened
+			}
+
+			state = MEASURING;
+			break;
+
+		case MEASURING:
+			if(digitalRead(posSensor1) == 0) {
+				Serial.println("Marker 1 detected.");
+				digitalWrite(LED_BUILTIN, HIGH);
+				counter1 = finalSteps;
+				counter2 = finalSteps;
+				counter3 = finalSteps;
+				currentSignal = digitalRead(encoder1);
+				state = COUNTING;
+			}
+			break;
+
+		case COUNTING:
+			if(timeUp && (digitalRead(encoder1) != currentSignal)) {
+				lastChange = micros();
+				currentSignal = !currentSignal;
+				if(currentSignal) {	 // RISING flank
+					if(--counter1 == 0) {
+						state = STOP;
+					}
+				}
+			}
+			break;
+
+		case STOP:
+			motor1.Brake();
+			motor2.Brake();
+			motor3.Brake();
+			Serial.println("Stopped.");
+			digitalWrite(LED_BUILTIN, LOW);
+			state = WAITING;
+			break;
+
+		case WAITING:
+			while(digitalRead(leverButton)) {
+				// Wait for pushbutton release
+			}
+			if(!digitalRead(leverButton)) {
+				state = START;
+			}
+			break;
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "C:/Users/Rubem Pechansky/Documents/Arduino/libraries"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/*.rpp": true
+		},
+		"files.associations": {
+			"launch.json": "jsonc"
+		}
+	}
+}

@@ -1,0 +1,39 @@
+Standard: Cpp11
+BasedOnStyle: Google
+ColumnLimit: 0
+
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+
+# AlignOperands: DontAlign
+# BreakBeforeBinaryOperators: None
+AlignAfterOpenBracket: DontAlign
+
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+
+IndentAccessModifiers: true
+AccessModifierOffset: 0
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterExternBlock: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: false
+  BeforeElse: false
+  SplitEmptyFunction: true
+  SplitEmptyNamespace: true
+  SplitEmptyRecord: true
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: false

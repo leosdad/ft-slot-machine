@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "oled-display.h"
+#include "../oled-display.h"
 
 Servo servo1;
 

@@ -1,11 +1,12 @@
 
 #include <Arduino.h>
 
-#include "oled-display.h"
+#include "../oled-display.h"
 #include "input-tests.h"
 #include "output-tests.h"
 #include "servo-tests.h"
 #include "dfplayer-tests.h"
+#include "seven-seg-tests.h"
 
 void testsSetup()
 {
@@ -14,10 +15,11 @@ void testsSetup()
 
 	// ----------------
 
-	inputTestsSetup();
+	// inputTestsSetup();
 	outputTestsSetup();
-	servoTestsSetup();
-	dfPlayerTestsSetup();
+	// servoTestsSetup();
+	// dfPlayerTestsSetup();
+	// sevenSegTest();
 }
 
 void testsLoop()
@@ -29,10 +31,10 @@ void testsLoop()
 	// toggleTests();	// OK
 
 	// Output tests
-	// powerOutputsTest();	// OK
+	// powerOutputsTests();	// OK
 	// motorTests();	// OK
-	// lockLEDTests();	// OK
-	// redLEDTests();	// OK
+	lockLEDTests();	// OK
+	redLEDTests();	// OK
 
 	// Servo tests
 	// servoTests();	// OK

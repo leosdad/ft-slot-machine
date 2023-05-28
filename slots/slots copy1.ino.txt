@@ -1,0 +1,258 @@
+
+// -----------------------------------------------------------------------------
+
+// fischertechnik / Arduino Slots
+// Rubem Pechansky 2023
+
+// -------------------------------------------------------------------- Includes
+
+#include "slots.h"
+
+// ----------------------------------------------------------------------- Types
+
+enum {
+	START = 0,
+	SENSING,
+	COUNTING,
+	STOP,
+	WAITING,
+};
+
+// -------------------------------------------------------- Constants and macros
+
+#define BAUD_RATE 57600
+
+// ------------------------------------------------------------------- Variables
+
+MotorDriver motor[] = {
+	MotorDriver(motor1Out, encoder[0]),
+	MotorDriver(motor2Out, encoder[1]),
+	MotorDriver(motor3Out, encoder[2])};
+
+// bool testing;
+uint16_t counter[NREELS];
+byte currentSignal[NREELS];
+unsigned long lastChange[NREELS];  //= {0, 0, 0};
+byte state[NREELS];				   //= { START, START, START };
+uint8_t speed[NREELS];			   // = {normalSpeed[0], normalSpeed[1], normalSpeed[2]};
+uint8_t rotations[NREELS];		   // = {0, 0, 0};
+
+// ----------------------------------------------------------------------- Setup
+
+void setup()
+{
+	// Serial.begin(BAUD_RATE);
+	// Serial.println("------------------------------------");
+	// Serial.println("Slot machine");
+
+	ioSetup();
+	oledSetup();
+	oledPrint(0, 0, "Slot machine");
+	oledPrint(1, 0, "Ready");
+
+	reset();
+	// testing = true;
+	digitalWrite(lockLED[0], true);
+	// testsSetup();
+}
+
+// ------------------------------------------------------------------- Main loop
+
+bool testing = false;
+bool leverState = false;			 // Variable to track the current state of the lever
+bool leverChanged = false;			 // Variable to track if the lever state has changed
+unsigned long debounceTime = 50;	 // Debounce time in milliseconds
+unsigned long lastDebounceTime = 0;	 // Variable to track the last time the lever state changed
+
+void loop()
+{
+	bool currentLever = !digitalRead(toggle[0]);
+
+	// Check if the lever state has changed
+	if(currentLever != leverState) {
+		lastDebounceTime = millis();
+		leverChanged = true;
+	}
+
+	// Check if enough time has passed since the last state change
+	if(millis() - lastDebounceTime > debounceTime && leverChanged) {
+		leverState = currentLever;
+		leverChanged = false;
+
+		if(testing) {
+			if(leverState) {
+				testing = false;
+				// motor[0].Coast();
+				// motor[1].Coast();
+				// motor[2].Coast();
+				reset();
+				digitalWrite(lockLED[0], false);
+				Serial.println("Paused");
+			}
+		} else {
+			if(leverState) {
+				testing = true;
+				digitalWrite(lockLED[0], true);
+				Serial.println("Testing");
+			}
+		}
+	}
+}
+
+// void loop()
+// {
+// 	bool lever = !digitalRead(toggle[0]);
+
+// 	if(testing) {
+// 		processReel(0, toggle[0]);
+// 		processReel(1, toggle[0]);
+// 		processReel(2, toggle[0]);
+// 		if(lever || isWaiting()) {
+// 			testing = false;
+// 			motor[0].Coast();
+// 			motor[1].Coast();
+// 			motor[2].Coast();
+// 			reset();
+// 			digitalWrite(lockLED[0], false);
+// 			oledPrint(1, 0, "Paused ");
+// 			// delay(50);
+// 			// while(lever);
+// 		}
+// 	} else {
+// 		if(lever) {
+// 			testing = true;
+// 			digitalWrite(lockLED[0], true);
+// 			oledPrint(1, 0, "Testing");
+// 			// delay(50);
+// 			// while(lever);
+// 		}
+// 	}
+// }
+
+// ------------------------------------------------------------------- Functions
+
+bool isWaiting()
+{
+	if(state[0] != WAITING) {
+		return false;
+	}
+	if(state[1] != WAITING) {
+		return false;
+	}
+	if(state[2] != WAITING) {
+		return false;
+	}
+	return true;
+}
+
+void reset()
+{
+	for(int i = 0; i < NREELS; i++) {
+		MotorDriver(motor1Out, encoder[0]),
+			counter[i] = 0;
+		currentSignal[i] = 0;
+		lastChange[i] = 0;
+		state[i] = START;
+		speed[i] = normalSpeed[i];
+		rotations[i] = 0;
+	}
+}
+
+void ioSetup()
+{
+	pinMode(decreaseBet, INPUT_PULLUP);
+	pinMode(increaseBet, INPUT_PULLUP);
+	pinMode(leverButton, INPUT_PULLUP);
+
+	pinMode(toggle[0], INPUT_PULLUP);
+	pinMode(toggle[1], INPUT_PULLUP);
+	pinMode(toggle[2], INPUT_PULLUP);
+
+	pinMode(encoder[0], INPUT_PULLUP);
+	pinMode(encoder[1], INPUT_PULLUP);
+	pinMode(encoder[2], INPUT_PULLUP);
+
+	pinMode(motor1Out[0], OUTPUT);
+	pinMode(motor1Out[1], OUTPUT);
+	pinMode(motor2Out[0], OUTPUT);
+	pinMode(motor2Out[1], OUTPUT);
+	pinMode(motor3Out[0], OUTPUT);
+	pinMode(motor3Out[1], OUTPUT);
+
+	pinMode(redLED1[0], OUTPUT);
+	pinMode(redLED1[0], OUTPUT);
+	pinMode(redLED2[1], OUTPUT);
+	pinMode(redLED2[1], OUTPUT);
+
+	pinMode(lockLED[0], OUTPUT);
+	pinMode(lockLED[1], OUTPUT);
+	pinMode(lockLED[2], OUTPUT);
+}
+
+void processReel(int n, int button)
+{
+	switch(state[n]) {
+		case START:
+			rotations[n] = extraRotations[n];
+			speed[n] = normalSpeed[n];
+			motor[n].RotateCW(speed[n]);
+			while(digitalRead(posSensor[n])) {
+				// Wait while sensor is blocked
+			}
+			state[n] = SENSING;
+			break;
+
+		case SENSING:
+			if(digitalRead(posSensor[n])) {
+				counter[n] = finalSteps[n];
+				currentSignal[n] = digitalRead(encoder[n]);
+				if(rotations[n] > 0) {
+					rotations[n]--;
+					// while(digitalRead(posSensor[n])) {
+					// 	// Wait while sensor is blocked
+					// }
+				} else {
+					// speed[n] = max(speed[n] - speedDecrement, minSpeed[n]);
+					// speed[n] = minSpeed[n];
+					// motor[n].RotateCCW(speed[n]);
+					state[n] = COUNTING;
+				}
+			}
+			break;
+
+		case COUNTING:
+			if(((micros() - lastChange[n]) > debouncePeriod) &&
+				(digitalRead(encoder[n]) != currentSignal[n])) {
+				lastChange[n] = micros();
+				currentSignal[n] = !currentSignal[n];
+				if(currentSignal[n]) {	// RISING flank
+					if(counter[n]-- == 0) {
+						state[n] = STOP;
+					}
+				}
+			}
+			break;
+
+		case STOP:
+			motor[n].Brake();
+			state[n] = WAITING;
+			break;
+
+		case WAITING:
+			if(state[0] == WAITING && state[1] == WAITING && state[2] == WAITING) {
+				while(digitalRead(button) == HIGH) {
+					// Wait for pushbutton release
+				}
+				if(digitalRead(button) == LOW) {
+					state[0] = state[1] = state[2] = START;
+					// lcd.setCursor(0, 0);
+					// lcd.print("----  ----  ----");
+					// lcd.setCursor(0, 1);
+					// lcd.print("                ");
+				}
+			}
+			break;
+	}
+}
+
+// ------------------------------------------------------------------------- End

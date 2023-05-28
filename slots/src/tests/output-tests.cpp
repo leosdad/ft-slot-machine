@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
-#include "slots.h"
-#include "oled-display.h"
+#include "../../slots.h"
+#include "../oled-display.h"
 
 void outputTestsSetup()
 {
@@ -105,17 +105,16 @@ void powerOutputTest(uint8_t port)
 	delay(INTERVAL);
 }
 
-void powerOutputsTest()
+void powerOutputsTests()
 {
 	char *buf = "\0\0\0";
-	const uint8_t ports[] = {
-		2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 46};
+	const uint8_t ports[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 46};
 	oledPrint(1, 5, "  ");
 
 	for(size_t i = 0; i < sizeof ports; i++) {
 		oledPrint(1, 0, "Port");
 		itoa(ports[i], buf, 10);
-		oledPrint(1, 5, buf);
+		oledPrint(2, 0, buf);
 		powerOutputTest(ports[i]);
 	}
 }

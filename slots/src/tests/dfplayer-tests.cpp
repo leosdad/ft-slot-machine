@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
 #include <DFPlayerMini_Fast.h>
-#include "oled-display.h"
+#include "../oled-display.h"
 
 DFPlayerMini_Fast mp3Player;
 

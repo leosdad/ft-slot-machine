@@ -1,0 +1,24 @@
+
+#include <Arduino.h>
+#include <ezButton.h>  // ezButton library
+#include <ezOutput.h>  // ezOutput library
+#include "slots.h"
+
+ezButton button(toggle[0]);
+ezOutput led(lockLED[0]);
+
+void setup()
+{
+	button.setDebounceTime(1);	 // set debounce time to 50 milliseconds
+	led.blink(400, 200);
+}
+
+void loop()
+{
+	led.loop();
+	button.loop();	// MUST call the loop() function first
+
+	if(button.isPressed()) {
+		led.toggle();
+	}
+}

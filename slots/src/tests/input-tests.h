@@ -1,6 +1,4 @@
 
-#include <Arduino.h>
-
 void inputTestsSetup();
 void pushButtonTests();
 void encoderTests();

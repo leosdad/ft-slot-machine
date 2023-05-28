@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
-#include "slots.h"
-#include "oled-display.h"
+#include "../../slots.h"
+#include "../oled-display.h"
 
 void inputTestsSetup()
 {

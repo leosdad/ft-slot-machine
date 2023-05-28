@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "C:/Users/Rubem Pechansky/Documents/Arduino/libraries/**",
-                "C:/Users/Rubem Pechansky/Documents/Arduino/libraries/LiquidCrystal_I2C"
+                "C:/Users/Rubem Pechansky/Documents/Arduino/libraries/LiquidCrystal_I2C",
+                "C:/Users/Rubem Pechansky/Documents/Arduino/libraries/**/**"
             ],
             "defines": [
                 "UNICODE",

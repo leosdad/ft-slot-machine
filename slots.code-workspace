@@ -17,6 +17,11 @@
 		"files.associations": {
 			"launch.json": "jsonc"
 		},
+		"cSpell.enableFiletypes": [
+			"!text",
+			"!markdown"
+		]
+
 		// "workbench.colorTheme": "Default Light+",		
 	}
 }

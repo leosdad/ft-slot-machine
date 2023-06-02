@@ -16,7 +16,7 @@ void oledSetup()
 	oled.on();
 }
 
-void oledPrint(uint8_t row, uint8_t col, char *str)
+void oledPrintS(uint8_t row, uint8_t col, const char* str)
 {
 	switch(row) {
 		case 2:
@@ -46,7 +46,14 @@ void oledPrint(uint8_t row, uint8_t col, char *str)
 	}
 }
 
+void oledPrintN(uint8_t row, uint8_t col, uint16_t number)
+{
+	char buffer[16];
+	ultoa(number, buffer, 10);
+	oledPrintS(row, col, buffer);
+}
+
 void oledClearRow(uint8_t row)
 {
-	oledPrint(row, 0, "                ");
+	oledPrintS(row, 0, "                ");
 }

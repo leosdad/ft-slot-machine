@@ -20,8 +20,8 @@
 		"cSpell.enableFiletypes": [
 			"!text",
 			"!markdown"
-		]
+		],
 
-		// "workbench.colorTheme": "Default Light+",		
+		// "workbench.colorTheme": "Visual Studio Light",		
 	}
 }

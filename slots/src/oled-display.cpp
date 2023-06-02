@@ -9,7 +9,7 @@
 
 void oledSetup()
 {
-	// TODO: Works only with FONT8X16
+	// WARNING: Works only with FONT8X16
 	oled.begin(128, 64, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);
 	oled.setFont(FONT8X16);
 	oled.clear();

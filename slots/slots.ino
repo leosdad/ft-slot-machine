@@ -143,13 +143,14 @@ void startReels(bool home)
 		extraTurns[0] = TrueRandom.random(0, 2);
 		extraTurns[1] = TrueRandom.random(extraTurns[0] + 1, 3);
 		extraTurns[2] = TrueRandom.random(extraTurns[1] + 1, 4);
-		/* DEBUG */ extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
+		/* To speed up tests */ extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
 
 		// Draws the final position for each wheel
 
 		pos[0] = TrueRandom.random(NREELSYMBOLS);
 		pos[1] = TrueRandom.random(NREELSYMBOLS);
 		pos[2] = TrueRandom.random(NREELSYMBOLS);
+		// /* For speed calibration */ pos[0] = pos[1] = pos[2] = 0;
 	}
 
 	// Calculates the number of steps necessary to reach each position

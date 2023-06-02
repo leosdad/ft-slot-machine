@@ -24,7 +24,9 @@ enum {
 // ------------------------------------------------------------------- Variables
 
 MotorDriver motor[] = { MotorDriver(motor1Out, encoder[0]), MotorDriver(motor2Out, encoder[1]), MotorDriver(motor3Out, encoder[2])};
-ezButton lever(toggle[0]);
+
+ezButton lever(leverButton);
+ezButton toggle0(toggle[0]);
 ezButton sensor[NREELS] = {posSensor[0], posSensor[1], posSensor[2]};
 
 bool spinning;
@@ -62,6 +64,7 @@ void setup()
 
 void loop()
 {
+	toggle0.loop();
 	lever.loop();
 
 	if(spinning) {
@@ -70,7 +73,7 @@ void loop()
 		processReel(1, toggle[0]);
 		processReel(2, toggle[0]);
 
-		if(lever.isPressed()) {
+		if(toggle0.isPressed()) {
 			stopReels(true, "Aborted ");
 		} else if(isIdle()) {
 			stopReels(false, "Stopped ");
@@ -79,7 +82,7 @@ void loop()
 			Display::Show(displayBuffer);
 		}
 	} else {
-		if(lever.isPressed()) {
+		if(toggle0.isPressed() || lever.isPressed()) {
 			startReels(false);
 		}
 	}

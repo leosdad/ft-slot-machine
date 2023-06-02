@@ -52,8 +52,3 @@ void oledPrintN(uint8_t row, uint8_t col, uint16_t number)
 	ultoa(number, buffer, 10);
 	oledPrintS(row, col, buffer);
 }
-
-void oledClearRow(uint8_t row)
-{
-	oledPrintS(row, 0, "                ");
-}

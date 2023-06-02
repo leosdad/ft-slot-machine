@@ -57,12 +57,13 @@ const uint8_t motor3Out[] = {8, 9};
 // Other constants
 
 const unsigned long debouncePeriod = 1000;	 // In μs (microseconds)
+const uint16_t homeOffset = 34;				 // Common offset for home position
 const uint8_t normalSpeed[] = {76, 80, 80};	 // Normal speed
 // /* To speed up tests */ const uint8_t normalSpeed[] = {120, 120, 120};
-const uint16_t homeOffset = 34;				 // Common offset for home position
 
 /**
- * Each number of steps is the previous one minus 8.5
+ * Encoder steps needed for each reel position. Each number of steps
+ * is the previous one minus 8.5, rounded up.
  */
 const int stepOffsets[] = {0, 93, 85, 76, 68, 59, 51, 42, 34, 25, 17, 8};
 

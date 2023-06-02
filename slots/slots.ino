@@ -100,7 +100,7 @@ void processReel(int n, int button)
 			break;
 
 		case SENSING:
-			if(sensor[n].isPressed()) {
+			if(sensor[n].isReleased()) {
 				if(rotations[n] > 0) {
 					rotations[n]--;
 				} else {
@@ -176,34 +176,34 @@ void startReels(bool home)
 
 void showReelPreview()
 {
-	oledClearRow(1);
+	oledPrintS(1, 2, " ");
 	oledPrintN(1, 1, pos[0]);
+	oledPrintS(1, 7, " ");
 	oledPrintN(1, 6, pos[1]);
+	oledPrintS(1, 12, " ");
 	oledPrintN(1, 11, pos[2]);
 
-	oledClearRow(2);
 	oledPrintN(2, 1, reels[0][pos[0]]);
 	oledPrintN(2, 6, reels[1][pos[1]]);
 	oledPrintN(2, 11, reels[2][pos[2]]);
 
-	oledClearRow(3);
 	oledPrintS(3, 1, symbolNames[reels[0][pos[0]]]);
 	oledPrintS(3, 6, symbolNames[reels[1][pos[1]]]);
 	oledPrintS(3, 11,symbolNames[reels[2][pos[2]]]);
 }
 
 /**
- * Looks for a payoff combination.
+ * Looks for a payoff combination from the reel positions.
  */
 void calculatePayoff()
 {
 	for(int p = 0; p < NPAYOFFS; p++) {
-		if(
-			((payoffs[p][0] == -1) || (reels[0][pos[0]] == (int16_t)payoffs[p][0])) &&
+		if( ((payoffs[p][0] == -1) || (reels[0][pos[0]] == (int16_t)payoffs[p][0])) &&
 			((payoffs[p][1] == -1) || (reels[1][pos[1]] == (int16_t)payoffs[p][1])) &&
-			((payoffs[p][2] == -1) || (reels[2][pos[2]] == (int16_t)payoffs[p][2]))
-			) {
+			((payoffs[p][2] == -1) || (reels[2][pos[2]] == (int16_t)payoffs[p][2])) ) {
+
 			// Found a payoff combination
+
 			money = payoffs[p][3];
 			return;
 		}

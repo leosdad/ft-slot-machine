@@ -23,7 +23,11 @@ enum {
 
 // ------------------------------------------------------------------- Variables
 
-MotorDriver motor[] = { MotorDriver(motor1Out, encoder[0]), MotorDriver(motor2Out, encoder[1]), MotorDriver(motor3Out, encoder[2])};
+MotorDriver motor[] = {
+	MotorDriver(motor1Out, encoder[0]),
+	MotorDriver(motor2Out, encoder[1]),
+	MotorDriver(motor3Out, encoder[2])
+};
 
 ezButton lever(leverButton);
 ezButton toggle0(toggle[0]);
@@ -37,20 +41,19 @@ uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
 uint16_t counter[NREELS];
 uint16_t finalSteps[] = {0, 0, 0};	// Steps after sensor is triggered
-uint16_t pos[] = {0, 0, 0};			// Symbol to be displayed (0-11)
+uint16_t pos[] = {0, 0, 0};			// Position of symbol to be displayed (0-11)
 uint16_t money = 0;
 unsigned long lastChange[NREELS];
-const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Wtml", "Bell", "Orng", "Lemn", "Grap"};
 char displayBuffer[DISPLAYCHARS];
+
+/* DEBUG */ const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Wtml", "Bell", "Orng", "Lemn", "Grap"};
 
 // ----------------------------------------------------------------------- Setup
 
 void setup()
 {
-	// Serial.begin(BAUD_RATE);
-	// Serial.println("------------------------------------");
-	// Serial.println("Slot machine");
-
+	// serialSetup();
+	sevenSegSetup();
 	ioSetup();
 	oledSetup();
 
@@ -90,6 +93,9 @@ void loop()
 
 // ------------------------------------------------------------------- Functions
 
+/**
+ * Individual reel state machine.
+ */
 void processReel(int n, int button)
 {
 	sensor[n].loop();
@@ -130,6 +136,9 @@ void processReel(int n, int button)
 	}
 }
 
+/**
+ * Does the necessary calculations, draws 3 symbols and starts the reels.
+ */
 void startReels(bool home)
 {
 	if(home) {
@@ -163,36 +172,17 @@ void startReels(bool home)
 	finalSteps[2] = stepOffsets[pos[2]];
 
 	// DEBUG
-
 	showReelPreview();
 	calculatePayoff();
 	Display::U2s(displayBuffer, money);
 	Display::Show(displayBuffer);
-
 	digitalWrite(lockLED[0], HIGH);
-	spinning = true;
-	state[0] = state[1] = state[2] = START;
-	resetVars();
-
 	oledPrintS(0, 0, "Spinning");
-}
 
-void showReelPreview()
-{
-	oledPrintS(1, 2, " ");
-	oledPrintN(1, 1, pos[0]);
-	oledPrintS(1, 7, " ");
-	oledPrintN(1, 6, pos[1]);
-	oledPrintS(1, 12, " ");
-	oledPrintN(1, 11, pos[2]);
+	// Starts the wheels
 
-	oledPrintN(2, 1, reels[0][pos[0]]);
-	oledPrintN(2, 6, reels[1][pos[1]]);
-	oledPrintN(2, 11, reels[2][pos[2]]);
-
-	oledPrintS(3, 1, symbolNames[reels[0][pos[0]]]);
-	oledPrintS(3, 6, symbolNames[reels[1][pos[1]]]);
-	oledPrintS(3, 11,symbolNames[reels[2][pos[2]]]);
+	spinning = true;
+	resetVars(START);
 }
 
 /**
@@ -214,6 +204,9 @@ void calculatePayoff()
 	money = 0;
 }
 
+/**
+ * Stops all three reels and display a message.
+ */
 void stopReels(bool coast, char *msg)
 {
 	if(coast) {
@@ -224,13 +217,16 @@ void stopReels(bool coast, char *msg)
 	digitalWrite(lockLED[0], LOW);
 	spinning = false;
 	state[0] = state[1] = state[2] = START;
-	resetVars();
+	resetVars(IDLE);
 
 	if(msg) {
 		oledPrintS(0, 0, msg);
 	}
 }
 
+/**
+ * Returns true if all reels are in idle state.
+ */
 bool isIdle()
 {
 	if(state[0] != IDLE) {
@@ -245,19 +241,35 @@ bool isIdle()
 	return true;
 }
 
-void resetVars()
+/**
+ * Resets the three reels prior to the next spin.
+ */
+void resetVars(int _state)
 {
 	for(int i = 0; i < NREELS; i++) {
 		MotorDriver(motor1Out, encoder[0]), counter[i] = 0;
 		currentSignal[i] = 0;
 		lastChange[i] = 0;
-		state[i] = START;
+		state[i] = _state;
 		speed[i] = normalSpeed[i];
 		rotations[i] = 0;
 	}
 }
 
-void ioSetup()
+/**
+ * Initializes the main serial port.
+ */
+void serialSetup()
+{
+	Serial.begin(BAUD_RATE);
+	Serial.println("------------------------------------");
+	Serial.println("Slot machine");
+}
+
+/**
+ * Initializes the seven-segment display.
+ */
+void sevenSegSetup()
 {
 	// Reset seven-segment display
 
@@ -265,9 +277,13 @@ void ioSetup()
 	Display::Init();
 	Display::Clear();
 	Display::Stop();
+}
 
-	// Set pin modes
-
+/**
+ * Sets initial pin modes for the Arduino.
+ */
+void ioSetup()
+{
 	pinMode(decreaseBet, INPUT_PULLUP);
 	pinMode(increaseBet, INPUT_PULLUP);
 	pinMode(leverButton, INPUT_PULLUP);
@@ -295,6 +311,27 @@ void ioSetup()
 	pinMode(lockLED[0], OUTPUT);
 	pinMode(lockLED[1], OUTPUT);
 	pinMode(lockLED[2], OUTPUT);
+}
+
+/**
+ * DEBUG: shows the state of the three reels.
+ */
+void showReelPreview()
+{
+	oledPrintS(1, 2, " ");
+	oledPrintN(1, 1, pos[0]);
+	oledPrintS(1, 7, " ");
+	oledPrintN(1, 6, pos[1]);
+	oledPrintS(1, 12, " ");
+	oledPrintN(1, 11, pos[2]);
+
+	oledPrintN(2, 1, reels[0][pos[0]]);
+	oledPrintN(2, 6, reels[1][pos[1]]);
+	oledPrintN(2, 11, reels[2][pos[2]]);
+
+	oledPrintS(3, 1, symbolNames[reels[0][pos[0]]]);
+	oledPrintS(3, 6, symbolNames[reels[1][pos[1]]]);
+	oledPrintS(3, 11,symbolNames[reels[2][pos[2]]]);
 }
 
 // ------------------------------------------------------------------------- End

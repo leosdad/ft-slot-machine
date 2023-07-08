@@ -12,20 +12,6 @@
 
 #include <Arduino.h>
 
-// Common libraries
-
-#include <Wire.h>
-#include <SevenSegDisplay.h>
-#include <ezButton.h>
-#include <ezOutput.h>
-#include <TrueRandom.h>
-
-// Project libraries
-
-#include "MotorDriver.h"
-#include "slots.h"
-#include "src/oled-display.h"
-
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		 3
@@ -47,19 +33,27 @@ const uint8_t leverButton = 53;
 // Output pins
 
 const uint8_t lockLED[] = {34, 36, 38};
-const uint8_t redLED1[] = {4, 5};
+const uint8_t redLED1[] = {2, 3};
 const uint8_t redLED2[] = {6, 7};
 const uint8_t Servo = 44;
-const uint8_t motor1Out[] = {12, 46};
-const uint8_t motor2Out[] = {10, 11};
-const uint8_t motor3Out[] = {8, 9};
+
+// const uint8_t motor1Out[] = {12, 46};
+// const uint8_t motor2Out[] = {10, 11};
+// const uint8_t motor3Out[] = {8, 9};
+const uint8_t motor1Out[] = {46, 12};
+const uint8_t motor2Out[] = {11, 10};
+const uint8_t motor3Out[] = {9, 8};
 
 // Other constants
 
-const unsigned long debouncePeriod = 1000;	 // In μs (microseconds)
-const uint16_t homeOffset = 34;				 // Common offset for home position
-const uint8_t normalSpeed[] = {76, 80, 80};	 // Normal speed
-// /* To speed up tests */ const uint8_t normalSpeed[] = {120, 120, 120};
+// In μs (microseconds)
+const unsigned long debouncePeriod = 1000;
+
+// Common offset for home position
+const uint16_t homeOffset = 34;
+
+// Normal speed. Similar motors behave differently at slow speeds
+const uint8_t normalSpeed[] = {76, 80, 80};
 
 /**
  * Encoder steps needed for each reel position. Each number of steps
@@ -93,6 +87,21 @@ const int16_t payoffs[NPAYOFFS][NREELS + 1] = {
 	{7,  7, -1,  6},
 	{5, -1, -1,  3},
 };
+
+// const char *payoffText[NPAYOFFS] = {
+// 	"3 sevens!!!",
+// 	"3 cherries!!",
+// 	"3 watermelons!",
+// 	"2 bells, cherry",
+// 	"2 grapes, cherry",
+// 	"2 banana, cherry",
+// 	"3 grapes",
+// 	"3 bells",
+// 	"3 bananas",
+// 	"2 oranges",
+// 	"2 grapes",
+// 	"1 orange",
+// };
 
 #endif	// SLOTS_H
 

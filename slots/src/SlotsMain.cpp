@@ -124,7 +124,7 @@ void SlotsMain::processReel(int n, int button)
 	switch(state[n]) {
 		case START:
 			rotations[n] = extraTurns[n];
-			speed[n] = normalSpeed[n];
+			speed[n] = reelSpeed[n];
 			motor[n].RotateCW(speed[n]);
 			state[n] = SENSING;
 			break;
@@ -172,20 +172,23 @@ void SlotsMain::startReels(bool home)
 	} else {
 
 		// Sets the amount of initial full turns per reel
+#if SPEEDUP || CALIBRATE
+		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
+#else
 		extraTurns[0] = TrueRandom.random(0, 3);
 		extraTurns[1] = TrueRandom.random(extraTurns[0] + 1, 4);
 		extraTurns[2] = TrueRandom.random(extraTurns[1] + 1, 5);
-		
-		// To speed up tests
-		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
+#endif
 
 		// Draws the final position for each wheel
+#if CALIBRATE
+		pos[0] = pos[1] = pos[2] = 0;
+#else
 		pos[0] = TrueRandom.random(NREELSYMBOLS);
 		pos[1] = TrueRandom.random(NREELSYMBOLS);
 		pos[2] = TrueRandom.random(NREELSYMBOLS);
+#endif
 
-		// For speed calibration
-		// pos[0] = pos[1] = pos[2] = 0;
 	}
 
 	// Calculates the number of steps necessary to reach each position
@@ -279,7 +282,7 @@ void SlotsMain::resetVars(int _state)
 		currentSignal[i] = 0;
 		lastChange[i] = 0;
 		state[i] = _state;
-		speed[i] = normalSpeed[i];
+		speed[i] = reelSpeed[i];
 		rotations[i] = 0;
 	}
 }

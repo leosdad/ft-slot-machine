@@ -12,6 +12,14 @@
 
 #include <Arduino.h>
 
+// ------------------------------------------------------------------ Test flags
+
+// Set to true for faster tests
+#define SPEEDUP		true
+
+// Set to true for reel speed calibration
+#define CALIBRATE	false
+
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		 3
@@ -52,8 +60,12 @@ const unsigned long debouncePeriod = 1000;
 // Common offset for home position
 const uint16_t homeOffset = 34;
 
-// Normal speed. Similar motors behave differently at slow speeds
-const uint8_t normalSpeed[] = {76, 80, 80};
+// Speed for each motor. Similar motors may behave differently at slow speeds.
+#if SPEEDUP
+const uint8_t reelSpeed[] = {100, 100, 110};
+#else
+const uint8_t reelSpeed[] = {70, 90, 83};
+#endif
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

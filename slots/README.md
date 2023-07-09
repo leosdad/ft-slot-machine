@@ -1,6 +1,7 @@
 
 ## Third-party libraries used
 
-- https://arduinogetstarted.com/tutorials/arduino-output-library
-- https://arduinogetstarted.com/tutorials/arduino-button-library
+- [ezButton Library for Arduino](https://github.com/ArduinoGetStarted/button)
 - [TrueRandom](https://github.com/sirleech/TrueRandom)
+
+- https://arduinogetstarted.com/tutorials/arduino-output-library

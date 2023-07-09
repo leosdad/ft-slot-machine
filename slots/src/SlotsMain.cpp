@@ -42,9 +42,12 @@ MotorDriver motor[] = {
 	MotorDriver(motor3Out, encoder[2])
 };
 
-ezButton lever(leverButton);
-ezButton toggle0(toggle[0]);
+// Inicialize ezButtons
+ezButton leverBtn(leverButton);
+ezButton increaseBtn(increaseBet);
+ezButton decreaseBtn(decreaseBet);
 ezButton sensor[NREELS] = {posSensor[0], posSensor[1], posSensor[2]};
+ezButton reelBtn[NREELS] = {reelButton[0], reelButton[1], reelButton[2]};
 
 bool spinning;
 byte currentSignal[NREELS];
@@ -61,9 +64,11 @@ uint16_t finalSteps[] = {0, 0, 0};
 
 // Position of symbol to be displayed (0-11)
 uint16_t pos[] = {0, 0, 0};
-uint16_t money = 0;
+uint16_t payoff = 0;
 unsigned long lastChange[NREELS];
 char displayBuffer[DISPLAYCHARS];
+
+bool lockReel[NREELS] = {false, false, false};
 
 // Used for debugging
 const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Meln", "Bell", "Orng", "Lemn", "Grap"};
@@ -77,7 +82,7 @@ void SlotsMain::Setup()
 	ioSetup();
 	oledSetup();
 
-	Display::U2s(displayBuffer, money);
+	Display::U2s(displayBuffer, payoff);
 	Display::Show(displayBuffer);
 
 	startReels(true);
@@ -87,27 +92,47 @@ void SlotsMain::Setup()
 
 void SlotsMain::Loop()
 {
-	toggle0.loop();
-	lever.loop();
+	increaseBtn.loop();
+	decreaseBtn.loop();
+	leverBtn.loop();
+	reelBtn[0].loop();
+	reelBtn[1].loop();
+	reelBtn[2].loop();
 
 	if(spinning) {
 
-		processReel(0, toggle[0]);
-		processReel(1, toggle[0]);
-		processReel(2, toggle[0]);
+		processReel(0);
+		processReel(1);
+		processReel(2);
 
-		if(toggle0.isPressed()) {
+		if(!digitalRead(reelButton[0]) && !digitalRead(reelButton[1])) {
+
+			// Emergency stop
 			stopReels();
 			displayIdle("Aborted ");
+
 		} else if(isIdle()) {
-			displayIdle("Stopped");
-			calculatePayoff();
-			Display::U2s(displayBuffer, money);
+
+			displayIdle("Stopped ");
+			// calculatePayoff();
+			Display::U2s(displayBuffer, payoff);
 			Display::Show(displayBuffer);
+
 		}
+
 	} else {
-		if(toggle0.isPressed() || lever.isPressed()) {
+
+		if(leverBtn.isPressed()) {
 			startReels(false);
+		} else if(reelBtn[0].isPressed()) {
+			lockReel[0] = !lockReel[0];
+			digitalWrite(lockLED[0], lockReel[0]);
+		} else if(reelBtn[1].isPressed()) {
+			lockReel[1] = !lockReel[1];
+			digitalWrite(lockLED[1], lockReel[1]);
+		} else if(reelBtn[2].isPressed()) {
+			lockReel[2] = !lockReel[2];
+			digitalWrite(lockLED[2], lockReel[2]);
 		}
 	}
 }
@@ -117,11 +142,12 @@ void SlotsMain::Loop()
 /**
  * Individual reel state machine.
  */
-void SlotsMain::processReel(int n, int button)
+void SlotsMain::processReel(int n)
 {
 	sensor[n].loop();
 
 	switch(state[n]) {
+
 		case START:
 			rotations[n] = extraTurns[n];
 			speed[n] = reelSpeed[n];
@@ -197,12 +223,10 @@ void SlotsMain::startReels(bool home)
 	finalSteps[1] = stepOffsets[pos[1]];
 	finalSteps[2] = stepOffsets[pos[2]];
 
-	// DEBUG
-	showReelPreview();
 	calculatePayoff();
-	Display::U2s(displayBuffer, money);
+	showReelPreview();
+	Display::U2s(displayBuffer, payoff);
 	Display::Show(displayBuffer);
-	digitalWrite(lockLED[0], HIGH);
 	oledPrintS(0, 0, "Spinning");
 
 	// Starts the wheels
@@ -223,11 +247,11 @@ void SlotsMain::calculatePayoff()
 
 			// Found a payoff combination
 
-			money = payoffs[p][3];
+			payoff = payoffs[p][3];
 			return;
 		}
 	}
-	money = 0;
+	payoff = 0;
 }
 
 /**
@@ -245,7 +269,6 @@ void SlotsMain::stopReels()
  */
 void SlotsMain::displayIdle(char *msg)
 {
-	digitalWrite(lockLED[0], LOW);
 	spinning = false;
 	state[0] = state[1] = state[2] = START;
 	resetVars(IDLE);
@@ -296,6 +319,9 @@ void SlotsMain::showReelPreview()
 	oledPrintN(1, 6, extraTurns[1]);
 	oledPrintN(1, 11, extraTurns[2]);
 
+	oledPrintS(2, 1, "   ");
+	oledPrintN(2, 1, payoff);
+
 	oledPrintS(3, 1, symbolNames[reels[0][pos[0]]]);
 	oledPrintS(3, 6, symbolNames[reels[1][pos[1]]]);
 	oledPrintS(3, 11,symbolNames[reels[2][pos[2]]]);
@@ -329,19 +355,18 @@ void SlotsMain::sevenSegSetup()
  */
 void SlotsMain::ioSetup()
 {
-	pinMode(decreaseBet, INPUT_PULLUP);
-	pinMode(increaseBet, INPUT_PULLUP);
-	pinMode(leverButton, INPUT_PULLUP);
-	pinMode(toggle[0], INPUT_PULLUP);
-	pinMode(toggle[1], INPUT_PULLUP);
-	pinMode(toggle[2], INPUT_PULLUP);
+	// TODO: remove those that use ezButton, MotorDriver etc.
+
+	leverBtn.setDebounceTime(50);
+	increaseBtn.setDebounceTime(50);
+	decreaseBtn.setDebounceTime(50);
+	reelBtn[0].setDebounceTime(50);
+	reelBtn[1].setDebounceTime(50);
+	reelBtn[2].setDebounceTime(50);
+
 	pinMode(encoder[0], INPUT_PULLUP);
 	pinMode(encoder[1], INPUT_PULLUP);
 	pinMode(encoder[2], INPUT_PULLUP);
-
-	pinMode(posSensor[0], INPUT);
-	pinMode(posSensor[1], INPUT);
-	pinMode(posSensor[2], INPUT);
 
 	pinMode(motor1Out[0], OUTPUT);
 	pinMode(motor1Out[1], OUTPUT);

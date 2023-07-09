@@ -1,11 +1,9 @@
 
-#ifndef SLOTS_MAIN_H
-#define SLOTS_MAIN_H
-
-// -----------------------------------------------------------------------------
-
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
+
+#ifndef SLOTS_MAIN_H
+#define SLOTS_MAIN_H
 
 // -------------------------------------------------------------------- Includes
 
@@ -20,7 +18,7 @@ class SlotsMain
 		void Loop();
 
 	private:
-		void processReel(int n, int button);
+		void processReel(int n);
 		void startReels(bool home);
 		void calculatePayoff();
 		void stopReels();

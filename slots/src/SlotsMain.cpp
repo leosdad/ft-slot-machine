@@ -34,6 +34,17 @@ enum {
 
 #define BAUD_RATE 57600
 
+// Macros
+
+#define N12M(n)	(n > 0 ? n - 1 : n + NREELSYMBOLS - 1)
+#define N12P(n)	(n < NREELSYMBOLS - 1 ? n + 1 : n )
+
+// Paylines
+
+#define LINE1(n)	(reels[n][N12M(pos[n])])
+#define LINE2(n)	(reels[n][pos[n]])
+#define LINE3(n)	(reels[n][N12P(pos[n])])
+
 // ------------------------------------------------------------------- Variables
 
 MotorDriver motor[] = {
@@ -114,13 +125,14 @@ void SlotsMain::Loop()
 		} else if(isIdle()) {
 
 			displayIdle("Stopped ");
-			// calculatePayoff();
 			Display::U2s(displayBuffer, payoff);
 			Display::Show(displayBuffer);
 
 		}
 
 	} else {
+
+		// Process buttons
 
 		if(startLever.isPressed()) {
 			startReels(false);
@@ -315,16 +327,24 @@ void SlotsMain::resetVars(int _state)
  */
 void SlotsMain::showReelPreview()
 {
-	oledPrintN(1, 1, extraTurns[0]);
-	oledPrintN(1, 6, extraTurns[1]);
-	oledPrintN(1, 11, extraTurns[2]);
+	// oledPrintN(1, 1, extraTurns[0]);
+	// oledPrintN(1, 6, extraTurns[1]);	
+	// oledPrintN(1, 11, extraTurns[2]);
 
-	oledPrintS(2, 1, "   ");
-	oledPrintN(2, 1, payoff);
+	// oledPrintS(2, 1, "   ");
+	// oledPrintN(2, 1, payoff);
 
-	oledPrintS(3, 1, symbolNames[reels[0][pos[0]]]);
-	oledPrintS(3, 6, symbolNames[reels[1][pos[1]]]);
-	oledPrintS(3, 11,symbolNames[reels[2][pos[2]]]);
+	oledPrintS(1, 1,  symbolNames[LINE1(0)]);
+	oledPrintS(1, 6,  symbolNames[LINE1(1)]);
+	oledPrintS(1, 11, symbolNames[LINE1(2)]);
+
+ 	oledPrintS(2, 1,  symbolNames[LINE2(0)]);
+	oledPrintS(2, 6,  symbolNames[LINE2(1)]);
+	oledPrintS(2, 11, symbolNames[LINE2(2)]);
+
+ 	oledPrintS(3, 1,  symbolNames[LINE3(0)]);
+	oledPrintS(3, 6,  symbolNames[LINE3(1)]);
+	oledPrintS(3, 11, symbolNames[LINE3(2)]);
 }
 
 /**

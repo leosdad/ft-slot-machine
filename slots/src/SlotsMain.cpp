@@ -375,15 +375,15 @@ void SlotsMain::showReelPreview()
 	oledPrintS(3, 8, "    ");
 	oledPrintN(3, 8, calcPayoff(2));
 
-	// oledPrintS(1, 1,  symbolNames[LINE1(0)]);
-	// oledPrintS(1, 6,  symbolNames[LINE1(1)]);
-	// oledPrintS(1, 11, symbolNames[LINE1(2)]);
- 	// oledPrintS(2, 1,  symbolNames[LINE2(0)]);
-	// oledPrintS(2, 6,  symbolNames[LINE2(1)]);
-	// oledPrintS(2, 11, symbolNames[LINE2(2)]);
- 	// oledPrintS(3, 1,  symbolNames[LINE3(0)]);
-	// oledPrintS(3, 6,  symbolNames[LINE3(1)]);
-	// oledPrintS(3, 11, symbolNames[LINE3(2)]);
+	// oledPrintS(1, 1,  symbolNames[LINE1(0) - 1]);
+	// oledPrintS(1, 6,  symbolNames[LINE1(1) - 1]);
+	// oledPrintS(1, 11, symbolNames[LINE1(2) - 1]);
+ 	// oledPrintS(2, 1,  symbolNames[LINE2(0) - 1]);
+	// oledPrintS(2, 6,  symbolNames[LINE2(1) - 1]);
+	// oledPrintS(2, 11, symbolNames[LINE2(2) - 1]);
+ 	// oledPrintS(3, 1,  symbolNames[LINE3(0) - 1]);
+	// oledPrintS(3, 6,  symbolNames[LINE3(1) - 1]);
+	// oledPrintS(3, 11, symbolNames[LINE3(2) - 1]);
 }
 
 /**

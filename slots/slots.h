@@ -32,11 +32,11 @@
 // Input pins
 
 const uint8_t encoder[] = {28, 30, 32};
-const uint8_t reelButton[] = {35, 37, 39};
-const uint8_t posSensor[] = {29, 31, 33};
-const uint8_t leverButton = 53;
-const uint8_t increaseBet = 52;
-const uint8_t decreaseBet = 50;
+const uint8_t reelButtonPin[] = {35, 37, 39};
+const uint8_t positionSensor[] = {29, 31, 33};
+const uint8_t leverButtonPin = 53;
+const uint8_t increaseBetPin = 52;
+const uint8_t decreaseBetPin = 50;
 
 // Output pins
 
@@ -58,11 +58,7 @@ const unsigned long debouncePeriod = 1000;
 const uint16_t homeOffset = 34;
 
 // Speed for each motor. Similar motors may behave differently at slow speeds.
-#if SPEEDUP
-const uint8_t reelSpeed[] = {90, 100, 90};
-#else
 const uint8_t reelSpeed[] = {70, 90, 83};
-#endif
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

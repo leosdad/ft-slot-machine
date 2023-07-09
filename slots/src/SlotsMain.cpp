@@ -43,11 +43,11 @@ MotorDriver motor[] = {
 };
 
 // Inicialize ezButtons
-ezButton leverBtn(leverButton);
-ezButton increaseBtn(increaseBet);
-ezButton decreaseBtn(decreaseBet);
-ezButton sensor[NREELS] = {posSensor[0], posSensor[1], posSensor[2]};
-ezButton reelBtn[NREELS] = {reelButton[0], reelButton[1], reelButton[2]};
+ezButton startLever(leverButtonPin);
+ezButton increaseBet(increaseBetPin);
+ezButton decreaseBet(decreaseBetPin);
+ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
+ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
 bool spinning;
 byte currentSignal[NREELS];
@@ -71,7 +71,7 @@ char displayBuffer[DISPLAYCHARS];
 bool lockReel[NREELS] = {false, false, false};
 
 // Used for debugging
-const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Meln", "Bell", "Orng", "Lemn", "Grap"};
+const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Mlon", "Bell", "Orng", "Lmon", "Grap"};
 
 // ----------------------------------------------------------------------- Setup
 
@@ -92,9 +92,9 @@ void SlotsMain::Setup()
 
 void SlotsMain::Loop()
 {
-	increaseBtn.loop();
-	decreaseBtn.loop();
-	leverBtn.loop();
+	increaseBet.loop();
+	decreaseBet.loop();
+	startLever.loop();
 	reelBtn[0].loop();
 	reelBtn[1].loop();
 	reelBtn[2].loop();
@@ -105,7 +105,7 @@ void SlotsMain::Loop()
 		processReel(1);
 		processReel(2);
 
-		if(!digitalRead(reelButton[0]) && !digitalRead(reelButton[1])) {
+		if(!digitalRead(reelButtonPin[0]) && !digitalRead(reelButtonPin[1])) {
 
 			// Emergency stop
 			stopReels();
@@ -122,7 +122,7 @@ void SlotsMain::Loop()
 
 	} else {
 
-		if(leverBtn.isPressed()) {
+		if(startLever.isPressed()) {
 			startReels(false);
 		} else if(reelBtn[0].isPressed()) {
 			lockReel[0] = !lockReel[0];
@@ -144,7 +144,7 @@ void SlotsMain::Loop()
  */
 void SlotsMain::processReel(int n)
 {
-	sensor[n].loop();
+	posSensor[n].loop();
 
 	switch(state[n]) {
 
@@ -156,7 +156,7 @@ void SlotsMain::processReel(int n)
 			break;
 
 		case SENSING:
-			if(sensor[n].isReleased()) {
+			if(posSensor[n].isReleased()) {
 				if(rotations[n] > 0) {
 					rotations[n]--;
 				} else {
@@ -355,25 +355,13 @@ void SlotsMain::sevenSegSetup()
  */
 void SlotsMain::ioSetup()
 {
-	// TODO: remove those that use ezButton, MotorDriver etc.
-
-	leverBtn.setDebounceTime(50);
-	increaseBtn.setDebounceTime(50);
-	decreaseBtn.setDebounceTime(50);
+	startLever.setDebounceTime(50);
+	increaseBet.setDebounceTime(50);
+	decreaseBet.setDebounceTime(50);
 	reelBtn[0].setDebounceTime(50);
 	reelBtn[1].setDebounceTime(50);
 	reelBtn[2].setDebounceTime(50);
 
-	pinMode(encoder[0], INPUT_PULLUP);
-	pinMode(encoder[1], INPUT_PULLUP);
-	pinMode(encoder[2], INPUT_PULLUP);
-
-	pinMode(motor1Out[0], OUTPUT);
-	pinMode(motor1Out[1], OUTPUT);
-	pinMode(motor2Out[0], OUTPUT);
-	pinMode(motor2Out[1], OUTPUT);
-	pinMode(motor3Out[0], OUTPUT);
-	pinMode(motor3Out[1], OUTPUT);
 	pinMode(redLED1[0], OUTPUT);
 	pinMode(redLED1[0], OUTPUT);
 	pinMode(redLED2[1], OUTPUT);

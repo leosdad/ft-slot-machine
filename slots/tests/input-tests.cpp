@@ -5,9 +5,9 @@
 
 void inputTestsSetup()
 {
-	pinMode(decreaseBet, INPUT_PULLUP);
-	pinMode(increaseBet, INPUT_PULLUP);
-	pinMode(leverButton, INPUT_PULLUP);
+	pinMode(decreaseBetPin, INPUT_PULLUP);
+	pinMode(increaseBetPin, INPUT_PULLUP);
+	pinMode(leverButtonPin, INPUT_PULLUP);
 
 	pinMode(toggle[0], INPUT_PULLUP);
 	pinMode(toggle[1], INPUT_PULLUP);
@@ -22,17 +22,17 @@ void inputTestsSetup()
 
 void pushButtonTests()
 {
-	if(!digitalRead(decreaseBet)) {
+	if(!digitalRead(decreaseBetPin)) {
 		oledPrint(1, 0, "decrease");
 	} else {
 		oledClearRow(1);
 	}
-	if(!digitalRead(increaseBet)) {
+	if(!digitalRead(increaseBetPin)) {
 		oledPrint(2, 0, "increase");
 	} else {
 		oledClearRow(2);
 	}
-	if(!digitalRead(leverButton)) {
+	if(!digitalRead(leverButtonPin)) {
 		oledPrint(3, 0, "start");
 	} else {
 		oledClearRow(3);
@@ -60,17 +60,17 @@ void encoderTests()
 
 void sensorTests()
 {
-	if(digitalRead(posSensor[0])) {
+	if(digitalRead(positionSensor[0])) {
 		oledPrint(1, 0, "sens1");
 	} else {
 		oledPrint(1, 0, "     ");
 	}
-	if(digitalRead(posSensor[1])) {
+	if(digitalRead(positionSensor[1])) {
 		oledPrint(2, 0, "sens2");
 	} else {
 		oledPrint(2, 0, "     ");
 	}
-	if(digitalRead(posSensor[2])) {
+	if(digitalRead(positionSensor[2])) {
 		oledPrint(3, 0, "sens3");
 	} else {
 		oledPrint(3, 0, "     ");

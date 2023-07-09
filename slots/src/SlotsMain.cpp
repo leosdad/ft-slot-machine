@@ -36,14 +36,15 @@ enum {
 
 // Macros
 
-#define N12M(n)	(n > 0 ? n - 1 : n + NREELSYMBOLS - 1)
-#define N12P(n)	(n < NREELSYMBOLS - 1 ? n + 1 : n )
+#define CALCN1(n)	(n > 0 ? n - 1 : n + NREELSYMBOLS - 1)
+#define CALCN2(n)	(n)
+#define CALCN3(n)	(n < NREELSYMBOLS - 1 ? n + 1 : 0 )
 
 // Paylines
 
-#define LINE1(n)	(reels[n][N12M(pos[n])])
-#define LINE2(n)	(reels[n][pos[n]])
-#define LINE3(n)	(reels[n][N12P(pos[n])])
+#define LINE1(n)	(reels[n][CALCN1(pos[n])])
+#define LINE2(n)	(reels[n][CALCN2(pos[n])])
+#define LINE3(n)	(reels[n][CALCN3(pos[n])])
 
 // ------------------------------------------------------------------- Variables
 
@@ -61,6 +62,7 @@ ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSens
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
 bool spinning;
+bool playing = false;
 byte currentSignal[NREELS];
 byte state[NREELS];
 
@@ -75,7 +77,7 @@ uint16_t finalSteps[] = {0, 0, 0};
 
 // Position of symbol to be displayed (0-11)
 uint16_t pos[] = {0, 0, 0};
-uint16_t payoff = 0;
+uint16_t totalPayoff = 0;
 unsigned long lastChange[NREELS];
 char displayBuffer[DISPLAYCHARS];
 
@@ -93,7 +95,7 @@ void SlotsMain::Setup()
 	ioSetup();
 	oledSetup();
 
-	Display::U2s(displayBuffer, payoff);
+	Display::U2s(displayBuffer, totalPayoff);
 	Display::Show(displayBuffer);
 
 	startReels(true);
@@ -125,7 +127,7 @@ void SlotsMain::Loop()
 		} else if(isIdle()) {
 
 			displayIdle("Stopped ");
-			Display::U2s(displayBuffer, payoff);
+			Display::U2s(displayBuffer, totalPayoff);
 			Display::Show(displayBuffer);
 
 		}
@@ -235,35 +237,57 @@ void SlotsMain::startReels(bool home)
 	finalSteps[1] = stepOffsets[pos[1]];
 	finalSteps[2] = stepOffsets[pos[2]];
 
-	calculatePayoff();
-	showReelPreview();
-	Display::U2s(displayBuffer, payoff);
-	Display::Show(displayBuffer);
-	oledPrintS(0, 0, "Spinning");
+	// Calculates the payoff for all paylines
+
+	if(playing) {
+		totalPayoff = 0;
+		totalPayoff += calcPayoff(0);
+		totalPayoff += calcPayoff(1);
+		totalPayoff += calcPayoff(2);
+		showReelPreview();
+		Display::U2s(displayBuffer, totalPayoff);
+		Display::Show(displayBuffer);
+	}
 
 	// Starts the wheels
 
+	playing = true;
+	oledPrintS(0, 0, "Spinning");
 	spinning = true;
 	resetVars(START);
+}
+
+/*
+ * Returns the current symbol number of the line and reel specified.
+ */
+uint8_t SlotsMain::getLineSymbol(uint8_t line, uint8_t reel)
+{
+	switch(line) {
+		case 0:
+			return LINE1(reel);
+		case 1:
+			return LINE2(reel);
+		case 2:
+			return LINE3(reel);
+	}
 }
 
 /**
  * Looks for a payoff combination from the reel positions.
  */
-void SlotsMain::calculatePayoff()
+uint16_t SlotsMain::calcPayoff(int line)
 {
 	for(int p = 0; p < NPAYOFFS; p++) {
-		if( ((payoffs[p][0] == -1) || (reels[0][pos[0]] == (int16_t)payoffs[p][0])) &&
-			((payoffs[p][1] == -1) || (reels[1][pos[1]] == (int16_t)payoffs[p][1])) &&
-			((payoffs[p][2] == -1) || (reels[2][pos[2]] == (int16_t)payoffs[p][2])) ) {
+		if( ((payoffs[p][0] == -1) || (getLineSymbol(line, 0) == (int16_t)payoffs[p][0])) &&
+			((payoffs[p][1] == -1) || (getLineSymbol(line, 1) == (int16_t)payoffs[p][1])) &&
+			((payoffs[p][2] == -1) || (getLineSymbol(line, 2) == (int16_t)payoffs[p][2])) ) {
 
 			// Found a payoff combination
 
-			payoff = payoffs[p][3];
-			return;
+			return payoffs[p][3];
 		}
 	}
-	payoff = 0;
+	return 0;
 }
 
 /**
@@ -334,17 +358,32 @@ void SlotsMain::showReelPreview()
 	// oledPrintS(2, 1, "   ");
 	// oledPrintN(2, 1, payoff);
 
-	oledPrintS(1, 1,  symbolNames[LINE1(0)]);
-	oledPrintS(1, 6,  symbolNames[LINE1(1)]);
-	oledPrintS(1, 11, symbolNames[LINE1(2)]);
+	oledPrintN(1, 1,  getLineSymbol(0, 0));
+	oledPrintN(1, 3,  getLineSymbol(0, 1));
+	oledPrintN(1, 5,  getLineSymbol(0, 2));
+	oledPrintN(2, 1,  getLineSymbol(1, 0));
+	oledPrintN(2, 3,  getLineSymbol(1, 1));
+	oledPrintN(2, 5,  getLineSymbol(1, 2));
+	oledPrintN(3, 1,  getLineSymbol(2, 0));
+	oledPrintN(3, 3,  getLineSymbol(2, 1));
+	oledPrintN(3, 5,  getLineSymbol(2, 2));
 
- 	oledPrintS(2, 1,  symbolNames[LINE2(0)]);
-	oledPrintS(2, 6,  symbolNames[LINE2(1)]);
-	oledPrintS(2, 11, symbolNames[LINE2(2)]);
+	oledPrintS(1, 8, "    ");
+	oledPrintN(1, 8, calcPayoff(0));
+	oledPrintS(2, 8, "    ");
+	oledPrintN(2, 8, calcPayoff(1));
+	oledPrintS(3, 8, "    ");
+	oledPrintN(3, 8, calcPayoff(2));
 
- 	oledPrintS(3, 1,  symbolNames[LINE3(0)]);
-	oledPrintS(3, 6,  symbolNames[LINE3(1)]);
-	oledPrintS(3, 11, symbolNames[LINE3(2)]);
+	// oledPrintS(1, 1,  symbolNames[LINE1(0)]);
+	// oledPrintS(1, 6,  symbolNames[LINE1(1)]);
+	// oledPrintS(1, 11, symbolNames[LINE1(2)]);
+ 	// oledPrintS(2, 1,  symbolNames[LINE2(0)]);
+	// oledPrintS(2, 6,  symbolNames[LINE2(1)]);
+	// oledPrintS(2, 11, symbolNames[LINE2(2)]);
+ 	// oledPrintS(3, 1,  symbolNames[LINE3(0)]);
+	// oledPrintS(3, 6,  symbolNames[LINE3(1)]);
+	// oledPrintS(3, 11, symbolNames[LINE3(2)]);
 }
 
 /**

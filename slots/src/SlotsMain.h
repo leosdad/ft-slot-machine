@@ -20,7 +20,8 @@ class SlotsMain
 	private:
 		void processReel(int n);
 		void startReels(bool home);
-		void calculatePayoff();
+		uint8_t getLineSymbol(uint8_t line, uint8_t reel);
+		uint16_t calcPayoff(int line);
 		void stopReels();
 		void displayIdle(char *msg);
 		bool isIdle();

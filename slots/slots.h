@@ -72,7 +72,8 @@ const int stepOffsets[] = {0, 93, 85, 76, 68, 59, 51, 42, 34, 25, 17, 8};
 const int reels[NREELS][NREELSYMBOLS] = {
 	{0, 4, 1, 5, 7, 2, 7, 3, 1, 3, 1, 2},
 	{0, 4, 3, 1, 5, 1, 2, 4, 7, 4, 5, 7},
-	{0, 2, 7, 1, 7, 6, 4, 3, 4, 6, 1, 4}};
+	{0, 2, 7, 1, 7, 6, 4, 3, 4, 6, 1, 4}
+};
 
 /**
  * Each line is: reel 0, reel 1, reel 2, payoff. -1 on a reel means "any".

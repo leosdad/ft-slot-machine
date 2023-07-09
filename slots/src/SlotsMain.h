@@ -9,6 +9,15 @@
 
 #include "../slots.h"
 
+// ----------------------------------------------------------------------- Types
+
+typedef enum {
+	IDLE = 0,
+	START,
+	SENSING,
+	COUNTING,
+} ReelStatus;
+
 // ------------------------------------------------------------ Public functions
 
 class SlotsMain
@@ -25,12 +34,11 @@ class SlotsMain
 		void stopReels();
 		void displayIdle(char *msg);
 		bool isIdle();
-		void resetVars(int _state);
+		void resetVars(ReelStatus _state);
 		void serialSetup();
 		void sevenSegSetup();
 		void ioSetup();
 		void showReelPreview();
-
 };
 
 // ------------------------------------------------------------------------- End

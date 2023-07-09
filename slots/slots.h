@@ -20,6 +20,9 @@
 // Set to true for reel speed calibration
 #define CALIBRATE	 false
 
+// Set to true to simulate gameplay without actually moving anything
+#define SIMULATE	 false
+
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		 3

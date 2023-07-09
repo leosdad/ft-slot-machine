@@ -1,10 +1,8 @@
 
-// -----------------------------------------------------------------------------
-
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-// -------------------------------------------------------------------- Includes
+#pragma region -------------------------------------------------------- Includes
 
 #include "SlotsMain.h"
 
@@ -21,16 +19,9 @@
 #include "MotorDriver.h"
 #include "oled-display.h"
 
-// ----------------------------------------------------------------------- Types
+#pragma endregion
 
-enum {
-	IDLE = 0,
-	START,
-	SENSING,
-	COUNTING,
-};
-
-// --------------------------------------------------------------------- Defines
+#pragma region --------------------------------------------------------- Defines
 
 #define BAUD_RATE 57600
 
@@ -46,7 +37,11 @@ enum {
 #define LINE2(n)	(reels[n][CALCN2(pos[n])])
 #define LINE3(n)	(reels[n][CALCN3(pos[n])])
 
-// ------------------------------------------------------------------- Variables
+#pragma endregion
+
+#pragma region ------------------------------------------------------- Variables
+
+//-------------------------------------- Setup
 
 MotorDriver motor[] = {
 	MotorDriver(motor1Out, encoder[0]),
@@ -55,38 +50,45 @@ MotorDriver motor[] = {
 };
 
 // Inicialize ezButtons
+
 ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
+//-------------------------------------- Game control
+
 bool spinning;
 bool playing = false;
 byte currentSignal[NREELS];
-byte state[NREELS];
+ReelStatus state[NREELS];
 
 // Number of extra 360° revolutions per wheel
-uint8_t extraTurns[] = {0, 0, 0};
+uint8_t extraTurns[NREELS] = {0, 0, 0};
 uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
 uint16_t counter[NREELS];
+unsigned long lastChange[NREELS];
+char displayBuffer[DISPLAYCHARS];
 
 // Steps after sensor is triggered
 uint16_t finalSteps[] = {0, 0, 0};
 
 // Position of symbol to be displayed (0-11)
-uint16_t pos[] = {0, 0, 0};
+uint16_t pos[NREELS] = {0, 0, 0};
+uint16_t payoff[NREELS] = {0, 0, 0};
+uint8_t payoffMultiplier = 3;
 uint16_t totalPayoff = 0;
-unsigned long lastChange[NREELS];
-char displayBuffer[DISPLAYCHARS];
-
+uint16_t totalSpins = 0;
+uint16_t totalWins = 0;
 bool lockReel[NREELS] = {false, false, false};
 
-// Used for debugging
+//-------------------------------------- Used for debugging
+
 const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Mlon", "Bell", "Orng", "Lmon", "Grap"};
 
-// ----------------------------------------------------------------------- Setup
+#pragma endregion
 
 void SlotsMain::Setup()
 {
@@ -101,10 +103,10 @@ void SlotsMain::Setup()
 	startReels(true);
 }
 
-// ------------------------------------------------------------------- Main loop
-
 void SlotsMain::Loop()
 {
+	// ezButtons loops
+
 	increaseBet.loop();
 	decreaseBet.loop();
 	startLever.loop();
@@ -151,13 +153,82 @@ void SlotsMain::Loop()
 	}
 }
 
-// --------------------------------------------------------------------- Methods
+#pragma region ------------------------------------------------- Private methods
 
 /**
- * Individual reel state machine.
+ * Does the necessary calculations, draws 3 symbols and starts the reels.
+ */
+void SlotsMain::startReels(bool home)
+{
+	if(home) {
+
+		// Move reels to home position
+
+		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
+		pos[0] = pos[1] = pos[2] = 0;
+
+	} else {
+
+		// Sets the amount of initial full turns per reel
+#if SPEEDUP || CALIBRATE || SIMULATE
+		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
+#else
+		extraTurns[0] = TrueRandom.random(0, 3);
+		extraTurns[1] = TrueRandom.random(extraTurns[0] + 1, 4);
+		extraTurns[2] = TrueRandom.random(extraTurns[1] + 1, 5);
+#endif
+
+		// Draws the final position for each wheel
+#if CALIBRATE
+		pos[0] = pos[1] = pos[2] = 0;
+#else
+		pos[0] = TrueRandom.random(NREELSYMBOLS);
+		pos[1] = TrueRandom.random(NREELSYMBOLS);
+		pos[2] = TrueRandom.random(NREELSYMBOLS);
+#endif
+
+	}
+
+	// Calculates the number of steps necessary to reach each position
+
+	finalSteps[0] = stepOffsets[pos[0]];
+	finalSteps[1] = stepOffsets[pos[1]];
+	finalSteps[2] = stepOffsets[pos[2]];
+
+	// Calculates the payoff for all paylines
+
+	if(playing) {
+		payoff[0] = calcPayoff(0);
+		payoff[1] = calcPayoff(1);
+		payoff[2] = calcPayoff(2);
+		uint16_t total = payoff[0] + payoff[1] + payoff[2];
+		if(total) {
+			totalWins++;
+		}
+		totalPayoff += total;
+		totalSpins++;
+	}
+	showReelPreview();
+	Display::U2s(displayBuffer, totalPayoff);
+	Display::Show(displayBuffer);
+
+	// Starts the wheels
+
+	playing = true;
+	oledPrintS(0, 0, "Spinning");
+	spinning = true;
+	resetVars(START);
+}
+
+/**
+ * State machine for each reel.
  */
 void SlotsMain::processReel(int n)
 {
+#if SIMULATE
+	delay(100);
+	state[n] = IDLE;
+#else
 	posSensor[n].loop();
 
 	switch(state[n]) {
@@ -195,69 +266,10 @@ void SlotsMain::processReel(int n)
 			}
 			break;
 	}
+#endif
 }
 
 /**
- * Does the necessary calculations, draws 3 symbols and starts the reels.
- */
-void SlotsMain::startReels(bool home)
-{
-	if(home) {
-
-		// Move reels to home position
-
-		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
-		pos[0] = pos[1] = pos[2] = 0;
-
-	} else {
-
-		// Sets the amount of initial full turns per reel
-#if SPEEDUP || CALIBRATE
-		extraTurns[0] = extraTurns[1] = extraTurns[2] = 0;
-#else
-		extraTurns[0] = TrueRandom.random(0, 3);
-		extraTurns[1] = TrueRandom.random(extraTurns[0] + 1, 4);
-		extraTurns[2] = TrueRandom.random(extraTurns[1] + 1, 5);
-#endif
-
-		// Draws the final position for each wheel
-#if CALIBRATE
-		pos[0] = pos[1] = pos[2] = 0;
-#else
-		pos[0] = TrueRandom.random(NREELSYMBOLS);
-		pos[1] = TrueRandom.random(NREELSYMBOLS);
-		pos[2] = TrueRandom.random(NREELSYMBOLS);
-#endif
-
-	}
-
-	// Calculates the number of steps necessary to reach each position
-
-	finalSteps[0] = stepOffsets[pos[0]];
-	finalSteps[1] = stepOffsets[pos[1]];
-	finalSteps[2] = stepOffsets[pos[2]];
-
-	// Calculates the payoff for all paylines
-
-	if(playing) {
-		totalPayoff = 0;
-		totalPayoff += calcPayoff(0);
-		totalPayoff += calcPayoff(1);
-		totalPayoff += calcPayoff(2);
-		showReelPreview();
-		Display::U2s(displayBuffer, totalPayoff);
-		Display::Show(displayBuffer);
-	}
-
-	// Starts the wheels
-
-	playing = true;
-	oledPrintS(0, 0, "Spinning");
-	spinning = true;
-	resetVars(START);
-}
-
-/*
  * Returns the current symbol number of the line and reel specified.
  */
 uint8_t SlotsMain::getLineSymbol(uint8_t line, uint8_t reel)
@@ -278,13 +290,13 @@ uint8_t SlotsMain::getLineSymbol(uint8_t line, uint8_t reel)
 uint16_t SlotsMain::calcPayoff(int line)
 {
 	for(int p = 0; p < NPAYOFFS; p++) {
-		if( ((payoffs[p][0] == -1) || (getLineSymbol(line, 0) == (int16_t)payoffs[p][0])) &&
-			((payoffs[p][1] == -1) || (getLineSymbol(line, 1) == (int16_t)payoffs[p][1])) &&
-			((payoffs[p][2] == -1) || (getLineSymbol(line, 2) == (int16_t)payoffs[p][2])) ) {
+		if( ((payoffTable[p][0] == 0) || (getLineSymbol(line, 0) == (int16_t)payoffTable[p][0])) &&
+			((payoffTable[p][1] == 0) || (getLineSymbol(line, 1) == (int16_t)payoffTable[p][1])) &&
+			((payoffTable[p][2] == 0) || (getLineSymbol(line, 2) == (int16_t)payoffTable[p][2])) ) {
 
 			// Found a payoff combination
 
-			return payoffs[p][3];
+			return payoffTable[p][3] * payoffMultiplier;
 		}
 	}
 	return 0;
@@ -334,7 +346,7 @@ bool SlotsMain::isIdle()
 /**
  * Resets the three reels prior to the next spin.
  */
-void SlotsMain::resetVars(int _state)
+void SlotsMain::resetVars(ReelStatus _state)
 {
 	for(int i = 0; i < NREELS; i++) {
 		MotorDriver(motor1Out, encoder[0]), counter[i] = 0;
@@ -355,25 +367,24 @@ void SlotsMain::showReelPreview()
 	// oledPrintN(1, 6, extraTurns[1]);	
 	// oledPrintN(1, 11, extraTurns[2]);
 
-	// oledPrintS(2, 1, "   ");
-	// oledPrintN(2, 1, payoff);
+	oledPrintN(0, 10, totalSpins);
+	oledPrintN(0, 14, totalWins);
 
 	oledPrintN(1, 1,  getLineSymbol(0, 0));
 	oledPrintN(1, 3,  getLineSymbol(0, 1));
 	oledPrintN(1, 5,  getLineSymbol(0, 2));
+	oledPrintS(1, 8, "    ");
+	oledPrintN(1, 8, payoff[0]);
 	oledPrintN(2, 1,  getLineSymbol(1, 0));
 	oledPrintN(2, 3,  getLineSymbol(1, 1));
 	oledPrintN(2, 5,  getLineSymbol(1, 2));
+	oledPrintS(2, 8, "    ");
+	oledPrintN(2, 8, payoff[1]);
 	oledPrintN(3, 1,  getLineSymbol(2, 0));
 	oledPrintN(3, 3,  getLineSymbol(2, 1));
 	oledPrintN(3, 5,  getLineSymbol(2, 2));
-
-	oledPrintS(1, 8, "    ");
-	oledPrintN(1, 8, calcPayoff(0));
-	oledPrintS(2, 8, "    ");
-	oledPrintN(2, 8, calcPayoff(1));
 	oledPrintS(3, 8, "    ");
-	oledPrintN(3, 8, calcPayoff(2));
+	oledPrintN(3, 8, payoff[2]);
 
 	// oledPrintS(1, 1,  symbolNames[LINE1(0) - 1]);
 	// oledPrintS(1, 6,  symbolNames[LINE1(1) - 1]);
@@ -430,4 +441,4 @@ void SlotsMain::ioSetup()
 	pinMode(lockLED[2], OUTPUT);
 }
 
-// ------------------------------------------------------------------------- End
+#pragma endregion

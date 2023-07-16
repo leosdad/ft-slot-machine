@@ -41,7 +41,7 @@
 
 #pragma region ------------------------------------------------------- Variables
 
-//-------------------------------------- Setup
+// Setup
 
 MotorDriver motor[] = {
 	MotorDriver(motor1Out, encoder[0]),
@@ -57,7 +57,7 @@ ezButton decreaseBet(decreaseBetPin);
 ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
-//-------------------------------------- Game control
+// Game control
 
 bool spinning;
 bool playing = false;
@@ -84,9 +84,9 @@ uint16_t totalSpins = 0;
 uint16_t totalWins = 0;
 bool lockReel[NREELS] = {false, false, false};
 
-//-------------------------------------- Used for debugging
+// Used for debugging
 
-const char *symbolNames[NSYMBOLS] = {"Sevn", "Bana", "Chry", "Mlon", "Bell", "Orng", "Lmon", "Grap"};
+const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
 
 #pragma endregion
 
@@ -359,34 +359,31 @@ void SlotsMain::resetVars(ReelStatus _state)
 }
 
 /**
- * Shows the state and future symbols of the three reels.
+ * Shows the state and future symbols of the three reels on the OLED display.
  */
 void SlotsMain::showReelPreview()
 {
-	// oledPrintN(1, 1, extraTurns[0]);
-	// oledPrintN(1, 6, extraTurns[1]);	
-	// oledPrintN(1, 11, extraTurns[2]);
-
 	oledPrintN(0, 10, totalSpins);
 	oledPrintN(0, 14, totalWins);
 
-	for(int l = 0; l < NPAYLINES; l++) {
-		oledPrintN(l + 1, 1,  getLineSymbol(l, 0));
-		oledPrintN(l + 1, 3,  getLineSymbol(l, 1));
-		oledPrintN(l + 1, 5,  getLineSymbol(l, 2));
-		oledPrintS(l + 1, 8, "    ");
-		oledPrintN(l + 1, 8, payoff[l]);
-	}
+	uint8_t x = 1;
 
-	// oledPrintS(1, 1,  symbolNames[LINE1(0) - 1]);
-	// oledPrintS(1, 6,  symbolNames[LINE1(1) - 1]);
-	// oledPrintS(1, 11, symbolNames[LINE1(2) - 1]);
- 	// oledPrintS(2, 1,  symbolNames[LINE2(0) - 1]);
-	// oledPrintS(2, 6,  symbolNames[LINE2(1) - 1]);
-	// oledPrintS(2, 11, symbolNames[LINE2(2) - 1]);
- 	// oledPrintS(3, 1,  symbolNames[LINE3(0) - 1]);
-	// oledPrintS(3, 6,  symbolNames[LINE3(1) - 1]);
-	// oledPrintS(3, 11, symbolNames[LINE3(2) - 1]);
+#if NPAYLINES < 3
+	for(int i = 0; i < NREELS; i++, x+=3) {
+		oledPrintS(1, x++, "T");
+		oledPrintN(1, x, extraTurns[i]);
+	}
+#endif
+
+	x = 4 - NPAYLINES;
+
+	for(int l = 0; l < NPAYLINES; l++) {
+		oledPrintS(x + l, 1, symbolNames[getLineSymbol(l, 0)]);
+		oledPrintS(x + l, 5, symbolNames[getLineSymbol(l, 1)]);
+		oledPrintS(x + l, 9, symbolNames[getLineSymbol(l, 2)]);
+		oledPrintS(x + l, 13, "   ");
+		oledPrintN(x + l, 13, payoff[l]);
+	}
 }
 
 /**

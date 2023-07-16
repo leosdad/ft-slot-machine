@@ -25,10 +25,11 @@
 
 // --------------------------------------------------------------------- Defines
 
-#define NREELS		 3
-#define NSYMBOLS	 8
-#define NREELSYMBOLS 12
-#define NPAYOFFS	 22
+#define NREELS		     3
+#define NSYMBOLS	     8
+#define NREELSYMBOLS     12
+#define NCOMBINATIONS	 22
+#define NPAYLINES        2
 
 // ---------------------------------------------------------------- Arduino pins
 
@@ -81,7 +82,7 @@ const int reels[NREELS][NREELSYMBOLS] = {
 /**
  * Each line is: reel 0, reel 1, reel 2, payoff. -1 on a reel means "any".
  */
-const int16_t payoffTable[NPAYOFFS][NREELS + 1] = {
+const int16_t payoffTable[NCOMBINATIONS][NREELS + 1] = {
 	{1, 1, 1, 172},
 	{3, 3, 3, 86},
 	{4, 4, 4, 86},

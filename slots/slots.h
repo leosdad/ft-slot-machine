@@ -73,7 +73,7 @@ const uint8_t reelSpeed[] = {70, 90, 83};
 // Number of coins for each player
 const uint16_t defaultCoins = 3;
 
-const uint16_t maxCoins = 10000;
+const uint16_t maxCoins = 999999;
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

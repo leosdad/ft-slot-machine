@@ -18,6 +18,13 @@ enum class ReelStatus {
 	COUNTING,
 };
 
+enum class GameStatus {
+	IDLE = 0,
+	IDLE_SPINNING,
+	PLAYING,
+	PLAYING_SPINNING,
+};
+
 // ------------------------------------------------------------ Public functions
 
 class SlotsMain
@@ -37,11 +44,7 @@ class SlotsMain
 		void resetVars();
 		void sevenSegSetup();
 		void startReels(bool home);
-
-		// Debug
-
 		void forceStopReels();
-		void showReelPreview();
 };
 
 // ------------------------------------------------------------------------- End

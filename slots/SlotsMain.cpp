@@ -6,24 +6,26 @@
 
 #include "SlotsMain.h"
 
-// Common libraries
+// Arduino libraries
 
 #include <Wire.h>
-#include <SevenSegDisplay.h>
 #include <ezButton.h>
 #include <ezOutput.h>
 #include <TrueRandom.h>
 
+// Custom libraries
+
+#include <SevenSegDisplay.h>
+#include <MotorDriver.h>
+
 // Project libraries
 
-#include "MotorDriver.h"
-#include "src/oled-display.h"
+// #include "src/oled-display.h"
+#include "src/debug.h"
 
 #pragma endregion
 
 #pragma region --------------------------------------------------------- Defines
-
-#define BAUD_RATE 57600
 
 // Macros
 
@@ -57,6 +59,8 @@ ezButton decreaseBet(decreaseBetPin);
 ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
+Debug debug;
+
 #pragma endregion
 
 #pragma region ------------------------------------------------------- Variables
@@ -81,17 +85,13 @@ uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
 unsigned long lastChange[NREELS]; 	 	// In mmicroseconds; Used with encoders
 
-#if SHOWDEBUGDATA
-const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
-#endif
-
 #pragma endregion --------------------------------------------------------------
 
 void SlotsMain::Setup()
 {
 	sevenSegSetup();
 	ioSetup();
-	oledSetup();
+	debug.Setup();
 
 	changeBet(0);
 	Display::U2s(displayBuffer, spinPayoff);
@@ -126,14 +126,14 @@ void SlotsMain::Loop()
 			forceStopReels();
 			delay(200);
 			resetVars();
-			oledPrintS(0, 0, "Aborted ");
+			debug.DisplayS("Aborted ");
 
 		} else {
 #endif
 			if(isIdle()) {
 
 				resetVars();
-				oledPrintS(0, 0, "Stopped ");
+				debug.DisplayS("Stopped ");
 				if(spinPayoff) {
 					changeBet((spinPayoff * nCoins) - nCoins);
 				} else {
@@ -222,16 +222,16 @@ void SlotsMain::startReels(bool home)
 		spinPayoff += total;
 		totalSpins++;
 	}
-#if SHOWDEBUGDATA
-	showReelPreview();
+
+	debug.ShowReelPreview(totalSpins, totalWins, extraTurns, payoff, pos);
+
 	// Display::U2s(displayBuffer, spinPayoff);
 	// Display::Show(displayBuffer);
-#endif
 
 	// Starts the wheels
 
 	playing = true;
-	oledPrintS(0, 0, "Spinning");
+	debug.DisplayS("Spinning");
 	spinning = true;
 	prepareNextSpin(ReelStatus::START);
 }
@@ -372,8 +372,7 @@ void SlotsMain::prepareNextSpin(ReelStatus newState)
 void SlotsMain::changeBet(uint16_t bet)
 {
 	nCoins = min(maxCoins, max(0, (signed)(nCoins + bet)));
-	oledPrintS(2, 7, "    ");
-	oledPrintN(2, 7, nCoins);
+	debug.DisplayN(nCoins, 0, 2, true);
 }
 
 /**
@@ -408,40 +407,6 @@ void SlotsMain::ioSetup()
 	pinMode(lockLED[0], OUTPUT);
 	pinMode(lockLED[1], OUTPUT);
 	pinMode(lockLED[2], OUTPUT);
-}
-
-#pragma endregion
-
-#pragma region ------------------------------------------------- Debug methods
-
-/**
- * Shows the state and future symbols of the three reels on the OLED display.
- */
-void SlotsMain::showReelPreview()
-{
-#if SHOWDEBUGDATA
-	oledPrintN(0, 10, totalSpins);
-	oledPrintN(0, 14, totalWins);
-
-	uint8_t x = 1;
-
-#if NPAYLINES < 3
-	for(int i = 0; i < NREELS; i++, x+=3) {
-		oledPrintS(1, x++, "T");
-		oledPrintN(1, x, extraTurns[i]);
-	}
-#endif
-
-	x = 4 - NPAYLINES;
-
-	for(int l = 0; l < NPAYLINES; l++) {
-		oledPrintS(x + l, 1, symbolNames[getLineSymbol(l, 0)]);
-		oledPrintS(x + l, 5, symbolNames[getLineSymbol(l, 1)]);
-		oledPrintS(x + l, 9, symbolNames[getLineSymbol(l, 2)]);
-		oledPrintS(x + l, 13, "   ");
-		oledPrintN(x + l, 13, payoff[l]);
-	}
-#endif
 }
 
 /**

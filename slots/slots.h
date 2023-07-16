@@ -12,19 +12,22 @@
 
 #include <Arduino.h>
 
-// ------------------------------------------------------------------ Test flags
+// ----------------------------------------------------------------- Debug flags
 
 // Set to true for faster tests
-#define SPEEDUP		 true
+#define SPEEDUP true
 
 // Set to true for reel speed calibration
-#define CALIBRATE	 false
+#define CALIBRATE false
 
 // Set to true to simulate gameplay without actually moving anything
-#define SIMULATE	 false
+#define SIMULATE false
 
 // Set to true to enable abort by pressing the two first reel buttons
-#define  EMERGENCYSTOP	true
+#define EMERGENCYSTOP true
+
+// Set to true to show debug data on the OLED display
+#define SHOWDEBUGDATA false
 
 // --------------------------------------------------------------------- Defines
 
@@ -66,6 +69,11 @@ const uint16_t homeOffset = 34;
 
 // Speed for each motor. Similar motors may behave differently at slow speeds.
 const uint8_t reelSpeed[] = {70, 90, 83};
+
+// Number of coins for each player
+const uint16_t defaultCoins = 3;
+
+const uint16_t maxCoins = 10000;
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

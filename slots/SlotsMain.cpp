@@ -39,7 +39,7 @@
 
 #pragma endregion
 
-#pragma region ---------------------------------------------------- Inicializers
+#pragma region ---------------------------------------------------- Initializers
 
 // Motor setup
 
@@ -66,9 +66,10 @@ bool playing = false;
 bool spinning = false;
 byte currentSignal[NREELS];				// Used for encoder debouncing
 char displayBuffer[DISPLAYCHARS];		// Used for the 7-segment display
-ReelStatus state[NREELS];				// State machines
+ReelStatus reelState[NREELS];			// State machines for the reels
 uint16_t counter[NREELS];				// Position counters
 uint16_t finalSteps[] = {0, 0, 0};		// Steps after sensor is triggered
+uint16_t nCoins = 3;					// Current number of coins
 uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
 uint16_t pos[NREELS] = {0, 0, 0};		// Position of symbol to be displayed (0-11)
 uint16_t spinPayoff = 0;				// Total payoff for last spin
@@ -80,19 +81,19 @@ uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
 unsigned long lastChange[NREELS]; 	 	// In mmicroseconds; Used with encoders
 
-// Debug
-
+#if SHOWDEBUGDATA
 const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
+#endif
 
 #pragma endregion --------------------------------------------------------------
 
 void SlotsMain::Setup()
 {
-	// serialSetup();
 	sevenSegSetup();
 	ioSetup();
 	oledSetup();
 
+	changeBet(0);
 	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
 
@@ -111,6 +112,8 @@ void SlotsMain::Loop()
 	reelBtn[2].loop();
 
 	if(spinning) {
+
+		// Loop while spinning
 
 		processReel(0);
 		processReel(1);
@@ -131,9 +134,13 @@ void SlotsMain::Loop()
 
 				resetVars();
 				oledPrintS(0, 0, "Stopped ");
+				if(spinPayoff) {
+					changeBet((spinPayoff * nCoins) - nCoins);
+				} else {
+					changeBet(-nCoins);
+				}
 				Display::U2s(displayBuffer, spinPayoff);
 				Display::Show(displayBuffer);
-
 			}
 #if EMERGENCYSTOP
 		}
@@ -141,10 +148,14 @@ void SlotsMain::Loop()
 
 	} else {
 
-		// Process buttons
+		// Loop while not spinning
 
 		if(startLever.isPressed()) {
 			startReels(false);
+		} else if(increaseBet.isPressed()) {
+			changeBet(1);
+		} else if(decreaseBet.isPressed()) {
+			changeBet(-1);
 		} else {
 			for(int i = 0; i < NREELS; i++) {
 				if(reelBtn[i].isPressed()) {
@@ -211,16 +222,18 @@ void SlotsMain::startReels(bool home)
 		spinPayoff += total;
 		totalSpins++;
 	}
+#if SHOWDEBUGDATA
 	showReelPreview();
-	Display::U2s(displayBuffer, spinPayoff);
-	Display::Show(displayBuffer);
+	// Display::U2s(displayBuffer, spinPayoff);
+	// Display::Show(displayBuffer);
+#endif
 
 	// Starts the wheels
 
 	playing = true;
 	oledPrintS(0, 0, "Spinning");
 	spinning = true;
-	prepareNextSpin(START);
+	prepareNextSpin(ReelStatus::START);
 }
 
 /**
@@ -233,33 +246,33 @@ void SlotsMain::processReel(int nReel)
 	state[nReel] = IDLE;
 #else
 	if(lockReel[nReel]) {
-		state[nReel] = IDLE;
+		reelState[nReel] = ReelStatus::IDLE;
 		return;
 	}
 	posSensor[nReel].loop();
 
-	switch(state[nReel]) {
+	switch(reelState[nReel]) {
 
-		case START:
+		case ReelStatus::START:
 			rotations[nReel] = extraTurns[nReel];
 			speed[nReel] = reelSpeed[nReel];
 			motor[nReel].RotateCW(speed[nReel]);
-			state[nReel] = SENSING;
+			reelState[nReel] = ReelStatus::SENSING;
 			break;
 
-		case SENSING:
+		case ReelStatus::SENSING:
 			if(posSensor[nReel].isReleased()) {
 				if(rotations[nReel] > 0) {
 					rotations[nReel]--;
 				} else {
 					counter[nReel] = finalSteps[nReel];
 					currentSignal[nReel] = digitalRead(encoder[nReel]);
-					state[nReel] = COUNTING;
+					reelState[nReel] = ReelStatus::COUNTING;
 				}
 			}
 			break;
 
-		case COUNTING:
+		case ReelStatus::COUNTING:
 			if(((micros() - lastChange[nReel]) > debouncePeriod) &&
 				(digitalRead(encoder[nReel]) != currentSignal[nReel])) {
 				lastChange[nReel] = micros();
@@ -267,7 +280,7 @@ void SlotsMain::processReel(int nReel)
 				if(currentSignal[nReel]) {	// RISING flank
 					if(counter[nReel]-- + homeOffset == 0) {
 						motor[nReel].Brake();
-						state[nReel] = IDLE;
+						reelState[nReel] = ReelStatus::IDLE;
 					}
 				}
 			}
@@ -314,14 +327,10 @@ uint16_t SlotsMain::calcPayoff(int line)
  */
 bool SlotsMain::isIdle()
 {
-	if(state[0] != IDLE) {
-		return false;
-	}
-	if(state[1] != IDLE) {
-		return false;
-	}
-	if(state[2] != IDLE) {
-		return false;
+	for(int i = 0; i < NREELS; i++) {
+		if(reelState[i] != ReelStatus::IDLE) {
+			return false;
+		}
 	}
 	return true;
 }
@@ -332,8 +341,10 @@ bool SlotsMain::isIdle()
 void SlotsMain::resetVars()
 {
 	spinning = false;
-	state[0] = state[1] = state[2] = START;
-	prepareNextSpin(IDLE);
+	for(int i = 0; i < NREELS; i++) {
+		reelState[i] = ReelStatus::START;
+	}
+	prepareNextSpin(ReelStatus::IDLE);
 	for(int i = 0; i < NREELS; i++) {
 		lockReel[i] = false;
 		digitalWrite(lockLED[i], LOW);
@@ -343,16 +354,26 @@ void SlotsMain::resetVars()
 /**
  * Resets the three reels prior to the next spin.
  */
-void SlotsMain::prepareNextSpin(ReelStatus _state)
+void SlotsMain::prepareNextSpin(ReelStatus newState)
 {
 	for(int i = 0; i < NREELS; i++) {
 		MotorDriver(motor1Out, encoder[0]), counter[i] = 0;
 		currentSignal[i] = 0;
 		lastChange[i] = 0;
-		state[i] = _state;
+		reelState[i] = newState;
 		speed[i] = reelSpeed[i];
 		rotations[i] = 0;
 	}
+}
+
+/**
+ * Increments the number of coins by the amount given.
+ */
+void SlotsMain::changeBet(uint16_t bet)
+{
+	nCoins = min(maxCoins, max(0, (signed)(nCoins + bet)));
+	oledPrintS(2, 7, "    ");
+	oledPrintN(2, 7, nCoins);
 }
 
 /**
@@ -394,20 +415,11 @@ void SlotsMain::ioSetup()
 #pragma region ------------------------------------------------- Debug methods
 
 /**
- * Initializes the main serial port.
- */
-void SlotsMain::serialSetup()
-{
-	Serial.begin(BAUD_RATE);
-	Serial.println("------------------------------------");
-	Serial.println("Slot machine");
-}
-
-/**
  * Shows the state and future symbols of the three reels on the OLED display.
  */
 void SlotsMain::showReelPreview()
 {
+#if SHOWDEBUGDATA
 	oledPrintN(0, 10, totalSpins);
 	oledPrintN(0, 14, totalWins);
 
@@ -429,6 +441,7 @@ void SlotsMain::showReelPreview()
 		oledPrintS(x + l, 13, "   ");
 		oledPrintN(x + l, 13, payoff[l]);
 	}
+#endif
 }
 
 /**

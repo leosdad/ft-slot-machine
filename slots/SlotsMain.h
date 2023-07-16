@@ -11,12 +11,12 @@
 
 // ----------------------------------------------------------------------- Types
 
-typedef enum {
+enum class ReelStatus {
 	IDLE = 0,
 	START,
 	SENSING,
 	COUNTING,
-} ReelStatus;
+};
 
 // ------------------------------------------------------------ Public functions
 
@@ -27,21 +27,21 @@ class SlotsMain
 		void Loop();
 
 	private:
-		void processReel(int n);
-		void startReels(bool home);
-		uint8_t getLineSymbol(uint8_t line, uint8_t reel);
-		uint16_t calcPayoff(int line);
-		void resetVars();
 		bool isIdle();
-		void prepareNextSpin(ReelStatus _state);
-		void sevenSegSetup();
+		uint16_t calcPayoff(int line);
+		uint8_t getLineSymbol(uint8_t line, uint8_t reel);
+		void changeBet(uint16_t bet);
 		void ioSetup();
+		void prepareNextSpin(ReelStatus _state);
+		void processReel(int n);
+		void resetVars();
+		void sevenSegSetup();
+		void startReels(bool home);
 
 		// Debug
 
-		void serialSetup();
-		void showReelPreview();
 		void forceStopReels();
+		void showReelPreview();
 };
 
 // ------------------------------------------------------------------------- End

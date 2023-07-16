@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
 #include "../slots.h"
-#include "./oled-display.h"
+#include "./debug-display.h"
 
 void outputTestsSetup()
 {

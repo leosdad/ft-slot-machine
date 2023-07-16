@@ -23,6 +23,9 @@
 // Set to true to simulate gameplay without actually moving anything
 #define SIMULATE	 false
 
+// Set to true to enable abort by pressing the two first reel buttons
+#define  EMERGENCYSTOP	true
+
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		     3

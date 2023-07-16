@@ -120,19 +120,28 @@ void SlotsMain::Loop()
 		processReel(1);
 		processReel(2);
 
+#if EMERGENCYSTOP
 		if(!digitalRead(reelButtonPin[0]) && !digitalRead(reelButtonPin[1])) {
 
 			// Emergency stop
-			stopReels();
-			displayIdle("Aborted ");
+			forceStopReels();
+			delay(200);
+			resetVars();
+			oledPrintS(0, 0, "Aborted ");
 
-		} else if(isIdle()) {
+		} else {
+#endif
+			if(isIdle()) {
 
-			displayIdle("Stopped ");
-			Display::U2s(displayBuffer, totalPayoff);
-			Display::Show(displayBuffer);
+				resetVars();
+				oledPrintS(0, 0, "Stopped ");
+				Display::U2s(displayBuffer, totalPayoff);
+				Display::Show(displayBuffer);
 
+			}
+#if EMERGENCYSTOP
 		}
+#endif
 
 	} else {
 
@@ -140,15 +149,13 @@ void SlotsMain::Loop()
 
 		if(startLever.isPressed()) {
 			startReels(false);
-		} else if(reelBtn[0].isPressed()) {
-			lockReel[0] = !lockReel[0];
-			digitalWrite(lockLED[0], lockReel[0]);
-		} else if(reelBtn[1].isPressed()) {
-			lockReel[1] = !lockReel[1];
-			digitalWrite(lockLED[1], lockReel[1]);
-		} else if(reelBtn[2].isPressed()) {
-			lockReel[2] = !lockReel[2];
-			digitalWrite(lockLED[2], lockReel[2]);
+		} else {
+			for(int i = 0; i < NREELS; i++) {
+				if(reelBtn[i].isPressed()) {
+					lockReel[i] = !lockReel[i];
+					digitalWrite(lockLED[i], lockReel[i]);
+				}
+			}
 		}
 	}
 }
@@ -217,7 +224,7 @@ void SlotsMain::startReels(bool home)
 	playing = true;
 	oledPrintS(0, 0, "Spinning");
 	spinning = true;
-	resetVars(START);
+	prepareNextSpin(START);
 }
 
 /**
@@ -303,30 +310,6 @@ uint16_t SlotsMain::calcPayoff(int line)
 }
 
 /**
- * Force stop all three reels.
- */
-void SlotsMain::stopReels()
-{
-	for(int i = 0; i < NREELS; i++) {
-		motor[i].Coast();
-	}
-}
-
-/**
- * Turns off LEDs and display a message.
- */
-void SlotsMain::displayIdle(char *msg)
-{
-	spinning = false;
-	state[0] = state[1] = state[2] = START;
-	resetVars(IDLE);
-
-	if(msg) {
-		oledPrintS(0, 0, msg);
-	}
-}
-
-/**
  * Returns true if all reels are in idle state.
  */
 bool SlotsMain::isIdle()
@@ -344,9 +327,23 @@ bool SlotsMain::isIdle()
 }
 
 /**
+ * Turns off state variables and put machine to idle state.
+ */
+void SlotsMain::resetVars()
+{
+	spinning = false;
+	state[0] = state[1] = state[2] = START;
+	prepareNextSpin(IDLE);
+	for(int i = 0; i < NREELS; i++) {
+		lockReel[i] = false;
+		digitalWrite(lockLED[i], LOW);
+	}
+}
+
+/**
  * Resets the three reels prior to the next spin.
  */
-void SlotsMain::resetVars(ReelStatus _state)
+void SlotsMain::prepareNextSpin(ReelStatus _state)
 {
 	for(int i = 0; i < NREELS; i++) {
 		MotorDriver(motor1Out, encoder[0]), counter[i] = 0;
@@ -356,44 +353,6 @@ void SlotsMain::resetVars(ReelStatus _state)
 		speed[i] = reelSpeed[i];
 		rotations[i] = 0;
 	}
-}
-
-/**
- * Shows the state and future symbols of the three reels on the OLED display.
- */
-void SlotsMain::showReelPreview()
-{
-	oledPrintN(0, 10, totalSpins);
-	oledPrintN(0, 14, totalWins);
-
-	uint8_t x = 1;
-
-#if NPAYLINES < 3
-	for(int i = 0; i < NREELS; i++, x+=3) {
-		oledPrintS(1, x++, "T");
-		oledPrintN(1, x, extraTurns[i]);
-	}
-#endif
-
-	x = 4 - NPAYLINES;
-
-	for(int l = 0; l < NPAYLINES; l++) {
-		oledPrintS(x + l, 1, symbolNames[getLineSymbol(l, 0)]);
-		oledPrintS(x + l, 5, symbolNames[getLineSymbol(l, 1)]);
-		oledPrintS(x + l, 9, symbolNames[getLineSymbol(l, 2)]);
-		oledPrintS(x + l, 13, "   ");
-		oledPrintN(x + l, 13, payoff[l]);
-	}
-}
-
-/**
- * Initializes the main serial port.
- */
-void SlotsMain::serialSetup()
-{
-	Serial.begin(BAUD_RATE);
-	Serial.println("------------------------------------");
-	Serial.println("Slot machine");
 }
 
 /**
@@ -428,6 +387,58 @@ void SlotsMain::ioSetup()
 	pinMode(lockLED[0], OUTPUT);
 	pinMode(lockLED[1], OUTPUT);
 	pinMode(lockLED[2], OUTPUT);
+}
+
+#pragma endregion
+
+#pragma region ------------------------------------------------- Debug methods
+
+/**
+ * Initializes the main serial port.
+ */
+void SlotsMain::serialSetup()
+{
+	Serial.begin(BAUD_RATE);
+	Serial.println("------------------------------------");
+	Serial.println("Slot machine");
+}
+
+/**
+ * Shows the state and future symbols of the three reels on the OLED display.
+ */
+void SlotsMain::showReelPreview()
+{
+	oledPrintN(0, 10, totalSpins);
+	oledPrintN(0, 14, totalWins);
+
+	uint8_t x = 1;
+
+#if NPAYLINES < 3
+	for(int i = 0; i < NREELS; i++, x+=3) {
+		oledPrintS(1, x++, "T");
+		oledPrintN(1, x, extraTurns[i]);
+	}
+#endif
+
+	x = 4 - NPAYLINES;
+
+	for(int l = 0; l < NPAYLINES; l++) {
+		oledPrintS(x + l, 1, symbolNames[getLineSymbol(l, 0)]);
+		oledPrintS(x + l, 5, symbolNames[getLineSymbol(l, 1)]);
+		oledPrintS(x + l, 9, symbolNames[getLineSymbol(l, 2)]);
+		oledPrintS(x + l, 13, "   ");
+		oledPrintN(x + l, 13, payoff[l]);
+	}
+}
+
+/**
+ * Force stop all three reels.
+ */
+void SlotsMain::forceStopReels()
+{
+	for(int i = 0; i < NREELS; i++) {
+		motor[i].Coast();
+	}
 }
 
 #pragma endregion

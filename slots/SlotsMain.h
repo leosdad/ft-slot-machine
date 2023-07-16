@@ -31,14 +31,17 @@ class SlotsMain
 		void startReels(bool home);
 		uint8_t getLineSymbol(uint8_t line, uint8_t reel);
 		uint16_t calcPayoff(int line);
-		void stopReels();
-		void displayIdle(char *msg);
+		void resetVars();
 		bool isIdle();
-		void resetVars(ReelStatus _state);
-		void serialSetup();
+		void prepareNextSpin(ReelStatus _state);
 		void sevenSegSetup();
 		void ioSetup();
+
+		// Debug
+
+		void serialSetup();
 		void showReelPreview();
+		void forceStopReels();
 };
 
 // ------------------------------------------------------------------------- End

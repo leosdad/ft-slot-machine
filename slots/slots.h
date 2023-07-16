@@ -58,10 +58,10 @@ const uint8_t motor3Out[] = {9, 8};
 
 // ------------------------------------------------------------- Other constants
 
-// In μs (microseconds)
+// Used with encoders. In μs (microseconds)
 const unsigned long debouncePeriod = 1000;
 
-// Common offset for home position
+// Common position offset for home position
 const uint16_t homeOffset = 34;
 
 // Speed for each motor. Similar motors may behave differently at slow speeds.
@@ -83,7 +83,7 @@ const int reels[NREELS][NREELSYMBOLS] = {
 };
 
 /**
- * Each line is: reel 0, reel 1, reel 2, payoff. -1 on a reel means "any".
+ * Each line is: reel 0, reel 1, reel 2, payoff. 0 on a reel means "any".
  */
 const int16_t payoffTable[NCOMBINATIONS][NREELS + 1] = {
 	{1, 1, 1, 172},

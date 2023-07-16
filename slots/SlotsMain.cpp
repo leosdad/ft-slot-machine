@@ -39,9 +39,9 @@
 
 #pragma endregion
 
-#pragma region ------------------------------------------------------- Variables
+#pragma region ---------------------------------------------------- Inicializers
 
-// Setup
+// Motor setup
 
 MotorDriver motor[] = {
 	MotorDriver(motor1Out, encoder[0]),
@@ -49,7 +49,7 @@ MotorDriver motor[] = {
 	MotorDriver(motor3Out, encoder[2])
 };
 
-// Inicialize ezButtons
+// EzButtons
 
 ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
@@ -57,38 +57,34 @@ ezButton decreaseBet(decreaseBetPin);
 ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
-// Game control
+#pragma endregion
 
-bool spinning;
+#pragma region ------------------------------------------------------- Variables
+
+bool lockReel[NREELS] = {false, false, false};	// State of reel locks
 bool playing = false;
-byte currentSignal[NREELS];
-ReelStatus state[NREELS];
-
-// Number of extra 360° revolutions per wheel
-uint8_t extraTurns[NREELS] = {0, 0, 0};
+bool spinning = false;
+byte currentSignal[NREELS];				// Used for encoder debouncing
+char displayBuffer[DISPLAYCHARS];		// Used for the 7-segment display
+ReelStatus state[NREELS];				// State machines
+uint16_t counter[NREELS];				// Position counters
+uint16_t finalSteps[] = {0, 0, 0};		// Steps after sensor is triggered
+uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
+uint16_t pos[NREELS] = {0, 0, 0};		// Position of symbol to be displayed (0-11)
+uint16_t spinPayoff = 0;				// Total payoff for last spin
+uint16_t totalSpins = 0;				// Total spins since the beginning
+uint16_t totalWins = 0;					// Total wins since the beginning
+uint8_t extraTurns[NREELS] = {0, 0, 0};	// Number of extra 360° revolutions per wheel
+uint8_t payoffMultiplier = 3;
 uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
-uint16_t counter[NREELS];
-unsigned long lastChange[NREELS];
-char displayBuffer[DISPLAYCHARS];
+unsigned long lastChange[NREELS]; 	 	// In mmicroseconds; Used with encoders
 
-// Steps after sensor is triggered
-uint16_t finalSteps[] = {0, 0, 0};
-
-// Position of symbol to be displayed (0-11)
-uint16_t pos[NREELS] = {0, 0, 0};
-uint16_t payoff[NPAYLINES] = {0, 0};
-uint8_t payoffMultiplier = 3;
-uint16_t totalPayoff = 0;
-uint16_t totalSpins = 0;
-uint16_t totalWins = 0;
-bool lockReel[NREELS] = {false, false, false};
-
-// Used for debugging
+// Debug
 
 const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
 
-#pragma endregion
+#pragma endregion --------------------------------------------------------------
 
 void SlotsMain::Setup()
 {
@@ -97,7 +93,7 @@ void SlotsMain::Setup()
 	ioSetup();
 	oledSetup();
 
-	Display::U2s(displayBuffer, totalPayoff);
+	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
 
 	startReels(true);
@@ -135,7 +131,7 @@ void SlotsMain::Loop()
 
 				resetVars();
 				oledPrintS(0, 0, "Stopped ");
-				Display::U2s(displayBuffer, totalPayoff);
+				Display::U2s(displayBuffer, spinPayoff);
 				Display::Show(displayBuffer);
 
 			}
@@ -212,11 +208,11 @@ void SlotsMain::startReels(bool home)
 		if(total) {
 			totalWins++;
 		}
-		totalPayoff += total;
+		spinPayoff += total;
 		totalSpins++;
 	}
 	showReelPreview();
-	Display::U2s(displayBuffer, totalPayoff);
+	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
 
 	// Starts the wheels
@@ -230,44 +226,48 @@ void SlotsMain::startReels(bool home)
 /**
  * State machine for each reel.
  */
-void SlotsMain::processReel(int n)
+void SlotsMain::processReel(int nReel)
 {
 #if SIMULATE
 	delay(100);
-	state[n] = IDLE;
+	state[nReel] = IDLE;
 #else
-	posSensor[n].loop();
+	if(lockReel[nReel]) {
+		state[nReel] = IDLE;
+		return;
+	}
+	posSensor[nReel].loop();
 
-	switch(state[n]) {
+	switch(state[nReel]) {
 
 		case START:
-			rotations[n] = extraTurns[n];
-			speed[n] = reelSpeed[n];
-			motor[n].RotateCW(speed[n]);
-			state[n] = SENSING;
+			rotations[nReel] = extraTurns[nReel];
+			speed[nReel] = reelSpeed[nReel];
+			motor[nReel].RotateCW(speed[nReel]);
+			state[nReel] = SENSING;
 			break;
 
 		case SENSING:
-			if(posSensor[n].isReleased()) {
-				if(rotations[n] > 0) {
-					rotations[n]--;
+			if(posSensor[nReel].isReleased()) {
+				if(rotations[nReel] > 0) {
+					rotations[nReel]--;
 				} else {
-					counter[n] = finalSteps[n];
-					currentSignal[n] = digitalRead(encoder[n]);
-					state[n] = COUNTING;
+					counter[nReel] = finalSteps[nReel];
+					currentSignal[nReel] = digitalRead(encoder[nReel]);
+					state[nReel] = COUNTING;
 				}
 			}
 			break;
 
 		case COUNTING:
-			if(((micros() - lastChange[n]) > debouncePeriod) &&
-				(digitalRead(encoder[n]) != currentSignal[n])) {
-				lastChange[n] = micros();
-				currentSignal[n] = !currentSignal[n];
-				if(currentSignal[n]) {	// RISING flank
-					if(counter[n]-- + homeOffset == 0) {
-						motor[n].Brake();
-						state[n] = IDLE;
+			if(((micros() - lastChange[nReel]) > debouncePeriod) &&
+				(digitalRead(encoder[nReel]) != currentSignal[nReel])) {
+				lastChange[nReel] = micros();
+				currentSignal[nReel] = !currentSignal[nReel];
+				if(currentSignal[nReel]) {	// RISING flank
+					if(counter[nReel]-- + homeOffset == 0) {
+						motor[nReel].Brake();
+						state[nReel] = IDLE;
 					}
 				}
 			}

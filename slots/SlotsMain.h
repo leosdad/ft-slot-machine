@@ -25,7 +25,7 @@ enum class GameStatus {
 	PLAYING_SPINNING,
 };
 
-// ------------------------------------------------------------ Public functions
+// ----------------------------------------------------------- Class declaration
 
 class SlotsMain
 {

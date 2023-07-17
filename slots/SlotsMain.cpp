@@ -21,6 +21,7 @@
 // Project libraries
 
 #include "src/debug.h"
+#include "src/oled-display.h"
 
 #pragma endregion
 
@@ -59,6 +60,7 @@ ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSens
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
 
 Debug debug;
+OledDisplay od;
 
 #pragma endregion
 
@@ -91,10 +93,14 @@ void SlotsMain::Setup()
 	sevenSegSetup();
 	ioSetup();
 	debug.Setup();
+	od.Setup();
 
 	changeBet(0);
 	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
+
+	od.SetFont(Font::MONO_BOLD);
+	od.PrintS(2, 8, "Coins");
 
 	startReels(true);
 }
@@ -112,7 +118,7 @@ void SlotsMain::Loop()
 
 	if(spinning) {
 
-		// Loop while spinning
+		// Spinning
 
 		processReel(0);
 		processReel(1);
@@ -147,7 +153,7 @@ void SlotsMain::Loop()
 
 	} else {
 
-		// Loop while not spinning
+		// Not spinning
 
 		if(startLever.isPressed()) {
 			startReels(false);
@@ -371,7 +377,8 @@ void SlotsMain::prepareNextSpin(ReelStatus newState)
 void SlotsMain::changeBet(uint16_t bet)
 {
 	nCoins = min(maxCoins, max(0, (signed)(nCoins + bet)));
-	debug.DisplayN(nCoins, 0, 2, true);
+	od.SetFont(Font::DIGITS_EXTRALARGE);
+	od.PrintN(1, 3, nCoins);
 }
 
 /**

@@ -10,7 +10,6 @@
 
 #include <Wire.h>
 #include <ezButton.h>
-#include <ezOutput.h>
 #include <TrueRandom.h>
 
 // Custom libraries
@@ -66,25 +65,30 @@ OledDisplay od;
 
 #pragma region ------------------------------------------------------- Variables
 
+// TODO: join these values in a struct
 bool lockReel[NREELS] = {false, false, false};	// State of reel locks
-bool playing = false;
-bool spinning = false;
-byte currentSignal[NREELS];				// Used for encoder debouncing
-char displayBuffer[DISPLAYCHARS];		// Used for the 7-segment display
-ReelStatus reelState[NREELS];			// State machines for the reels
-uint16_t counter[NREELS];				// Position counters
-uint16_t finalSteps[] = {0, 0, 0};		// Steps after sensor is triggered
-uint16_t nCoins = 3;					// Current number of coins
-uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
-uint16_t pos[NREELS] = {0, 0, 0};		// Position of symbol to be displayed (0-11)
-uint16_t spinPayoff = 0;				// Total payoff for last spin
-uint16_t totalSpins = 0;				// Total spins since the beginning
-uint16_t totalWins = 0;					// Total wins since the beginning
-uint8_t extraTurns[NREELS] = {0, 0, 0};	// Number of extra 360° revolutions per wheel
-uint8_t payoffMultiplier = 3;
+byte currentSignal[NREELS];					// Used for encoder debouncing
+ReelStatus reelState[NREELS];				// State machines for the reels
+uint16_t counter[NREELS];					// Position counters
+uint16_t finalSteps[NREELS] = {0, 0, 0};	// Steps after sensor is triggered
+uint16_t pos[NREELS] = {0, 0, 0};			// Position of symbol to be displayed (0-11)
+uint8_t extraTurns[NREELS] = {0, 0, 0};		// Number of extra 360° revolutions per wheel
 uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
-unsigned long lastChange[NREELS]; 	 	// In mmicroseconds; Used with encoders
+unsigned long lastChange[NREELS]; 	 		// In mmicroseconds; Used with encoders
+
+bool playing = false;
+bool spinning = false;
+char displayBuffer[DISPLAYCHARS];			// Used for the 7-segment display
+uint16_t nCoins = 3;						// Current number of coins
+uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
+uint16_t spinPayoff = 0;					// Total payoff for last spin
+uint16_t totalSpins = 0;					// Total spins since the beginning
+uint16_t totalWins = 0;						// Total wins since the beginning
+uint8_t payoffMultiplier = 3;
+
+
+
 
 #pragma endregion --------------------------------------------------------------
 
@@ -118,42 +122,24 @@ void SlotsMain::Loop()
 
 	if(spinning) {
 
-		// Spinning
-
 		processReel(0);
 		processReel(1);
 		processReel(2);
 
-#if EMERGENCYSTOP
-		if(!digitalRead(reelButtonPin[0]) && !digitalRead(reelButtonPin[1])) {
+		if(isIdle()) {
 
-			// Emergency stop
-			forceStopReels();
-			delay(200);
 			resetVars();
-			debug.DisplayS("Aborted ");
-
-		} else {
-#endif
-			if(isIdle()) {
-
-				resetVars();
-				debug.DisplayS("Stopped ");
-				if(spinPayoff) {
-					changeBet((spinPayoff * nCoins) - nCoins);
-				} else {
-					changeBet(-nCoins);
-				}
-				Display::U2s(displayBuffer, spinPayoff);
-				Display::Show(displayBuffer);
+			debug.DisplayS("Stopped ");
+			if(spinPayoff) {
+				changeBet((spinPayoff * nCoins) - nCoins);
+			} else {
+				changeBet(-nCoins);
 			}
-#if EMERGENCYSTOP
+			Display::U2s(displayBuffer, spinPayoff);
+			Display::Show(displayBuffer);
 		}
-#endif
 
 	} else {
-
-		// Not spinning
 
 		if(startLever.isPressed()) {
 			startReels(false);

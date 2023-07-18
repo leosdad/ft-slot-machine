@@ -23,9 +23,6 @@
 // Set to true to simulate gameplay without actually moving anything
 #define SIMULATE false
 
-// Set to true to enable abort by pressing the two first reel buttons
-#define EMERGENCYSTOP true
-
 // Set to true to show debug data on the OLED display
 #define SHOWDEBUGDATA false
 

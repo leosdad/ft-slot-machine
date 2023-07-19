@@ -8,12 +8,16 @@
 // -------------------------------------------------------------------- Includes
 
 #include "../slots.h"
+#include "oled-display.h"
+#include "payline.h"
 
 // ----------------------------------------------------------- Class declaration
 
 class Debug
 {
 	public:
+		Debug();
+
 		void Setup();
 		void DisplayS(const char *msg, uint8_t row = 0, uint8_t col = 0, bool erase = false);
 		void DisplayN(uint16_t number, uint8_t row = 0, uint8_t col = 0, bool erase = false);
@@ -24,9 +28,10 @@ class Debug
 			uint16_t payoff[NREELS],
 			uint16_t pos[NREELS]
 		);
-
+	
 	private:
-		uint8_t getLineSymbol(uint8_t line, uint8_t reel, uint16_t pos[]);
+		OledDisplay od;
+		Payline payline;
 };
 
 // ------------------------------------------------------------------------- End

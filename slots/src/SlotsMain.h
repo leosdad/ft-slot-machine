@@ -7,7 +7,10 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "slots.h"
+#include "../slots.h"
+#include "debug.h"
+#include "oled-display.h"
+#include "payoffs.h"
 
 // ----------------------------------------------------------------------- Types
 
@@ -35,8 +38,6 @@ class SlotsMain
 
 	private:
 		bool isIdle();
-		uint16_t calcPayoff(int line);
-		uint8_t getLineSymbol(uint8_t line, uint8_t reel);
 		void changeBet(uint16_t bet);
 		void ioSetup();
 		void prepareNextSpin(ReelStatus _state);
@@ -46,6 +47,13 @@ class SlotsMain
 		void startReels(bool home);
 		void forceStopReels();
 		void blinkReelLockLeds();
+
+		// Private fields
+
+		Debug debug;
+		OledDisplay od;
+		Payline payline;
+		Payoffs payoffs;
 };
 
 // ------------------------------------------------------------------------- End

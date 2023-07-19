@@ -14,24 +14,23 @@
 
 // ----------------------------------------------------------------- Debug flags
 
-// Set to true for faster tests
+// Define for faster tests
 #define SPEEDUP true
 
-// Set to true for reel speed calibration
-#define CALIBRATE false
+// Define for reel speed calibration
+// #define CALIBRATE
 
-// Set to true to simulate gameplay without actually moving anything
-#define SIMULATE false
+// Define to simulate gameplay without actually moving anything
+// #define SIMULATE
 
-// Set to true to show debug data on the OLED display
-#define SHOWDEBUGDATA false
+// Define to show debug data on the OLED display
+// #define SHOWDEBUGDATA
 
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		    3
 #define NSYMBOLS	    8
 #define NREELSYMBOLS    12
-#define NCOMBINATIONS	22
 #define NPAYLINES       2
 #define BLINKINTERVAL	200
 
@@ -86,34 +85,6 @@ const int reels[NREELS][NREELSYMBOLS] = {
 	{1, 5, 2, 6, 8, 3, 8, 4, 2, 4, 2, 3},
 	{1, 5, 4, 2, 6, 2, 3, 5, 8, 5, 6, 8},
 	{1, 3, 8, 2, 8, 7, 5, 4, 5, 7, 2, 5}
-};
-
-/**
- * Each line is: reel 0, reel 1, reel 2, payoff. 0 on a reel means "any".
- */
-const int16_t payoffTable[NCOMBINATIONS][NREELS + 1] = {
-	{1, 1, 1, 172},
-	{3, 3, 3, 86},
-	{4, 4, 4, 86},
-	{5, 5, 3, 58},
-	{8, 8, 3, 43},
-	{2, 2, 3, 29},
-	{8, 8, 8, 22},
-	{5, 5, 5, 20},
-	{2, 2, 2, 14},
-	{1, 1, 0, 14},
-	{0, 1, 1, 14},
-	{1, 0, 1, 14},
-	{0, 3, 3, 14},
-	{0, 3, 1, 14},
-	{0, 4, 4, 14},
-	{5, 3, 0, 14},
-	{6, 6, 0, 7},
-	{3, 3, 0, 7},
-	{3, 1, 0, 7},
-	{8, 8, 0, 4},
-	{0, 8, 8, 4},
-	{0, 0, 3, 1},
 };
 
 #endif	// SLOTS_H

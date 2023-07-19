@@ -2,43 +2,14 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#pragma region -------------------------------------------------------- Includes
+// -------------------------------------------------------------------- Includes
 
 #include "SlotsMain.h"
-
-// Arduino libraries
-
 #include <Wire.h>
 #include <ezButton.h>
 #include <TrueRandom.h>
-
-// Custom libraries
-
 #include <SevenSegDisplay.h>
 #include <MotorDriver.h>
-
-// Project libraries
-
-#include "src/debug.h"
-#include "src/oled-display.h"
-
-#pragma endregion
-
-#pragma region --------------------------------------------------------- Defines
-
-// Macros
-
-#define CALCN1(n)	(n > 0 ? n - 1 : n + NREELSYMBOLS - 1)
-#define CALCN2(n)	(n)
-#define CALCN3(n)	(n < NREELSYMBOLS - 1 ? n + 1 : 0 )
-
-// Paylines
-
-#define LINE1(n)	(reels[n][CALCN1(pos[n])])
-#define LINE2(n)	(reels[n][CALCN2(pos[n])])
-#define LINE3(n)	(reels[n][CALCN3(pos[n])])
-
-#pragma endregion
 
 #pragma region ---------------------------------------------------- Initializers
 
@@ -57,9 +28,6 @@ ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 ezButton posSensor[NREELS] = {positionSensor[0], positionSensor[1], positionSensor[2]};
 ezButton reelBtn[NREELS] = {reelButtonPin[0], reelButtonPin[1], reelButtonPin[2]};
-
-Debug debug;
-OledDisplay od;
 
 #pragma endregion
 
@@ -100,7 +68,6 @@ uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
 uint16_t spinPayoff = 0;					// Payoff amount for last spin
 uint16_t totalSpins = 0;					// Total spins since the beginning
 uint16_t totalWins = 0;						// Total wins since the beginning
-uint8_t payoffMultiplier = 3;
 
 // LED blinking
 
@@ -268,7 +235,7 @@ void SlotsMain::startReels(bool home)
 	if(playing) {
 		uint16_t total = 0;
 		for(int l = 0; l < NPAYLINES; l++) {
-			total += payoff[l] = calcPayoff(l);
+			total += payoff[l] = payoffs.Calculate(l, pos);
 		}
 		if(total) {
 			totalWins++;
@@ -345,39 +312,6 @@ void SlotsMain::processReel(int nReel)
 			break;
 	}
 #endif
-}
-
-/**
- * Returns the current symbol number of the line and reel specified.
- */
-uint8_t SlotsMain::getLineSymbol(uint8_t line, uint8_t reel)
-{
-	switch(line) {
-		case 0:
-			return LINE1(reel);
-		case 1:
-			return LINE2(reel);
-		case 2:
-			return LINE3(reel);
-	}
-}
-
-/**
- * Looks for a payoff combination from the reel positions.
- */
-uint16_t SlotsMain::calcPayoff(int line)
-{
-	for(int c = 0; c < NCOMBINATIONS; c++) {
-		if( ((payoffTable[c][0] == 0) || (getLineSymbol(line, 0) == (int16_t)payoffTable[c][0])) &&
-			((payoffTable[c][1] == 0) || (getLineSymbol(line, 1) == (int16_t)payoffTable[c][1])) &&
-			((payoffTable[c][2] == 0) || (getLineSymbol(line, 2) == (int16_t)payoffTable[c][2])) ) {
-
-			// Found a payoff combination
-
-			return payoffTable[c][3] * payoffMultiplier;
-		}
-	}
-	return 0;
 }
 
 /**

@@ -28,11 +28,12 @@
 
 // --------------------------------------------------------------------- Defines
 
-#define NREELS		     3
-#define NSYMBOLS	     8
-#define NREELSYMBOLS     12
-#define NCOMBINATIONS	 22
-#define NPAYLINES        2
+#define NREELS		    3
+#define NSYMBOLS	    8
+#define NREELSYMBOLS    12
+#define NCOMBINATIONS	22
+#define NPAYLINES       2
+#define BLINKINTERVAL	200
 
 // ---------------------------------------------------------------- Arduino pins
 

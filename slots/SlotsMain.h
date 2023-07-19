@@ -45,6 +45,7 @@ class SlotsMain
 		void sevenSegSetup();
 		void startReels(bool home);
 		void forceStopReels();
+		void blinkReelLockLeds();
 };
 
 // ------------------------------------------------------------------------- End

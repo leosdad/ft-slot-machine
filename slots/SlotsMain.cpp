@@ -65,7 +65,8 @@ OledDisplay od;
 
 #pragma region ------------------------------------------------------- Variables
 
-// TODO: join these values in a struct
+// TODO: join these values in a struct. Should also include posSensor, reelBtn...
+// Maybe even lockLED, etc. (see slots.h)?
 bool lockReel[NREELS] = {false, false, false};	// State of reel locks
 byte currentSignal[NREELS];					// Used for encoder debouncing
 ReelStatus reelState[NREELS];				// State machines for the reels
@@ -75,20 +76,37 @@ uint16_t pos[NREELS] = {0, 0, 0};			// Position of symbol to be displayed (0-11)
 uint8_t extraTurns[NREELS] = {0, 0, 0};		// Number of extra 360° revolutions per wheel
 uint8_t rotations[NREELS];
 uint8_t speed[NREELS];
-unsigned long lastChange[NREELS]; 	 		// In mmicroseconds; Used with encoders
+unsigned long lastChange[NREELS]; 	 		// In microseconds; Used with encoders
+
+enum class LockableStatus {
+	LOCKABLE = 0,
+	NOT_LOCKABLE,
+	NEXT_LOCABLE
+};
+
+typedef struct Reels
+{
+	bool lockable;
+	bool locked;
+} Reel;
+
+Reel reel[NREELS];
 
 bool playing = false;
 bool spinning = false;
 char displayBuffer[DISPLAYCHARS];			// Used for the 7-segment display
 uint16_t nCoins = 3;						// Current number of coins
 uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
-uint16_t spinPayoff = 0;					// Total payoff for last spin
+uint16_t spinPayoff = 0;					// Payoff amount for last spin
 uint16_t totalSpins = 0;					// Total spins since the beginning
 uint16_t totalWins = 0;						// Total wins since the beginning
 uint8_t payoffMultiplier = 3;
 
+// LED blinking
 
-
+const long blinkInterval = BLINKINTERVAL;
+unsigned long blinkPreviousMs = 0;
+int blinkLedState = LOW;
 
 #pragma endregion --------------------------------------------------------------
 
@@ -127,7 +145,6 @@ void SlotsMain::Loop()
 		processReel(2);
 
 		if(isIdle()) {
-
 			resetVars();
 			debug.DisplayS("Stopped ");
 			if(spinPayoff) {
@@ -149,16 +166,62 @@ void SlotsMain::Loop()
 			changeBet(-1);
 		} else {
 			for(int i = 0; i < NREELS; i++) {
-				if(reelBtn[i].isPressed()) {
-					lockReel[i] = !lockReel[i];
-					digitalWrite(lockLED[i], lockReel[i]);
+				if(reel[i].lockable) {
+					if(reelBtn[i].isPressed()) {
+						reel[i].locked = !reel[i].locked;
+					}
+					if(reel[i].locked) {
+						digitalWrite(lockLED[i], HIGH);
+					}
+				} else {
+					digitalWrite(lockLED[i], LOW);
 				}
 			}
+
+			// Blink reel lock LEDs
+
+			blinkReelLockLeds();
 		}
 	}
 }
 
 #pragma region ------------------------------------------------- Private methods
+
+void lockUnlock()
+{
+	for(int i = 0; i < NREELS; i++) {
+		if(reel[i].locked) {
+			for(int r = 0; r < NREELS; r++) {
+				reel[r].lockable = false;
+				reel[i].locked = false;
+			}
+			return;
+		}
+	}
+
+	for(int i = 0; i < NREELS; i++) {
+		reel[i].locked = false;
+		reel[i].lockable = true;
+	}
+}
+
+/**
+ * Blink reel lock LEDs
+ */
+void SlotsMain::blinkReelLockLeds()
+{
+	unsigned long currMs = millis();
+
+	if(currMs - blinkPreviousMs >= blinkInterval) {
+		blinkPreviousMs = currMs;
+		blinkLedState = !blinkLedState;
+		for(int i = 0; i < NREELS; i++) {
+			if(reel[i].lockable) {
+				digitalWrite(lockLED[i], blinkLedState);
+			}
+		}
+	}
+}
 
 /**
  * Does the necessary calculations, draws 3 symbols and starts the reels.
@@ -224,6 +287,10 @@ void SlotsMain::startReels(bool home)
 	playing = true;
 	debug.DisplayS("Spinning");
 	spinning = true;
+
+	// TODO: should remove from here
+
+	lockUnlock();
 	prepareNextSpin(ReelStatus::START);
 }
 

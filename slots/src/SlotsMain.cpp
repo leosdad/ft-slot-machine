@@ -4,12 +4,14 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "SlotsMain.h"
 #include <Wire.h>
 #include <ezButton.h>
 #include <TrueRandom.h>
 #include <SevenSegDisplay.h>
 #include <MotorDriver.h>
+
+#include "SlotsMain.h"
+#include "reel.h"
 
 #pragma region ---------------------------------------------------- Initializers
 
@@ -52,16 +54,17 @@ enum class LockableStatus {
 	NEXT_LOCABLE
 };
 
-typedef struct Reels
+typedef struct __Reels
 {
 	bool lockable;
 	bool locked;
-} Reel;
+} __Reel;
 
-Reel reel[NREELS];
+__Reel reel[NREELS];
 
-bool playing = false;
-bool spinning = false;
+bool playing = false;		// Game status
+bool spinning = false;		// Game status
+
 char displayBuffer[DISPLAYCHARS];			// Used for the 7-segment display
 uint16_t nCoins = 3;						// Current number of coins
 uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
@@ -75,6 +78,8 @@ const long blinkInterval = BLINKINTERVAL;
 unsigned long blinkPreviousMs = 0;
 int blinkLedState = LOW;
 
+Reel myReel[3];
+
 #pragma endregion --------------------------------------------------------------
 
 void SlotsMain::Setup()
@@ -83,6 +88,17 @@ void SlotsMain::Setup()
 	ioSetup();
 	debug.Setup();
 	od.Setup();
+
+	for(int i = 0; i < NREELS; i++) {
+		Reel myReel[i](
+			motorOut[i],
+			encoder[i],
+			positionSensor[i],
+			reelButtonPin[i],
+			lockLED[i],
+			reelSpeed[i],
+			reels[i]);
+	}
 
 	changeBet(0);
 	Display::U2s(displayBuffer, spinPayoff);

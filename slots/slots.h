@@ -14,17 +14,17 @@
 
 // ----------------------------------------------------------------- Debug flags
 
-// Define for faster tests
+// Set to true for faster tests
 #define SPEEDUP true
 
-// Define for reel speed calibration
-// #define CALIBRATE
+// Set to true for reel speed calibration
+#define CALIBRATE false
 
-// Define to simulate gameplay without actually moving anything
-// #define SIMULATE
+// Set to true to simulate gameplay without actually moving anything
+#define SIMULATE false
 
-// Define to show debug data on the OLED display
-// #define SHOWDEBUGDATA
+// Set to true to show debug data on the OLED display
+#define SHOWDEBUGDATA false
 
 // --------------------------------------------------------------------- Defines
 
@@ -33,6 +33,8 @@
 #define NREELSYMBOLS    12
 #define NPAYLINES       2
 #define BLINKINTERVAL	200
+#define BTN_DEBOUNCE	50
+#define SIMULATE_DELAY	50
 
 // ---------------------------------------------------------------- Arduino pins
 
@@ -50,30 +52,31 @@ const uint8_t motorOut[NREELS][2] = {
 
 // Input pins
 
-const uint8_t encoder[NREELS] = {28, 30, 32};
-const uint8_t reelButtonPin[NREELS] = {35, 37, 39};
-const uint8_t positionSensor[NREELS] = {29, 31, 33};
+const uint8_t homeSensorPin[NREELS] = {29, 31, 33};
+const uint8_t lockButtonPin[NREELS] = {35, 37, 39};
+const uint8_t encoderPin[NREELS] = {28, 30, 32};
+
 const uint8_t leverButtonPin = 53;
 const uint8_t increaseBetPin = 52;
 const uint8_t decreaseBetPin = 50;
 
 // Output pins
 
-const uint8_t lockLED[NREELS] = {34, 36, 38};
-const uint8_t redLED1[2] = {2, 3};
-const uint8_t redLED2[2] = {6, 7};
+const uint8_t lockLEDPin[NREELS] = {34, 36, 38};
+const uint8_t signalLED1[2] = {2, 3};
+const uint8_t signalLED2[2] = {6, 7};
 const uint8_t Servo = 44;
 
 // ------------------------------------------------------------- Other constants
+
+// Speed for each motor. Similar motors may behave differently at slow speeds.
+const uint8_t motorSpeed[NREELS] = {70, 90, 83};
 
 // Used with encoders. In μs (microseconds)
 const unsigned long debouncePeriod = 1000;
 
 // Common position offset for home position
 const uint16_t homeOffset = 34;
-
-// Speed for each motor. Similar motors may behave differently at slow speeds.
-const uint8_t reelSpeed[NREELS] = {70, 90, 83};
 
 // Number of initial coins
 const uint16_t startCoins = 3;
@@ -89,7 +92,7 @@ const int stepOffsets[] = {0, 93, 85, 76, 68, 59, 51, 42, 34, 25, 17, 8};
 /**
  * Reel composition
  */
-const int reels[NREELS][NREELSYMBOLS] = {
+const int reelComposition[NREELS][NREELSYMBOLS] = {
 	{1, 5, 2, 6, 8, 3, 8, 4, 2, 4, 2, 3},
 	{1, 5, 4, 2, 6, 2, 3, 5, 8, 5, 6, 8},
 	{1, 3, 8, 2, 8, 7, 5, 4, 5, 7, 2, 5}

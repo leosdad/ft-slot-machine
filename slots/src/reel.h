@@ -10,7 +10,7 @@
 #include "../slots.h"
 #include <ezButton.h>
 #include <TrueRandom.h>
-#include <MotorDriver.h>
+#include "motor-driver.h"
 
 // ----------------------------------------------------------- Class declaration
 
@@ -42,35 +42,41 @@ class Reel
 		uint8_t rotations;			// Rotation counter
 		unsigned long lastChange; 	// In microseconds; Used with encoders
 
-		// Not modified, must be initialized
+		// Not modified: must be initialized
 
-		uint8_t motorPins[2];		// Motor pins
 		uint8_t encoderPin;			// Encoder motor pin
-		uint8_t homeSensorPin;		// Pin for optic home position sensor
 		uint8_t lockLEDPin;			// Pin for green lock reel LED
-		uint8_t lockButtonPin;		// Pin for pushbutton behind LED
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
-		MotorDriver &motor;			// Motor that corresponds to this reel
-		ezButton &ezHomeSensor;		// ezButton instance for home sensor
-		ezButton &ezLockBtn;		// ezButton instance for reel lock button
 		int *composition;			// Reel composition
+		// uint8_t motorPins[2];		// Motor pins
+		// uint8_t homeSensorPin;		// Pin for optic home position sensor
+		// uint8_t lockButtonPin;		// Pin for pushbutton behind LED
+
+		// Non-scalar types
+
+		MotorDriver motor{0,0};			// Motor that corresponds to this reel
+		// ezButton ezHomeSensor;		// ezButton instance for home sensor
+		// ezButton ezLockBtn;			// ezButton instance for reel lock button
+		ezButton ezHomeSensor{0}; // Initialize to a default pin number (you can change this default if needed)
+		ezButton ezLockBtn{0};    // Initialize to a default pin number (you can change this default if needed)
 
 	public:
 
 		/**
 		 * Constructor.
 		*/
+		Reel();
+
 		Reel(
-			const uint8_t motorPinNumbers[2],
-			const uint8_t encoderPinNumber,
-			const uint8_t homeSensorPinNumber,
-			const uint8_t lockButtonPinNumber,
+			const uint8_t motorPins[2],
+			const uint8_t encoderPin,
+			const uint8_t homeSensorPin,
+			const uint8_t lockButtonPin,
 			const uint8_t lockLEDPinNumber,
 			const uint8_t motorSpeedValue,
 			int *reelComposition
 		);
 
-		void Setup();
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		void Process();
 		void Simulate();

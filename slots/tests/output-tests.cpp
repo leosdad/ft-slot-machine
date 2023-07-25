@@ -19,10 +19,10 @@ void outputTestsSetup()
 	pinMode(motor3Out[0], OUTPUT);
 	pinMode(motor3Out[1], OUTPUT);
 
-	pinMode(redLED1[0], OUTPUT);
-	pinMode(redLED1[0], OUTPUT);
-	pinMode(redLED2[1], OUTPUT);
-	pinMode(redLED2[1], OUTPUT);
+	pinMode(signalLED1[0], OUTPUT);
+	pinMode(signalLED1[0], OUTPUT);
+	pinMode(signalLED2[1], OUTPUT);
+	pinMode(signalLED2[1], OUTPUT);
 
 	pinMode(lockLED[0], OUTPUT);
 	pinMode(lockLED[1], OUTPUT);
@@ -58,21 +58,21 @@ void lockLEDTests()
 void redLEDTests()
 {
 	oledD.PrintS(1, 0, "Right LED");
-	digitalWrite(redLED1[0], LOW);
-	digitalWrite(redLED1[1], HIGH);
+	digitalWrite(signalLED1[0], LOW);
+	digitalWrite(signalLED1[1], HIGH);
 	delay(INTERVAL);
 	oledD.PrintS(1, 0, "         ");
-	digitalWrite(redLED1[0], LOW);
-	digitalWrite(redLED1[1], LOW);
+	digitalWrite(signalLED1[0], LOW);
+	digitalWrite(signalLED1[1], LOW);
 	delay(INTERVAL);
 
 	oledD.PrintS(2, 0, "Left LED");
-	digitalWrite(redLED2[0], LOW);
-	digitalWrite(redLED2[1], HIGH);
+	digitalWrite(signalLED2[0], LOW);
+	digitalWrite(signalLED2[1], HIGH);
 	delay(INTERVAL);
 	oledD.PrintS(2, 0, "         ");
-	digitalWrite(redLED2[0], LOW);
-	digitalWrite(redLED2[1], LOW);
+	digitalWrite(signalLED2[0], LOW);
+	digitalWrite(signalLED2[1], LOW);
 	delay(INTERVAL);
 }
 

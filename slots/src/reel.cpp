@@ -8,38 +8,47 @@
 
 // --------------------------------------------------------------- Class members
 
+Reel::Reel()
+{
+};
+
 Reel::Reel(
-	const uint8_t motorPinNumbers[2],
+	const uint8_t motorPins[2],
 	const uint8_t encoderPinNumber,
-	const uint8_t homeSensorPinNumber,
-	const uint8_t lockButtonPinNumber,
+	const uint8_t homeSensorPin,
+	const uint8_t lockButtonPin,
 	const uint8_t lockLEDPinNumber,
 	const uint8_t motorSpeedValue,
 	int *reelComposition
 )
 {
-	// Copy pin number values
+	// Copy some pin number values
 
-	motorPins[0] = motorPinNumbers[0];
-	motorPins[1] = motorPinNumbers[1];
 	encoderPin = encoderPinNumber;
-	homeSensorPin = homeSensorPinNumber;
-	lockButtonPin = lockButtonPinNumber;
+
+	// motorPins[0] = motorPinNumbers[0];
+	// motorPins[1] = motorPinNumbers[1];
+	// homeSensorPin = homeSensorPinNumber;
+	// lockButtonPin = lockButtonPinNumber;
 	lockLEDPin = lockLEDPinNumber;
+	pinMode(lockLEDPin, OUTPUT);
 	motorSpeed = motorSpeedValue;
 	composition = reelComposition;
 
-	// motor = MotorDriver(motorPins, encoderPin);
-	// ezHomeSensor = ezButton(homeSensorPin);
-	// ezLockBtn = ezButton(lockButtonPin);
-}
-
-void Reel::Setup()
-{
+	// motor = _motor;
+	// ezHomeSensor = _ezHomeSensor;
+	// ezLockBtn = _ezLockBtn;
 	motor = MotorDriver(motorPins, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPin);
 	ezLockBtn = ezButton(lockButtonPin);
+	ezLockBtn.setDebounceTime(BTN_DEBOUNCE);
 }
+
+// void Reel::Setup(
+// )
+// {
+
+// }
 
 /**
  * Does the necessary calculations, draws 3 symbols and starts the reels.
@@ -74,13 +83,14 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	// Calculates the number of steps necessary to reach each position
 
 	finalSteps = stepOffsets[symbolPos];
+	reelState = ReelState::START;
 
 	return extraTurns;
 }
 
 void Reel::Simulate()
 {
-	delay(50);
+	delay(SIMULATE_DELAY);
 	reelState = ReelState::IDLE;
 }
 
@@ -89,11 +99,14 @@ void Reel::Simulate()
  */
 void Reel::Process()
 {
-	if(locked) {
-		reelState = ReelState::IDLE;
-		return;
-	}
+	// if(locked) {
+	// 	reelState = ReelState::IDLE;
+	// 	return;
+	// }
+
 	ezHomeSensor.loop();
+
+	// ezHomeSensor.loop();
 
 	switch(reelState) {
 

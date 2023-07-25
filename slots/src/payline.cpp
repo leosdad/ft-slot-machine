@@ -16,9 +16,9 @@
 
 // Payline symbols
 
-#define LINE1(l, pos)	(reels[l][CALCN1(pos[l])])
-#define LINE2(l, pos)	(reels[l][CALCN2(pos[l])])
-#define LINE3(l, pos)	(reels[l][CALCN3(pos[l])])
+#define LINE1(reels, l, pos)	(reels[l][CALCN1(pos[l])])
+#define LINE2(reels, l, pos)	(reels[l][CALCN2(pos[l])])
+#define LINE3(reels, l, pos)	(reels[l][CALCN3(pos[l])])
 
 #pragma endregion
 
@@ -29,14 +29,14 @@
  */
 uint8_t Payline::GetLineSymbol(uint8_t line, uint8_t reel, uint16_t pos[])
 {
-	switch(line) {
-		case 0:
-			return LINE1(reel, pos);
-		case 1:
-			return LINE2(reel, pos);
-		case 2:
-			return LINE3(reel, pos);
-	}
+	// switch(line) {
+	// 	case 0:
+	// 		return LINE1(reels, reel, pos);
+	// 	case 1:
+	// 		return LINE2(reels, reel, pos);
+	// 	case 2:
+	// 		return LINE3(reels, reel, pos);
+	// }
 }
 
 // ------------------------------------------------------------------------- End

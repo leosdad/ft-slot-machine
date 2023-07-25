@@ -44,7 +44,7 @@ class SlotsMain
 		void processReel(int n);
 		void resetVars();
 		void sevenSegSetup();
-		void startReels(bool home);
+		void __unnamed();
 		void forceStopReels();
 		void blinkReelLockLeds();
 

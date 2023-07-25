@@ -60,17 +60,17 @@ void encoderTests()
 
 void sensorTests()
 {
-	if(digitalRead(positionSensor[0])) {
+	if(digitalRead(homeSensorPin[0])) {
 		oledPrint(1, 0, "sens1");
 	} else {
 		oledPrint(1, 0, "     ");
 	}
-	if(digitalRead(positionSensor[1])) {
+	if(digitalRead(homeSensorPin[1])) {
 		oledPrint(2, 0, "sens2");
 	} else {
 		oledPrint(2, 0, "     ");
 	}
-	if(digitalRead(positionSensor[2])) {
+	if(digitalRead(homeSensorPin[2])) {
 		oledPrint(3, 0, "sens3");
 	} else {
 		oledPrint(3, 0, "     ");

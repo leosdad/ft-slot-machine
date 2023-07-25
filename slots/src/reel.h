@@ -12,17 +12,26 @@
 #include <TrueRandom.h>
 #include "motor-driver.h"
 
+// ----------------------------------------------------------------- Debug flags
+
+// Set to true for faster tests
+#define SPEEDUP true
+
+// Set to true for reel speed calibration
+#define CALIBRATE false
+
+// Set to true to simulate gameplay without actually moving anything
+#define SIMULATE false
+
+#define SIMULATE_DELAY	50
+
 // ----------------------------------------------------------- Class declaration
 
 class Reel
 {
 	private:
 
-		// enum class LockableStatus {
-		// 	LOCKABLE = 0,
-		// 	NOT_LOCKABLE,
-		// 	NEXT_LOCABLE
-		// };
+		// Enums
 
 		enum class ReelState {
 			IDLE = 0,
@@ -31,9 +40,9 @@ class Reel
 			COUNTING,
 		};
 
+		// Private fields
+
 		ReelState reelState;		// Machine state
-		bool lockable = true;		// Signals if the reel can be locked
-		bool locked = false;		// State of reel lock
 		byte currentSignal;			// Used for encoder debouncing
 		uint16_t counter;			// Position counter
 		uint16_t finalSteps = 0;	// Steps after sensor is triggered
@@ -41,30 +50,30 @@ class Reel
 		uint8_t extraTurns = 0;		// Number of extra 360° revolutions
 		uint8_t rotations;			// Rotation counter
 		unsigned long lastChange; 	// In microseconds; Used with encoders
+		bool lockable = true;		// Signals if the reel can be locked
+		bool locked = false;		// State of reel lock
 
-		// Not modified: must be initialized
+		// Must be initialized
 
 		uint8_t encoderPin;			// Encoder motor pin
 		uint8_t lockLEDPin;			// Pin for green lock reel LED
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
 		int *composition;			// Reel composition
-		// uint8_t motorPins[2];		// Motor pins
-		// uint8_t homeSensorPin;		// Pin for optic home position sensor
-		// uint8_t lockButtonPin;		// Pin for pushbutton behind LED
 
 		// Non-scalar types
 
 		MotorDriver motor{0,0};			// Motor that corresponds to this reel
-		// ezButton ezHomeSensor;		// ezButton instance for home sensor
-		// ezButton ezLockBtn;			// ezButton instance for reel lock button
 		ezButton ezHomeSensor{0}; // Initialize to a default pin number (you can change this default if needed)
 		ezButton ezLockBtn{0};    // Initialize to a default pin number (you can change this default if needed)
 
+		// Private methods
+
+		void lockAndUnlock();
+
 	public:
 
-		/**
-		 * Constructor.
-		*/
+		// Constructors
+
 		Reel();
 
 		Reel(
@@ -77,8 +86,11 @@ class Reel
 			int *reelComposition
 		);
 
+		// Public methods
+
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void Process();
+		void ProcessSpinning();
+		void ProcessStopped(bool blinkStatus);
 		void Simulate();
 		bool IsIdle();
 		void ForceStop();

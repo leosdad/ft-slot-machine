@@ -12,20 +12,6 @@
 
 #include <Arduino.h>
 
-// ----------------------------------------------------------------- Debug flags
-
-// Set to true for faster tests
-#define SPEEDUP true
-
-// Set to true for reel speed calibration
-#define CALIBRATE false
-
-// Set to true to simulate gameplay without actually moving anything
-#define SIMULATE false
-
-// Set to true to show debug data on the OLED display
-#define SHOWDEBUGDATA false
-
 // --------------------------------------------------------------------- Defines
 
 #define NREELS		    3
@@ -34,7 +20,6 @@
 #define NPAYLINES       2
 #define BLINKINTERVAL	200
 #define BTN_DEBOUNCE	50
-#define SIMULATE_DELAY	50
 
 // ---------------------------------------------------------------- Arduino pins
 
@@ -63,8 +48,8 @@ const uint8_t decreaseBetPin = 50;
 // Output pins
 
 const uint8_t lockLEDPin[NREELS] = {34, 36, 38};
-const uint8_t signalLED1[2] = {2, 3};
-const uint8_t signalLED2[2] = {6, 7};
+const uint8_t signalLED1[2] = {2, 3};	// 0V and 9V, respectively
+const uint8_t signalLED2[2] = {6, 7};	// 0V and 9V, respectively
 const uint8_t Servo = 44;
 
 // ------------------------------------------------------------- Other constants

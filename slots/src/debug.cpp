@@ -27,29 +27,23 @@ Debug::Debug()
 
 void Debug::Setup()
 {
-#if SHOWDEBUGDATA
 	od.Setup();
-#endif
 }
 
 void Debug::DisplayS(const char *msg, uint8_t row = 0, uint8_t col = 0, bool erase = false)
 {
-#if SHOWDEBUGDATA
 	if(erase) {
 		od.PrintS(row, 0, "                ");
 	}
 	od.PrintS(row, col, msg);
-#endif
 }
 
 void Debug::DisplayN(uint16_t number, uint8_t row = 0, uint8_t col = 0, bool erase = false)
 {
-#if SHOWDEBUGDATA
 	if(erase) {
 		od.PrintS(row, 0, "                ");
 	}
 	od.PrintN(row, col, number);
-#endif
 }
 
 /**
@@ -63,7 +57,6 @@ void Debug::ShowReelPreview(
 	uint16_t pos[NREELS]
 )
 {
-#if SHOWDEBUGDATA
 	od.PrintN(0, 10, totalSpins);
 	od.PrintN(0, 14, totalWins);
 
@@ -85,7 +78,6 @@ void Debug::ShowReelPreview(
 		od.PrintS(x + l, 13, "   ");
 		od.PrintN(x + l, 13, payoff[l]);
 	}
-#endif
 }
 
 // ------------------------------------------------------------------------- End

@@ -26,29 +26,16 @@ Reel::Reel(
 
 	encoderPin = encoderPinNumber;
 
-	// motorPins[0] = motorPinNumbers[0];
-	// motorPins[1] = motorPinNumbers[1];
-	// homeSensorPin = homeSensorPinNumber;
-	// lockButtonPin = lockButtonPinNumber;
 	lockLEDPin = lockLEDPinNumber;
 	pinMode(lockLEDPin, OUTPUT);
 	motorSpeed = motorSpeedValue;
 	composition = reelComposition;
 
-	// motor = _motor;
-	// ezHomeSensor = _ezHomeSensor;
-	// ezLockBtn = _ezLockBtn;
 	motor = MotorDriver(motorPins, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPin);
 	ezLockBtn = ezButton(lockButtonPin);
 	ezLockBtn.setDebounceTime(BTN_DEBOUNCE);
 }
-
-// void Reel::Setup(
-// )
-// {
-
-// }
 
 /**
  * Does the necessary calculations, draws 3 symbols and starts the reels.
@@ -95,9 +82,9 @@ void Reel::Simulate()
 }
 
 /**
- * State machine for each reel.
+ * State machine for each reel while spinning.
  */
-void Reel::Process()
+void Reel::ProcessSpinning()
 {
 	// if(locked) {
 	// 	reelState = ReelState::IDLE;
@@ -145,6 +132,27 @@ void Reel::Process()
 }
 
 /**
+ * Set reel lock and LED status.
+ */
+void Reel::ProcessStopped(bool blinkStatus)
+{
+	ezLockBtn.loop();
+
+	if(lockable) {
+		if(ezLockBtn.isPressed()) {
+			locked = !locked;
+		}
+		if(locked) {
+			digitalWrite(lockLEDPin, HIGH);
+		} else {
+			digitalWrite(lockLEDPin, blinkStatus);
+		}
+	} else {
+		digitalWrite(lockLEDPin, LOW);
+	}
+}
+
+/**
  * Returns true if the reel is in idle state.
  */
 bool Reel::IsIdle()
@@ -159,5 +167,6 @@ void Reel::ForceStop()
 {
 	motor.Coast();
 }
+
 
 // ------------------------------------------------------------------------- End

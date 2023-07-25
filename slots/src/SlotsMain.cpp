@@ -27,32 +27,8 @@ ezButton decreaseBet(decreaseBetPin);
 
 #pragma region ------------------------------------------------------- Variables
 
-// TODO: join these values in a struct. Should also include posSensor, reelBtn...
-// Maybe even lockLED, etc. (see slots.h)?
-// bool lockReel[NREELS] = {false, false, false};	// State of reel locks
-// byte currentSignal[NREELS];					// Used for encoder debouncing
-// ReelStatus reelState[NREELS];				// State machines for the reels
-// uint16_t counter[NREELS];					// Position counters
-// uint16_t finalSteps[NREELS] = {0, 0, 0};	// Steps after sensor is triggered
-// uint16_t pos[NREELS] = {0, 0, 0};			// Position of symbol to be displayed (0-11)
-// uint8_t extraTurns[NREELS] = {0, 0, 0};		// Number of extra 360° revolutions per wheel
-// uint8_t rotations[NREELS];
-// uint8_t speed[NREELS];
-// unsigned long lastChange[NREELS]; 	 		// In microseconds; Used with encoders
-
-enum class LockableStatus {
-	LOCKABLE = 0,
-	NOT_LOCKABLE,
-	NEXT_LOCABLE
-};
-
-typedef struct __Reels
-{
-	bool lockable;
-	bool locked;
-} __Reel;
-
-__Reel reel[NREELS];
+// Set to true to show debug data on the OLED display
+bool displayDebugInfo = true;
 
 bool playing = false;		// Game status
 bool spinning = false;		// Game status
@@ -97,14 +73,19 @@ void SlotsMain::Setup()
 		);
 	}
 
+	if(displayDebugInfo) {
+		od.PrintN(1, 1, lockButtonPin[0]);
+		od.PrintN(2, 1, lockButtonPin[1]);
+	}
+
 	changeBet(0);
 	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
 
-#if not defined SHOWDEBUGDATA
-	od.SetFont(Font::MONO_BOLD);
-	od.PrintS(2, 8, "Coins");
-#endif
+	if(!displayDebugInfo) {
+		od.SetFont(Font::MONO_BOLD);
+		od.PrintS(2, 8, "Coins");
+	}
 
 	for(int i = 0; i < NREELS; i++) {
 		myReel[i].Start(true, 0);
@@ -120,18 +101,12 @@ void SlotsMain::Loop()
 	increaseBet.loop();
 	decreaseBet.loop();
 	startLever.loop();
-	// reelBtn[0].loop();
-	// reelBtn[1].loop();
-	// reelBtn[2].loop();
 
 	if(spinning) {
 
 		for(int i = 0; i < NREELS; i++) {
-			myReel[i].Process();
+			myReel[i].ProcessSpinning();
 		}
-		// processReel(0);
-		// processReel(1);
-		// processReel(2);
 
 		if(isIdle()) {
 			resetVars();
@@ -148,7 +123,6 @@ void SlotsMain::Loop()
 	} else {
 
 		if(startLever.isPressed()) {
-			// startReels(false);
 			for(int i = 0; i < NREELS; i++) {
 				myReel[i].Start(false, 0);
 			}
@@ -159,60 +133,28 @@ void SlotsMain::Loop()
 			changeBet(-1);
 		} else {
 			// for(int i = 0; i < NREELS; i++) {
-			// 	if(reel[i].lockable) {
-			// 		if(reelBtn[i].isPressed()) {
-			// 			reel[i].locked = !reel[i].locked;
-			// 		}
-			// 		if(reel[i].locked) {
-			// 			digitalWrite(lockLED[i], HIGH);
-			// 		}
-			// 	} else {
-			// 		digitalWrite(lockLED[i], LOW);
-			// 	}
+			// 	myReel[i].ProcessStopped(blinkLedState);
 			// }
-
-			// Blink reel lock LEDs
-
-			blinkReelLockLeds();
+			// blinkLedsTimer();
 		}
 	}
+	
+	// digitalWrite(signalLED1[1], spinning);
+	// digitalWrite(signalLED2[1], spinning);
 }
 
 #pragma region ------------------------------------------------- Private methods
 
-void lockUnlock()
-{
-	for(int i = 0; i < NREELS; i++) {
-		if(reel[i].locked) {
-			for(int r = 0; r < NREELS; r++) {
-				reel[r].lockable = false;
-				reel[i].locked = false;
-			}
-			return;
-		}
-	}
-
-	for(int i = 0; i < NREELS; i++) {
-		reel[i].locked = false;
-		reel[i].lockable = true;
-	}
-}
-
 /**
- * Blink reel lock LEDs
+ * Timer for blinking reel lock LEDs
  */
-void SlotsMain::blinkReelLockLeds()
+void SlotsMain::blinkLedsTimer()
 {
 	unsigned long currMs = millis();
 
 	if(currMs - blinkPreviousMs >= blinkInterval) {
 		blinkPreviousMs = currMs;
 		blinkLedState = !blinkLedState;
-		for(int i = 0; i < NREELS; i++) {
-			if(reel[i].lockable) {
-				// digitalWrite(lockLED[i], blinkLedState);
-			}
-		}
 	}
 }
 
@@ -245,7 +187,7 @@ void SlotsMain::__unnamed()
 
 	// TODO: should remove from here
 
-	lockUnlock();
+	// lockUnlock();
 	prepareNextSpin(ReelStatus::START);
 }
 
@@ -299,10 +241,10 @@ void SlotsMain::prepareNextSpin(ReelStatus newState)
 void SlotsMain::changeBet(uint16_t bet)
 {
 	nCoins = min(maxCoins, max(0, (signed)(nCoins + bet)));
-#if not defined SHOWDEBUGDATA	
-	od.SetFont(Font::DIGITS_EXTRALARGE);
-	od.PrintN(1, 3, nCoins);
-#endif
+	if(!displayDebugInfo) {
+		od.SetFont(Font::DIGITS_EXTRALARGE);
+		od.PrintN(1, 3, nCoins);
+	}
 }
 
 /**
@@ -326,17 +268,11 @@ void SlotsMain::ioSetup()
 	startLever.setDebounceTime(50);
 	increaseBet.setDebounceTime(50);
 	decreaseBet.setDebounceTime(50);
-	// reelBtn[0].setDebounceTime(50);
-	// reelBtn[1].setDebounceTime(50);
-	// reelBtn[2].setDebounceTime(50);
 
 	pinMode(signalLED1[0], OUTPUT);
 	pinMode(signalLED1[0], OUTPUT);
 	pinMode(signalLED2[1], OUTPUT);
 	pinMode(signalLED2[1], OUTPUT);
-	// pinMode(lockLED[0], OUTPUT);
-	// pinMode(lockLED[1], OUTPUT);
-	// pinMode(lockLED[2], OUTPUT);
 }
 
 /**
@@ -345,7 +281,6 @@ void SlotsMain::ioSetup()
 void SlotsMain::forceStopReels()
 {
 	for(int i = 0; i < NREELS; i++) {
-		// motor[i].Coast();
 		myReel[i].ForceStop();
 	}
 }

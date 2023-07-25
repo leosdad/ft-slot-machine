@@ -41,12 +41,11 @@ class SlotsMain
 		void changeBet(uint16_t bet);
 		void ioSetup();
 		void prepareNextSpin(ReelStatus _state);
-		void processReel(int n);
 		void resetVars();
 		void sevenSegSetup();
 		void __unnamed();
 		void forceStopReels();
-		void blinkReelLockLeds();
+		void blinkLedsTimer();
 
 		// Private fields
 

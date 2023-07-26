@@ -7,10 +7,12 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "../slots.h"
 #include <ezButton.h>
 #include <TrueRandom.h>
+
+#include "../slots.h"
 #include "motor-driver.h"
+#include "pwm-micros.h"
 
 // ----------------------------------------------------------------- Debug flags
 
@@ -22,7 +24,6 @@
 
 // Set to true to simulate gameplay without actually moving anything
 #define SIMULATE false
-
 #define SIMULATE_DELAY	50
 
 // ----------------------------------------------------------- Class declaration
@@ -56,15 +57,15 @@ class Reel
 		// Must be initialized
 
 		uint8_t encoderPin;			// Encoder motor pin
-		uint8_t lockLEDPin;			// Pin for green lock reel LED
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
 		int *composition;			// Reel composition
 
 		// Non-scalar types
 
-		MotorDriver motor{0,0};			// Motor that corresponds to this reel
-		ezButton ezHomeSensor{0}; // Initialize to a default pin number (you can change this default if needed)
-		ezButton ezLockBtn{0};    // Initialize to a default pin number (you can change this default if needed)
+		MotorDriver motor{0,0};		// Motor that corresponds to this reel
+		ezButton ezHomeSensor{0};	// Initialize to a default pin number (you can change this default if needed)
+		ezButton ezLockBtn{0};		// Initialize to a default pin number (you can change this default if needed)
+		PwmMicros lockLED;			// Lock LED PWM driver
 
 		// Private methods
 

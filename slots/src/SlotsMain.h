@@ -38,7 +38,6 @@ class SlotsMain
 
 	private:
 		bool isIdle();
-		void changeBet(uint16_t bet);
 		void ioSetup();
 		void prepareNextSpin(ReelStatus _state);
 		void resetVars();
@@ -46,6 +45,8 @@ class SlotsMain
 		void __unnamed();
 		void forceStopReels();
 		void blinkLedsTimer();
+
+		void displayBet();
 
 		// Private fields
 

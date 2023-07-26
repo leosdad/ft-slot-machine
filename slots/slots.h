@@ -18,7 +18,7 @@
 #define NSYMBOLS	    8
 #define NREELSYMBOLS    12
 #define NPAYLINES       2
-#define BLINKINTERVAL	200
+#define BLINKINTERVAL	350
 #define BTN_DEBOUNCE	50
 
 // ---------------------------------------------------------------- Arduino pins
@@ -62,11 +62,6 @@ const unsigned long debouncePeriod = 1000;
 
 // Common position offset for home position
 const uint16_t homeOffset = 34;
-
-// Number of initial coins
-const uint16_t startCoins = 3;
-
-const uint16_t maxCoins = 9;
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

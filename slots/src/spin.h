@@ -2,8 +2,8 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef PAYLINE_H
-#define PAYLINE_H
+#ifndef SPIN_H
+#define SPIN_H
 
 // -------------------------------------------------------------------- Includes
 
@@ -11,13 +11,12 @@
 
 // ----------------------------------------------------------- Class declaration
 
-class Payline
+class Spin
 {
 	public:
-		// uint16_t payoff = 0;
-		uint8_t GetLineSymbol(uint8_t line, uint8_t reel, uint16_t pos[]);
+		Spin();
 };
 
 // ------------------------------------------------------------------------- End
 
-#endif // PAYLINE_H
+#endif // SPIN_H

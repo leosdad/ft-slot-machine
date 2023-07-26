@@ -22,15 +22,11 @@ Reel::Reel(
 	int *reelComposition
 )
 {
-	// Copy some pin number values
-
 	encoderPin = encoderPinNumber;
-
-	lockLEDPin = lockLEDPinNumber;
-	pinMode(lockLEDPin, OUTPUT);
 	motorSpeed = motorSpeedValue;
 	composition = reelComposition;
 
+	lockLED.Setup(lockLEDPinNumber);
 	motor = MotorDriver(motorPins, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPin);
 	ezLockBtn = ezButton(lockButtonPin);
@@ -92,6 +88,7 @@ void Reel::ProcessSpinning()
 	// }
 
 	ezHomeSensor.loop();
+	// lockLED.Loop();
 
 	// ezHomeSensor.loop();
 
@@ -137,18 +134,19 @@ void Reel::ProcessSpinning()
 void Reel::ProcessStopped(bool blinkStatus)
 {
 	ezLockBtn.loop();
+	lockLED.Loop();
 
 	if(lockable) {
 		if(ezLockBtn.isPressed()) {
 			locked = !locked;
 		}
 		if(locked) {
-			digitalWrite(lockLEDPin, HIGH);
+			lockLED.SetValue(255);
 		} else {
-			digitalWrite(lockLEDPin, blinkStatus);
+			lockLED.SetValue(blinkStatus ? 10 : 0);
 		}
 	} else {
-		digitalWrite(lockLEDPin, LOW);
+		lockLED.SetValue(0);
 	}
 }
 

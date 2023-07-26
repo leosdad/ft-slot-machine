@@ -15,7 +15,13 @@
 
 class Debug
 {
+	private:
+
+		OledDisplay od;
+		Payline payline;
+
 	public:
+
 		Debug();
 
 		void Setup();
@@ -28,10 +34,6 @@ class Debug
 			uint16_t payoff[NREELS],
 			uint16_t pos[NREELS]
 		);
-	
-	private:
-		OledDisplay od;
-		Payline payline;
 };
 
 // ------------------------------------------------------------------------- End

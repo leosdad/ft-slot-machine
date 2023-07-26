@@ -11,6 +11,8 @@
 
 #include "SlotsMain.h"
 #include "motor-driver.h"
+#include "game.h"
+#include "spin.h"
 #include "reel.h"
 
 #pragma region ---------------------------------------------------- Initializers
@@ -20,25 +22,28 @@
 ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
-// ezButton posSensor[NREELS] = {homeSensorPin[0], homeSensorPin[1], homeSensorPin[2]};
-// ezButton reelBtn[NREELS] = {lockButtonPin[0], lockButtonPin[1], lockButtonPin[2]};
 
 #pragma endregion
 
 #pragma region ------------------------------------------------------- Variables
 
 // Set to true to show debug data on the OLED display
-bool displayDebugInfo = true;
-
-bool playing = false;		// Game status
-bool spinning = false;		// Game status
+bool displayDebugInfo = false;
 
 char displayBuffer[DISPLAYCHARS];			// Used for the 7-segment display
-uint16_t nCoins = 3;						// Current number of coins
+
+// Game
+
+// bool playing = false;						// Game status
+// bool spinning = false;						// Game status
+// uint16_t nCoins = 3;						// Current number of coins
+// uint16_t totalSpins = 0;					// Total spins since the beginning
+// uint16_t totalWins = 0;						// Total wins since the beginning
+
+// Spin
+
 uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
 uint16_t spinPayoff = 0;					// Payoff amount for last spin
-uint16_t totalSpins = 0;					// Total spins since the beginning
-uint16_t totalWins = 0;						// Total wins since the beginning
 
 // LED blinking
 
@@ -46,11 +51,8 @@ const long blinkInterval = BLINKINTERVAL;
 unsigned long blinkPreviousMs = 0;
 int blinkLedState = LOW;
 
-// Reel myReel[3];
-// ezButton reelBtn1 = lockButtonPin[0];
-Reel myReel[NREELS];//{{0,0},{0,0},{0,0}};
-
-//= Reel(reelBtn1);
+Reel myReel[NREELS];
+Game game;
 
 #pragma endregion --------------------------------------------------------------
 
@@ -78,7 +80,9 @@ void SlotsMain::Setup()
 		od.PrintN(2, 1, lockButtonPin[1]);
 	}
 
-	changeBet(0);
+	game.changeBet(0);
+	displayBet();
+
 	Display::U2s(displayBuffer, spinPayoff);
 	Display::Show(displayBuffer);
 
@@ -102,7 +106,7 @@ void SlotsMain::Loop()
 	decreaseBet.loop();
 	startLever.loop();
 
-	if(spinning) {
+	if(game.spinning) {
 
 		for(int i = 0; i < NREELS; i++) {
 			myReel[i].ProcessSpinning();
@@ -110,12 +114,15 @@ void SlotsMain::Loop()
 
 		if(isIdle()) {
 			resetVars();
-			debug.DisplayS("Stopped ");
-			if(spinPayoff) {
-				changeBet((spinPayoff * nCoins) - nCoins);
-			} else {
-				changeBet(-nCoins);
+			if(!displayDebugInfo) {
+				debug.DisplayS("Stopped ");
 			}
+			if(spinPayoff) {
+				game.changeBet((spinPayoff * game.nCoins) - game.nCoins);
+			} else {
+				game.changeBet(-game.nCoins);
+			}
+			displayBet();
 			Display::U2s(displayBuffer, spinPayoff);
 			Display::Show(displayBuffer);
 		}
@@ -128,14 +135,16 @@ void SlotsMain::Loop()
 			}
 			__unnamed();
 		} else if(increaseBet.isPressed()) {
-			changeBet(1);
+			game.changeBet(1);
+			displayBet();
 		} else if(decreaseBet.isPressed()) {
-			changeBet(-1);
+			game.changeBet(-1);
+			displayBet();
 		} else {
-			// for(int i = 0; i < NREELS; i++) {
-			// 	myReel[i].ProcessStopped(blinkLedState);
-			// }
-			// blinkLedsTimer();
+			for(int i = 0; i < NREELS; i++) {
+				myReel[i].ProcessStopped(blinkLedState);
+			}
+			blinkLedsTimer();
 		}
 	}
 	
@@ -162,32 +171,34 @@ void SlotsMain::__unnamed()
 {
 	// Calculates the payoff for all paylines
 
-	if(playing) {
+	if(game.playing) {
 		uint16_t total = 0;
 		for(int l = 0; l < NPAYLINES; l++) {
 			// total += payoff[l] = payoffs.Calculate(l, pos);
 		}
 		if(total) {
-			totalWins++;
+			game.totalWins++;
 		}
 		spinPayoff += total;
-		totalSpins++;
+		game.totalSpins++;
 	}
 
 	// debug.ShowReelPreview(totalSpins, totalWins, extraTurns, payoff, pos);
 
-	// Display::U2s(displayBuffer, spinPayoff);
-	// Display::Show(displayBuffer);
+	Display::U2s(displayBuffer, spinPayoff);
+	Display::Show(displayBuffer);
 
 	// Starts the wheels
 
-	playing = true;
-	debug.DisplayS("Spinning");
-	spinning = true;
+	game.playing = true;
+	if(!displayDebugInfo) {
+		debug.DisplayS("Spinning");
+	}
+	game.spinning = true;
 
 	// TODO: should remove from here
 
-	// lockUnlock();
+	// lockAndUnlock();
 	prepareNextSpin(ReelStatus::START);
 }
 
@@ -209,7 +220,7 @@ bool SlotsMain::isIdle()
  */
 void SlotsMain::resetVars()
 {
-	spinning = false;
+	game.spinning = false;
 	// for(int i = 0; i < NREELS; i++) {
 	// 	reelState[i] = ReelStatus::START;
 	// }
@@ -236,14 +247,13 @@ void SlotsMain::prepareNextSpin(ReelStatus newState)
 }
 
 /**
- * Increments the number of coins by the amount given.
+ * Shows the current bet amount on the OLED display.
  */
-void SlotsMain::changeBet(uint16_t bet)
+void SlotsMain::displayBet()
 {
-	nCoins = min(maxCoins, max(0, (signed)(nCoins + bet)));
 	if(!displayDebugInfo) {
 		od.SetFont(Font::DIGITS_EXTRALARGE);
-		od.PrintN(1, 3, nCoins);
+		od.PrintN(1, 3, game.nCoins);
 	}
 }
 

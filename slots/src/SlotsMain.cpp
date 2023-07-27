@@ -4,12 +4,12 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include <Wire.h>
 #include <ezButton.h>
 #include <TrueRandom.h>
-#include <SevenSegDisplay.h>
 
 #include "SlotsMain.h"
+#include "seven-seg.h"
+#include "small-display.h"
 #include "motor-driver.h"
 #include "game.h"
 #include "spin.h"
@@ -23,27 +23,23 @@ ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 
+// Slot machine class instances
+
+Reel myReel[NREELS];
+Game game;
+SevenSeg sevenSegDisplay;
+SmallDisplay od;
+
 #pragma endregion
 
-#pragma region ------------------------------------------------------- Variables
+#pragma region ------------------------------------------------- Other variables
 
-// Set to true to show debug data on the OLED display
-bool displayDebugInfo = false;
-
-char displayBuffer[DISPLAYCHARS];			// Used for the 7-segment display
-
-// Game
-
-// bool playing = false;						// Game status
-// bool spinning = false;						// Game status
-// uint16_t nCoins = 3;						// Current number of coins
-// uint16_t totalSpins = 0;					// Total spins since the beginning
-// uint16_t totalWins = 0;						// Total wins since the beginning
+bool displayDebugInfo = DEBUGINFO;		// Show debug data on the OLED display
 
 // Spin
 
-uint16_t payoff[NPAYLINES] = {0, 0};		// Payoff for each payline
-uint16_t spinPayoff = 0;					// Payoff amount for last spin
+uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
+uint16_t spinPayoff = 0;				// Payoff amount for last spin
 
 // LED blinking
 
@@ -51,51 +47,28 @@ const long blinkInterval = BLINKINTERVAL;
 unsigned long blinkPreviousMs = 0;
 int blinkLedState = LOW;
 
-Reel myReel[NREELS];
-Game game;
-
 #pragma endregion --------------------------------------------------------------
 
 void SlotsMain::Setup()
 {
-	sevenSegSetup();
+	// Initialize
+
 	ioSetup();
 	debug.Setup();
-	od.Setup();
+	od.Setup(displayDebugInfo);
+	game.SetBet(0);
+	od.DisplayBet(game.nCoins);
+	cmdReels(ReelCommands::INIT);
+	game.ChangeBet(STARTCOINS);
+	sevenSegDisplay.Setup();
+	sevenSegDisplay.DisplayNumber(spinPayoff);
 
-	for(int i = 0; i < NREELS; i++) {
-		myReel[i] = Reel(
-			motorOut[i],
-			encoderPin[i],
-			homeSensorPin[i],
-			lockButtonPin[i],
-			lockLEDPin[i],
-			motorSpeed[i],
-			(int *)reelComposition[i]
-		);
-	}
+	// Starts spinning the reels
 
-	if(displayDebugInfo) {
-		od.PrintN(1, 1, lockButtonPin[0]);
-		od.PrintN(2, 1, lockButtonPin[1]);
-	}
-
-	game.changeBet(0);
-	displayBet();
-
-	Display::U2s(displayBuffer, spinPayoff);
-	Display::Show(displayBuffer);
-
-	if(!displayDebugInfo) {
-		od.SetFont(Font::MONO_BOLD);
-		od.PrintS(2, 8, "Coins");
-	}
-
-	for(int i = 0; i < NREELS; i++) {
-		myReel[i].Start(true, 0);
-	}
-
+	cmdReels(ReelCommands::START);
 	__unnamed();
+	// lockAndUnlock();
+	cmdReels(ReelCommands::RESET);
 }
 
 void SlotsMain::Loop()
@@ -108,23 +81,21 @@ void SlotsMain::Loop()
 
 	if(game.spinning) {
 
-		for(int i = 0; i < NREELS; i++) {
-			myReel[i].ProcessSpinning();
-		}
+		cmdReels(ReelCommands::PROCESSSPINNING);
 
 		if(isIdle()) {
-			resetVars();
+			game.spinning = false;
+			cmdReels(ReelCommands::RESET);
 			if(!displayDebugInfo) {
 				debug.DisplayS("Stopped ");
 			}
 			if(spinPayoff) {
-				game.changeBet((spinPayoff * game.nCoins) - game.nCoins);
+				game.ChangeBet((spinPayoff * game.nCoins) - game.nCoins);
 			} else {
-				game.changeBet(-game.nCoins);
+				game.ChangeBet(-game.nCoins);
 			}
-			displayBet();
-			Display::U2s(displayBuffer, spinPayoff);
-			Display::Show(displayBuffer);
+			od.DisplayBet(game.nCoins);
+			sevenSegDisplay.DisplayNumber(spinPayoff);
 		}
 
 	} else {
@@ -135,15 +106,13 @@ void SlotsMain::Loop()
 			}
 			__unnamed();
 		} else if(increaseBet.isPressed()) {
-			game.changeBet(1);
-			displayBet();
+			game.ChangeBet(1);
+			od.DisplayBet(game.nCoins);
 		} else if(decreaseBet.isPressed()) {
-			game.changeBet(-1);
-			displayBet();
+			game.ChangeBet(-1);
+			od.DisplayBet(game.nCoins);
 		} else {
-			for(int i = 0; i < NREELS; i++) {
-				myReel[i].ProcessStopped(blinkLedState);
-			}
+			cmdReels(ReelCommands::PROCESSSTOPPED);
 			blinkLedsTimer();
 		}
 	}
@@ -154,19 +123,6 @@ void SlotsMain::Loop()
 
 #pragma region ------------------------------------------------- Private methods
 
-/**
- * Timer for blinking reel lock LEDs
- */
-void SlotsMain::blinkLedsTimer()
-{
-	unsigned long currMs = millis();
-
-	if(currMs - blinkPreviousMs >= blinkInterval) {
-		blinkPreviousMs = currMs;
-		blinkLedState = !blinkLedState;
-	}
-}
-
 void SlotsMain::__unnamed()
 {
 	// Calculates the payoff for all paylines
@@ -174,7 +130,7 @@ void SlotsMain::__unnamed()
 	if(game.playing) {
 		uint16_t total = 0;
 		for(int l = 0; l < NPAYLINES; l++) {
-			// total += payoff[l] = payoffs.Calculate(l, pos);
+			total += payoff[l] = payoffs.Calculate(l, myReel);
 		}
 		if(total) {
 			game.totalWins++;
@@ -183,23 +139,15 @@ void SlotsMain::__unnamed()
 		game.totalSpins++;
 	}
 
-	// debug.ShowReelPreview(totalSpins, totalWins, extraTurns, payoff, pos);
+	debug.ShowReelPreview(game, myReel, payoff);
 
-	Display::U2s(displayBuffer, spinPayoff);
-	Display::Show(displayBuffer);
-
-	// Starts the wheels
+	sevenSegDisplay.DisplayNumber(spinPayoff);
 
 	game.playing = true;
-	if(!displayDebugInfo) {
+	game.spinning = true;
+	if(displayDebugInfo) {
 		debug.DisplayS("Spinning");
 	}
-	game.spinning = true;
-
-	// TODO: should remove from here
-
-	// lockAndUnlock();
-	prepareNextSpin(ReelStatus::START);
 }
 
 /**
@@ -216,58 +164,54 @@ bool SlotsMain::isIdle()
 }
 
 /**
- * Turns off state variables and put machine to idle state.
- */
-void SlotsMain::resetVars()
-{
-	game.spinning = false;
-	// for(int i = 0; i < NREELS; i++) {
-	// 	reelState[i] = ReelStatus::START;
-	// }
-	// prepareNextSpin(ReelStatus::IDLE);
-	// for(int i = 0; i < NREELS; i++) {
-	// 	lockReel[i] = false;
-	// 	digitalWrite(lockLED[i], LOW);
-	// }
-}
-
-/**
- * Resets the three reels prior to the next spin.
- */
-void SlotsMain::prepareNextSpin(ReelStatus newState)
+ * Receives a command and performs the respective actions on all reels.
+*/
+void SlotsMain::cmdReels(ReelCommands cmd)
 {
 	for(int i = 0; i < NREELS; i++) {
-		// MotorDriver(motor1Out, encoder[0]), counter[i] = 0;
-		// currentSignal[i] = 0;
-		// lastChange[i] = 0;
-		// reelState[i] = newState;
-		// speed[i] = reelSpeed[i];
-		// rotations[i] = 0;
+		switch(cmd) {
+			case ReelCommands::INIT:
+				myReel[i] = Reel(
+					motorOut[i],
+					encoderPin[i],
+					homeSensorPin[i],
+					lockButtonPin[i],
+					lockLEDPin[i],
+					motorSpeed[i],
+					(int *)reelComposition[i]
+				);
+				break;
+
+			case ReelCommands::START:
+				myReel[i].Start(true, 0);
+				break;
+
+			case ReelCommands::RESET:
+				myReel[i].Reset();
+				break;
+
+			case ReelCommands::PROCESSSPINNING:
+				myReel[i].ProcessSpinning();
+				break;
+
+			case ReelCommands::PROCESSSTOPPED:
+				myReel[i].ProcessStopped(blinkLedState);
+				break;
+		}
 	}
 }
 
 /**
- * Shows the current bet amount on the OLED display.
+ * Timer for blinking reel lock LEDs
  */
-void SlotsMain::displayBet()
+void SlotsMain::blinkLedsTimer()
 {
-	if(!displayDebugInfo) {
-		od.SetFont(Font::DIGITS_EXTRALARGE);
-		od.PrintN(1, 3, game.nCoins);
+	unsigned long currMs = millis();
+
+	if(currMs - blinkPreviousMs >= blinkInterval) {
+		blinkPreviousMs = currMs;
+		blinkLedState = !blinkLedState;
 	}
-}
-
-/**
- * Initializes the seven-segment display.
- */
-void SlotsMain::sevenSegSetup()
-{
-	// Reset seven-segment display
-
-	Wire.begin();
-	Display::Init();
-	Display::Clear();
-	Display::Stop();
 }
 
 /**
@@ -283,16 +227,6 @@ void SlotsMain::ioSetup()
 	pinMode(signalLED1[0], OUTPUT);
 	pinMode(signalLED2[1], OUTPUT);
 	pinMode(signalLED2[1], OUTPUT);
-}
-
-/**
- * Force stop all three reels.
- */
-void SlotsMain::forceStopReels()
-{
-	for(int i = 0; i < NREELS; i++) {
-		myReel[i].ForceStop();
-	}
 }
 
 #pragma endregion

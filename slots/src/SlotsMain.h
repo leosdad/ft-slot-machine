@@ -14,46 +14,36 @@
 
 // ----------------------------------------------------------------------- Types
 
-enum class ReelStatus {
+enum class ReelCommands {
 	IDLE = 0,
+	INIT,
+	PROCESSSPINNING,
+	PROCESSSTOPPED,
+	RESET,
 	START,
-	SENSING,
-	COUNTING,
-};
-
-enum class GameStatus {
-	IDLE = 0,
-	IDLE_SPINNING,
-	PLAYING,
-	PLAYING_SPINNING,
 };
 
 // ----------------------------------------------------------- Class declaration
 
 class SlotsMain
 {
-	public:
-		void Setup();
-		void Loop();
-
 	private:
 		bool isIdle();
-		void ioSetup();
-		void prepareNextSpin(ReelStatus _state);
-		void resetVars();
-		void sevenSegSetup();
 		void __unnamed();
-		void forceStopReels();
 		void blinkLedsTimer();
-
-		void displayBet();
+		void reelCommand(int nReel, ReelCommands cmd);
+		void cmdReels(ReelCommands cmd);
+		void ioSetup();
 
 		// Private fields
 
 		Debug debug;
-		OledDisplay od;
 		Payline payline;
 		Payoffs payoffs;
+
+	public:
+		void Setup();
+		void Loop();
 };
 
 // ------------------------------------------------------------------------- End

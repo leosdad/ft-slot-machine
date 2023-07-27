@@ -2,23 +2,27 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef PAYLINE_H
-#define PAYLINE_H
+#ifndef SEVEN_SEG_H
+#define SEVEN_SEG_H
 
 // -------------------------------------------------------------------- Includes
 
 #include "../slots.h"
-#include "reel.h"
+#include <Wire.h>
+#include <SevenSegDisplay.h>
 
 // ----------------------------------------------------------- Class declaration
 
-class Payline
+class SevenSeg
 {
+	private:
+		char displayBuffer[DISPLAYCHARS];
+
 	public:
-		// uint16_t payoff = 0;
-		uint8_t GetLineSymbol(uint8_t line, uint8_t nReel, Reel reel);
+		void Setup();
+		void DisplayNumber(unsigned long value);
 };
 
 // ------------------------------------------------------------------------- End
 
-#endif // PAYLINE_H
+#endif // SEVEN_SEG_H

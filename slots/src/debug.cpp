@@ -47,34 +47,32 @@ void Debug::DisplayN(uint16_t number, uint8_t row = 0, uint8_t col = 0, bool era
 }
 
 /**
- * Shows the state and future symbols of the three reels on the OLED display.
+ * Shows the state and already drawn symbols of the three reels on the OLED display.
  */
-void Debug::ShowReelPreview(
-	uint16_t totalSpins,
-	uint16_t totalWins,
-	uint8_t extraTurns[NREELS],
-	uint16_t payoff[NREELS],
-	uint16_t pos[NREELS]
-)
+void Debug::ShowReelPreview( Game game, Reel reels[NREELS], uint16_t payoff[NPAYLINES])
 {
-	od.PrintN(0, 10, totalSpins);
-	od.PrintN(0, 14, totalWins);
+	if(!DEBUGINFO) {
+		return;
+	}
+
+	od.PrintN(0, 10, game.totalSpins);
+	od.PrintN(0, 14, game.totalWins);
 
 	uint8_t x = 1;
 
 #if NPAYLINES < 3
 	for(int i = 0; i < NREELS; i++, x+=3) {
 		od.PrintS(1, x++, "T");
-		od.PrintN(1, x, extraTurns[i]);
+		od.PrintN(1, x, reels[i].extraTurns);
 	}
 #endif
 
 	x = 4 - NPAYLINES;
 
 	for(int l = 0; l < NPAYLINES; l++) {
-		od.PrintS(x + l, 1, symbolNames[payline.GetLineSymbol(l, 0, pos)]);
-		od.PrintS(x + l, 5, symbolNames[payline.GetLineSymbol(l, 1, pos)]);
-		od.PrintS(x + l, 9, symbolNames[payline.GetLineSymbol(l, 2, pos)]);
+		od.PrintS(x + l, 1, symbolNames[payline.GetLineSymbol(l, 0, reels[0])]);
+		od.PrintS(x + l, 5, symbolNames[payline.GetLineSymbol(l, 1, reels[1])]);
+		od.PrintS(x + l, 9, symbolNames[payline.GetLineSymbol(l, 2, reels[2])]);
 		od.PrintS(x + l, 13, "   ");
 		od.PrintN(x + l, 13, payoff[l]);
 	}

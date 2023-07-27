@@ -8,16 +8,26 @@
 
 // --------------------------------------------------------------- Class members
 
-Game::Game()
+/**
+ * Increments the number of coins by the amount given.
+ */
+uint16_t Game::SetBet(uint16_t bet)
 {
-};
+	nCoins = constrain(bet, 0, MAXCOINS);
+	// if(!displayDebugInfo) {
+	// 	od.SetFont(Font::DIGITS_EXTRALARGE);
+	// 	od.PrintN(1, 3, game.nCoins);
+	// }
+	return nCoins;
+}
+
 
 /**
  * Increments the number of coins by the amount given.
  */
-uint16_t Game::changeBet(uint16_t bet)
+uint16_t Game::ChangeBet(uint16_t bet)
 {
-	nCoins = min(MAXCOINS, max(0, (signed)(nCoins + bet)));
+	nCoins = constrain(nCoins + bet, 0, MAXCOINS);
 	// if(!displayDebugInfo) {
 	// 	od.SetFont(Font::DIGITS_EXTRALARGE);
 	// 	od.PrintN(1, 3, game.nCoins);

@@ -14,12 +14,6 @@
 #define CALCN2(l)	(l)
 #define CALCN3(l)	(l < NREELSYMBOLS - 1 ? l + 1 : 0 )
 
-// Payline symbols
-
-#define LINE1(reels, l, pos)	(reels[l][CALCN1(pos[l])])
-#define LINE2(reels, l, pos)	(reels[l][CALCN2(pos[l])])
-#define LINE3(reels, l, pos)	(reels[l][CALCN3(pos[l])])
-
 #pragma endregion
 
 // --------------------------------------------------------------- Class members
@@ -27,16 +21,18 @@
 /**
  * Returns the current symbol number of the line and reel specified.
  */
-uint8_t Payline::GetLineSymbol(uint8_t line, uint8_t reel, uint16_t pos[])
+uint8_t Payline::GetLineSymbol(uint8_t line, uint8_t nReel, Reel reel)
 {
-	// switch(line) {
-	// 	case 0:
-	// 		return LINE1(reels, reel, pos);
-	// 	case 1:
-	// 		return LINE2(reels, reel, pos);
-	// 	case 2:
-	// 		return LINE3(reels, reel, pos);
-	// }
+	const int *symbols = reelComposition[line];
+
+	switch(line) {
+		case 0:
+			return symbols[CALCN1(reel.symbolPos)];
+		case 1:
+			return symbols[CALCN2(reel.symbolPos)];
+		case 2:
+			return symbols[CALCN3(reel.symbolPos)];
+	}
 }
 
 // ------------------------------------------------------------------------- End

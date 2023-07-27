@@ -13,17 +13,19 @@
  * respective payoff times the multiplier. If not, returns zero.
  * 
  * @param paylineIndex Index of the desired payline.
- * @param symbolPosition Array of symbol positions to be displayed (0-11).
+ * @param symbolPositions Array of symbol positions to be displayed (0-11).
  */
-uint16_t Payoffs::Calculate(int paylineIndex, uint16_t symbolPosition[])
+uint16_t Payoffs::Calculate(int paylineIndex, Reel *reels)
 {
 	for(int c = 0; c < NCOMBINATIONS; c++) {
 
 		bool isValidCombination = true;
 
-		for(int i = 0; i < 3; i++) {
-			if(payoffTable[c].reel[i] != 0 &&
-				payline.GetLineSymbol(paylineIndex, i, symbolPosition) != (int16_t)(payoffTable[c].reel[i])) {
+		for(int i = 0; i < NREELS; i++) {
+			if(payoffTable[c].symbol[i] != 0 &&
+				payline.GetLineSymbol(paylineIndex, i, reels[i]) !=
+				(int16_t)(payoffTable[c].symbol[i])) {
+
 				isValidCombination = false;
 				break;
 			}

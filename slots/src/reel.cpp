@@ -30,7 +30,18 @@ Reel::Reel(
 	motor = MotorDriver(motorPins, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPin);
 	ezLockBtn = ezButton(lockButtonPin);
-	ezLockBtn.setDebounceTime(BTN_DEBOUNCE);
+	ezLockBtn.setDebounceTime(BTNDEBOUNCE);
+}
+
+void Reel::Reset()
+{
+	// if() {
+	lockable = true;
+	locked = false;
+	// }
+
+	reelState = ReelState::IDLE;
+	rotations = 0;
 }
 
 /**
@@ -71,6 +82,9 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	return extraTurns;
 }
 
+/**
+ * 
+ */
 void Reel::Simulate()
 {
 	delay(SIMULATE_DELAY);
@@ -156,14 +170,6 @@ void Reel::ProcessStopped(bool blinkStatus)
 bool Reel::IsIdle()
 {
 	return reelState == ReelState::IDLE;
-}
-
-/**
- * Force stop the reel.
- */
-void Reel::ForceStop()
-{
-	motor.Coast();
 }
 
 

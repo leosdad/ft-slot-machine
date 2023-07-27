@@ -47,14 +47,12 @@ class Reel
 		byte currentSignal;			// Used for encoder debouncing
 		uint16_t counter;			// Position counter
 		uint16_t finalSteps = 0;	// Steps after sensor is triggered
-		uint16_t symbolPos = 0;		// Position of symbol to be displayed (0-11)
-		uint8_t extraTurns = 0;		// Number of extra 360° revolutions
-		uint8_t rotations;			// Rotation counter
+		uint8_t rotations = 0;		// Rotation counter
 		unsigned long lastChange; 	// In microseconds; Used with encoders
 		bool lockable = true;		// Signals if the reel can be locked
 		bool locked = false;		// State of reel lock
 
-		// Must be initialized
+		// Must be initialized, don't ever change
 
 		uint8_t encoderPin;			// Encoder motor pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
@@ -73,6 +71,9 @@ class Reel
 
 	public:
 
+		uint16_t symbolPos = 0;		// Position of symbol to be displayed (0-11)
+		uint8_t extraTurns = 0;		// Number of extra 360° revolutions
+
 		// Constructors
 
 		Reel();
@@ -90,11 +91,11 @@ class Reel
 		// Public methods
 
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
+		void Reset();
 		void ProcessSpinning();
 		void ProcessStopped(bool blinkStatus);
 		void Simulate();
 		bool IsIdle();
-		void ForceStop();
 };
 
 // ------------------------------------------------------------------------- End

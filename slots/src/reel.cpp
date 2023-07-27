@@ -33,15 +33,12 @@ Reel::Reel(
 	ezLockBtn.setDebounceTime(BTNDEBOUNCE);
 }
 
-void Reel::Reset()
+void Reel::Reset(bool start)
 {
-	// if() {
 	lockable = true;
 	locked = false;
-	// }
-
-	reelState = ReelState::IDLE;
 	rotations = 0;
+	reelState = start ? ReelState::START : ReelState::IDLE;
 }
 
 /**

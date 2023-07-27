@@ -91,7 +91,7 @@ class Reel
 		// Public methods
 
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void Reset();
+		void Reset(bool start);
 		void ProcessSpinning();
 		void ProcessStopped(bool blinkStatus);
 		void Simulate();

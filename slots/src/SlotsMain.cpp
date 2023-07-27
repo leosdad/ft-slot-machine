@@ -22,7 +22,7 @@ ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 
-// Slot machine class instances
+// Slot machine objects
 
 Reel myReel[NREELS];
 Game game;
@@ -32,8 +32,6 @@ OledShow od;
 #pragma endregion
 
 #pragma region ------------------------------------------------- Other variables
-
-// Spin
 
 uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
 uint16_t spinPayoff = 0;				// Payoff amount for last spin
@@ -48,28 +46,18 @@ int blinkLedState = LOW;
 
 void SlotsMain::Setup()
 {
-	// Initialize
+	// Initialize objects
 
 	ioSetup();
-	od.Setup(DEBUGINFO);
-	game.SetBet(0);
-	od.DisplayBet(game.nCoins);
 	cmdReels(ReelCommands::INIT);
-	game.ChangeBet(STARTCOINS);
+	od.Setup(DEBUGINFO);
 	sevenSegDisplay.Setup();
+
+	// Reset reels to home posiion and start game with initial bet
+
 	sevenSegDisplay.DisplayNumber(spinPayoff);
-
-	// Starts spinning the reels
-
-	cmdReels(ReelCommands::START);
-	__unnamed();
-	od.ShowReelPreview(game, myReel, payoff);
-	// sevenSegDisplay.DisplayNumber(spinPayoff);
-	game.playing = true;
-	game.spinning = true;
-	od.ShowState("Spinning");
-	// lockAndUnlock();
-	// cmdReels(ReelCommands::RESET);
+	startSpinning(true);
+	od.DisplayBet(game.SetBet(STARTCOINS));
 }
 
 void SlotsMain::Loop()
@@ -100,10 +88,7 @@ void SlotsMain::Loop()
 	} else {
 
 		if(startLever.isPressed()) {
-			for(int i = 0; i < NREELS; i++) {
-				myReel[i].Start(false, 0);
-			}
-			__unnamed();
+			startSpinning(false);
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
 			od.DisplayBet(game.nCoins);
@@ -122,10 +107,23 @@ void SlotsMain::Loop()
 
 #pragma region ------------------------------------------------- Private methods
 
+void SlotsMain::startSpinning(bool home)
+{
+	if(home) {
+		game.SetBet(0);
+	}
+	cmdReels(home ? ReelCommands::STARTHOME : ReelCommands::START);
+	calculateAllPayoffs();
+	od.ShowReelPreview(game, myReel, payoff);
+	game.playing = true;
+	game.spinning = true;
+	od.ShowState("Spinning");
+}
+
 /**
  * Calculates the payoff for all paylines
  */
-void SlotsMain::__unnamed()
+void SlotsMain::calculateAllPayoffs()
 {
 	if(game.playing) {
 		uint16_t total = 0;
@@ -173,11 +171,19 @@ void SlotsMain::cmdReels(ReelCommands cmd)
 				break;
 
 			case ReelCommands::START:
+				myReel[i].Start(false, 0);
+				break;
+
+			case ReelCommands::STARTHOME:
 				myReel[i].Start(true, 0);
 				break;
 
 			case ReelCommands::RESET:
-				myReel[i].Reset();
+				myReel[i].Reset(false);
+				break;
+
+			case ReelCommands::RESETWITHSTART:
+				myReel[i].Reset(true);
 				break;
 
 			case ReelCommands::PROCESSSPINNING:
@@ -205,7 +211,7 @@ void SlotsMain::blinkLedsTimer()
 }
 
 /**
- * Sets initial pin modes for the Arduino.
+ * Sets initial pin modes for the Mega 2560.
  */
 void SlotsMain::ioSetup()
 {

@@ -19,7 +19,9 @@ enum class ReelCommands {
 	PROCESSSPINNING,
 	PROCESSSTOPPED,
 	RESET,
+	RESETWITHSTART,
 	START,
+	STARTHOME
 };
 
 // ----------------------------------------------------------- Class declaration
@@ -28,14 +30,14 @@ class SlotsMain
 {
 	private:
 		bool isIdle();
-		void __unnamed();
+		void calculateAllPayoffs();
 		void blinkLedsTimer();
+		void startSpinning(bool home);
 		void cmdReels(ReelCommands cmd);
 		void ioSetup();
 
 		// Private fields
 
-		Payline payline;
 		Payoffs payoffs;
 
 	public:

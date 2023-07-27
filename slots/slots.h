@@ -14,7 +14,7 @@
 
 // --------------------------------------------------------------------- Defines
 
-#define DEBUGINFO		true
+#define DEBUGINFO		true	// Show debug data on the OLED display
 #define STARTCOINS		3
 #define MAXCOINS		9
 #define BLINKINTERVAL	350

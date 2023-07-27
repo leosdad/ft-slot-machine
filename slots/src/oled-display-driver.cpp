@@ -1,5 +1,5 @@
 
-#include "./oled-display.h"
+#include "./oled-display-driver.h"
 
 // -------------------------------------------------------------------- Includes
 
@@ -13,7 +13,7 @@
 
 // -------------------------------------------------------------- Public methods
 
-void OledDisplay::Setup()
+void OledDisplayDriver::Setup()
 {
 	oled.begin(128, 64, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);
 	oled.enableChargePump(); // The default is off, but most boards need this.
@@ -24,7 +24,7 @@ void OledDisplay::Setup()
 	oled.setFont(FONT8X16);	// Set default font
 }
 
-void OledDisplay::SetFont(Font font)
+void OledDisplayDriver::SetFont(Font font)
 {
 	switch(font) {
 
@@ -61,7 +61,7 @@ void OledDisplay::SetFont(Font font)
 	}
 }
 
-void OledDisplay::PrintS(uint8_t row, uint8_t col, const char* str)
+void OledDisplayDriver::PrintS(uint8_t row, uint8_t col, const char* str)
 {
 	switch(row) {
 		case 2:
@@ -91,7 +91,7 @@ void OledDisplay::PrintS(uint8_t row, uint8_t col, const char* str)
 	}
 }
 
-void OledDisplay::PrintN(uint8_t row, uint8_t col, uint16_t number)
+void OledDisplayDriver::PrintN(uint8_t row, uint8_t col, uint16_t number)
 {
 	char buffer[16];
 	ultoa(number, buffer, 10);

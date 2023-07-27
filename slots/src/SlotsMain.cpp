@@ -9,7 +9,6 @@
 
 #include "SlotsMain.h"
 #include "seven-seg.h"
-#include "small-display.h"
 #include "motor-driver.h"
 #include "game.h"
 #include "spin.h"
@@ -28,13 +27,11 @@ ezButton decreaseBet(decreaseBetPin);
 Reel myReel[NREELS];
 Game game;
 SevenSeg sevenSegDisplay;
-SmallDisplay od;
+OledShow od;
 
 #pragma endregion
 
 #pragma region ------------------------------------------------- Other variables
-
-bool displayDebugInfo = DEBUGINFO;		// Show debug data on the OLED display
 
 // Spin
 
@@ -54,8 +51,7 @@ void SlotsMain::Setup()
 	// Initialize
 
 	ioSetup();
-	debug.Setup();
-	od.Setup(displayDebugInfo);
+	od.Setup(DEBUGINFO);
 	game.SetBet(0);
 	od.DisplayBet(game.nCoins);
 	cmdReels(ReelCommands::INIT);
@@ -67,8 +63,13 @@ void SlotsMain::Setup()
 
 	cmdReels(ReelCommands::START);
 	__unnamed();
+	od.ShowReelPreview(game, myReel, payoff);
+	// sevenSegDisplay.DisplayNumber(spinPayoff);
+	game.playing = true;
+	game.spinning = true;
+	od.ShowState("Spinning");
 	// lockAndUnlock();
-	cmdReels(ReelCommands::RESET);
+	// cmdReels(ReelCommands::RESET);
 }
 
 void SlotsMain::Loop()
@@ -86,9 +87,7 @@ void SlotsMain::Loop()
 		if(isIdle()) {
 			game.spinning = false;
 			cmdReels(ReelCommands::RESET);
-			if(!displayDebugInfo) {
-				debug.DisplayS("Stopped ");
-			}
+			od.ShowState("Stopped ");
 			if(spinPayoff) {
 				game.ChangeBet((spinPayoff * game.nCoins) - game.nCoins);
 			} else {
@@ -123,10 +122,11 @@ void SlotsMain::Loop()
 
 #pragma region ------------------------------------------------- Private methods
 
+/**
+ * Calculates the payoff for all paylines
+ */
 void SlotsMain::__unnamed()
 {
-	// Calculates the payoff for all paylines
-
 	if(game.playing) {
 		uint16_t total = 0;
 		for(int l = 0; l < NPAYLINES; l++) {
@@ -137,16 +137,6 @@ void SlotsMain::__unnamed()
 		}
 		spinPayoff += total;
 		game.totalSpins++;
-	}
-
-	debug.ShowReelPreview(game, myReel, payoff);
-
-	sevenSegDisplay.DisplayNumber(spinPayoff);
-
-	game.playing = true;
-	game.spinning = true;
-	if(displayDebugInfo) {
-		debug.DisplayS("Spinning");
 	}
 }
 

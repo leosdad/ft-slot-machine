@@ -2,27 +2,38 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef SMALL_DISPLAY_H
-#define SMALL_DISPLAY_H
+#ifndef DEBUG_SLOTS_H
+#define DEBUG_SLOTS_H
 
 // -------------------------------------------------------------------- Includes
 
-#include <Arduino.h>
-#include "oled-display.h"
+#include "../slots.h"
+#include "oled-display-driver.h"
+#include "game.h"
+#include "reel.h"
+#include "payline.h"
 
 // ----------------------------------------------------------- Class declaration
 
-class SmallDisplay
+class OledShow
 {
 	private:
-		OledDisplay od;
+
+		OledDisplayDriver odd;
+		Payline payline;
 		bool displayDebugInfo;
 
 	public:
+
 		void Setup(bool displayDebugInfo);
 		void DisplayBet(uint16_t nCoins);
+
+		// Debug only
+
+		void ShowReelPreview(Game game, Reel reels[NREELS], uint16_t payoff[NPAYLINES]);
+		void ShowState(const char *str);
 };
 
 // ------------------------------------------------------------------------- End
 
-#endif // SMALL_DISPLAY_H
+#endif // DEBUG_SLOTS_H

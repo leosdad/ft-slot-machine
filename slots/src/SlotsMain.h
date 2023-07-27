@@ -8,8 +8,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "../slots.h"
-#include "debug.h"
-#include "oled-display.h"
+#include "oled-show.h"
 #include "payoffs.h"
 
 // ----------------------------------------------------------------------- Types
@@ -31,13 +30,11 @@ class SlotsMain
 		bool isIdle();
 		void __unnamed();
 		void blinkLedsTimer();
-		void reelCommand(int nReel, ReelCommands cmd);
 		void cmdReels(ReelCommands cmd);
 		void ioSetup();
 
 		// Private fields
 
-		Debug debug;
 		Payline payline;
 		Payoffs payoffs;
 

@@ -42,6 +42,12 @@ void Reel::Reset(bool start)
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
+	lockLED.SetValue(locked ? 255 : 0);
+
+	if(locked) {
+		return;
+	}
+
 	if(home) {
 
 		// Move reel to home position
@@ -76,7 +82,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * 
+ * Does not move anything. Useful for quick testing for payoffs, etc.
  */
 void Reel::Simulate()
 {

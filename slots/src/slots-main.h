@@ -29,8 +29,8 @@ class SlotsMain
 		void ioSetup();
 		void loopWhenSpinning();
 		void loopWhenStopped();
-		void startGame(bool home);
-		void stopGame();
+		void startSpin(bool home);
+		void stopSpin();
 
 		// Private fields
 

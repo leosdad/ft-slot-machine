@@ -49,8 +49,6 @@ class Reel
 		uint16_t finalSteps = 0;	// Steps after sensor is triggered
 		uint8_t rotations = 0;		// Rotation counter
 		unsigned long lastChange; 	// In microseconds; Used with encoders
-		bool lockable = true;		// Signals if the reel can be locked
-		bool locked = false;		// State of reel lock
 
 		// Must be initialized, don't ever change
 
@@ -75,6 +73,8 @@ class Reel
 
 		uint16_t symbolPos = 0;		// Position of symbol to be displayed (0-11)
 		uint8_t extraTurns = 0;		// Number of extra 360° revolutions
+		bool lockable = true;		// Signals if the reel can be locked
+		bool locked = false;		// State of reel lock
 
 		// Public member functions
 

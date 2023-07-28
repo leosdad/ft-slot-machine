@@ -48,6 +48,7 @@ void Game::ProcessWhenSpinning()
 void Game::ProcessWhenStopped(int blinkLedState)
 {
 	for(int i = 0; i < NREELS; i++) {
+		CalcLock();
 		reels[i].ProcessWhenStopped(blinkLedState);
 	}
 }
@@ -63,6 +64,85 @@ void Game::ResetReels(bool start)
 {
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].Reset(start);
+	}
+}
+
+/*
+Besides, reel locking will not be possible in the following situations:
+
+In the first turn of each game session 
+After a turn where you have locked one or two reels 
+After a turn where you have won in one or more paylines 
+After a turn where you have lost all your money 
+After a turn where you have configured a winning combination, even if you have not bet on it. For example, if you have bet 1 coin for the last turn and obtained two watermelons in line 2 (upper payline), you will not be able to lock any reel. 
+
+*/
+
+/**
+ * Lock / unlock logic.
+ */
+void Game::CalcLock()
+{
+	// TODO: this logic does not need to be inside the loop; only
+	// after a lock button or the bet incr/decr are pressed
+
+	uint8_t currentLocked = 0;
+	uint8_t maxLockable = min(2, currentBet / 3);
+
+	for(int i = 0; i < NREELS; i++) {
+		if(reels[i].locked) {
+			currentLocked++;
+		}
+	}
+
+	if(currentLocked < maxLockable) {
+		for(int i = 0; i < NREELS; i++) {
+			reels[i].lockable = true;
+		}
+	} else if(currentLocked == maxLockable) {
+		for(int i = 0; i < NREELS; i++) {
+			if(!reels[i].locked) {
+				reels[i].lockable = false;
+				reels[i].locked = false;
+			}
+		}
+	} else {	// (currentLocked > maxLockable)
+		for(int i = NREELS - 1; i >= 0;  i--) {
+			if(reels[i].locked) {
+				reels[i].locked = false;
+				currentLocked--;
+				if(currentLocked <= maxLockable) {
+					break;
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Lock / unlock logic after a spin is completed.
+ */
+void Game::LockUnlock()
+{
+	bool allowNext = true;
+
+	for(int i = 0; i < NREELS; i++) {
+		if(reels[i].locked) {
+			allowNext = false;
+			break;
+		}
+	}
+
+	if(allowNext) {
+		for(int i = 0; i < NREELS; i++) {
+			reels[i].lockable = true;
+			reels[i].locked = false;
+		}
+	} else {
+		for(int i = 0; i < NREELS; i++) {
+			reels[i].lockable = false;
+			reels[i].locked = false;
+		}
 	}
 }
 

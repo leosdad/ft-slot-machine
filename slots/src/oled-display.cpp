@@ -5,10 +5,26 @@
 // -------------------------------------------------------------------- Includes
 
 #include "oled-display.h"
+// #include <iostream>
+#include <string.h>
 
-// ------------------------------------------------------------------- Variables
+// ------------------------------------------------------------ Global constants
 
 const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
+
+// ---------------------------------------------------- Private member functions
+
+uint8_t OledShow::getSize(uint8_t number)
+{
+	uint8_t digits = 1;
+
+	while(number >= 10) {
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
+}
 
 // ----------------------------------------------------- Public member functions
 
@@ -25,7 +41,7 @@ void OledShow::Setup(bool debug)
 		odd.PrintS(1, 5, "Co");
 	} else {
 		odd.SetFont(Font::MONO_BOLD);
-		odd.PrintS(2, 8, "Coins");
+		odd.PrintS(2, 11, "Coins");
 		odd.PrintS(3, 8, "Bet");
 	}
 }
@@ -37,7 +53,9 @@ uint16_t OledShow::DisplayCoins(uint16_t number)
 		odd.PrintN(1, 8, number);
 	} else {
 		odd.SetFont(Font::DIGITS_EXTRALARGE);
-		odd.PrintN(1, 3, number);
+		odd.PrintS(1, 2, "    ");
+		odd.PrintN(1, 2, number);
+		// odd.PrintN(1, 8 * 3 - 8 * getSize(number), number);
 	}
 
 	return number;
@@ -54,8 +72,6 @@ uint16_t OledShow::DisplayBet(uint16_t number)
 
 	return number;
 }
-
-// --------------------------------------------------------------- For debugging
 
 /**
  * Shows the state and already drawn symbols of the three reels on the OLED display.
@@ -76,8 +92,8 @@ void OledShow::DisplayDebugInfo(Game game)
 	// 	odd.PrintS(1, x++, "T");
 	// 	odd.PrintN(1, x, game.reels[i].extraTurns);
 	// }
-	odd.PrintS(1, 12, "    ");
-	odd.PrintN(1, 12, game.spinPayoff * game.currentBet);
+	odd.PrintS(1, 13, "    ");
+	odd.PrintN(1, 13, game.spinPayoff * game.currentBet);
 #endif
 
 	x = 4 - NPAYLINES;

@@ -23,6 +23,8 @@ class OledShow
 		Payline payline;
 		bool debugMode;
 
+		uint8_t getSize(uint8_t number);
+
 	public:
 
 		void Setup(bool debugMode);

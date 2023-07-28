@@ -55,7 +55,7 @@ void SlotsMain::Setup()
 	sevenSegDisplay.DisplayNumber(0);
 	od.DisplayCoins(game.nCoins = STARTCOINS);
 	od.DisplayBet(game.SetBet(INITIALBET));
-	startGame(true);
+	startSpin(true);
 }
 
 void SlotsMain::Loop()
@@ -75,7 +75,7 @@ void SlotsMain::loopWhenSpinning()
 {
 	game.ProcessWhenSpinning();
 	if(game.IsIdle()) {
-		stopGame();
+		stopSpin();
 	}
 }
 
@@ -86,7 +86,7 @@ void SlotsMain::loopWhenStopped()
 
 	if(startLever.isPressed()) {
 		if(game.currentBet) {
-			startGame(false);
+			startSpin(false);
 		}
 	} else if(increaseBet.isPressed()) {
 		od.DisplayBet(game.ChangeBet(1));
@@ -103,7 +103,7 @@ void SlotsMain::inputLoop()
 	startLever.loop();
 }
 
-void SlotsMain::startGame(bool home)
+void SlotsMain::startSpin(bool home)
 {
 	game.StartReels(home);
 	if(!home) {
@@ -120,16 +120,17 @@ void SlotsMain::startGame(bool home)
 	od.ShowState("Spinning");
 }
 
-void SlotsMain::stopGame()
+void SlotsMain::stopSpin()
 {
 	game.spinning = false;
-	game.StartReels(false);
+	game.LockUnlock();
+
 	od.ShowState("Stopped ");
 	if(game.playing) {
 		game.nCoins += game.spinPayoff * game.currentBet;
 	}
 	od.DisplayCoins(game.nCoins);
-	sevenSegDisplay.DisplayNumber(game.spinPayoff);
+	sevenSegDisplay.DisplayNumber(game.spinPayoff * game.currentBet);
 }
 
 /**

@@ -21,6 +21,24 @@
 			"!text",
 			"!markdown"
 		],
+		"files.associations": {
+			"settings.json": "jsonc",
+			".eslintrc.json": "jsonc",
+			"*.schema.json": "jsonc",
+			"*.defaults": "json",
+			"*.bindings": "ini",
+			"*.htm": "html",
+			"*.html": "html",
+			"*.js.njk": "jinja-js",
+			"*.html.njk": "jinja-html",
+			"*scss.njk": "jinja-css",
+			"*.njk": "jinja",
+			"*.log": "log",
+			"*.conf": "hocon",
+			"*.json": "json",
+			"*.js5": "json5",
+			"new": "cpp"
+		},
 
 		// "workbench.colorTheme": "Visual Studio Light",		
 	}

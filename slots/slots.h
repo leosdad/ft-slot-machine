@@ -18,7 +18,7 @@
 #define INITIALBET		3
 #define MAXBET			9
 #define STARTCOINS		200
-#define MAXCOINS		999999
+#define MAXCOINS		99999
 #define BLINKINTERVAL	350
 #define BTNDEBOUNCE		50
 #define NPAYLINES       2

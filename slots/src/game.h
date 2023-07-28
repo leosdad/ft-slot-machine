@@ -21,6 +21,8 @@ class Game
 
 		bool playing = false;			// Game status
 		bool spinning = false;			// Reels spinning status
+		bool allowLocking = false;
+		// bool allowNext = false;
 		uint8_t currentBet = 0;			// Current bet
 		uint16_t nCoins = 0;			// Current number of coins
 		uint16_t totalSpins = 0;		// Total spins since the beginning
@@ -39,6 +41,9 @@ class Game
 		void StartReels(bool home);
 		void ResetReels(bool start);
 		bool IsIdle();
+		void LockUnlock();
+		void CalcLock();
+
 		void InitReels(
 			const uint8_t motorPins[NREELS][2],
 			const uint8_t encoderPin[NREELS],

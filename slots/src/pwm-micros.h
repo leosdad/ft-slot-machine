@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 
+#define DEFAULTCYCLEDURATION 10000  // 10 ms in microseconds
+
 class PwmMicros
 {
 	private:
@@ -18,9 +20,7 @@ class PwmMicros
 		bool ledState;
 
 	public:
-		PwmMicros();
-
-		void Setup(const uint8_t pin);
+		void Setup(const uint8_t pin, uint32_t cycleDuration = DEFAULTCYCLEDURATION);
 		void Setup(const uint8_t pin, const uint8_t value);
 		void SetValue(const uint8_t value);
 		void Loop();

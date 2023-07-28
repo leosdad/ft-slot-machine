@@ -14,7 +14,7 @@
 #include "spin.h"
 #include "reel.h"
 
-#pragma region ---------------------------------------------------- Initializers
+// ------------------------------------------------------------------- Variables
 
 // EzButtons
 
@@ -38,7 +38,7 @@ const long blinkInterval = BLINKINTERVAL;
 unsigned long blinkPreviousMs = 0;
 int blinkLedState = LOW;
 
-#pragma endregion --------------------------------------------------------------
+// -------------------------------------------------------------- Setup and Loop
 
 void SlotsMain::Setup()
 {
@@ -50,7 +50,7 @@ void SlotsMain::Setup()
 	od.Setup(DEBUGINFO);
 	sevenSegDisplay.Setup();
 
-	// Reset reels to home posiion and start game with initial bet
+	// Reset reels to home position and start game with initial bet
 
 	sevenSegDisplay.DisplayNumber(game.spinPayoff);
 	startSpinning(true);
@@ -59,47 +59,60 @@ void SlotsMain::Setup()
 
 void SlotsMain::Loop()
 {
+	inputLoops();
+
+	if(game.spinning) {
+		loopWhenSpinning();
+	} else {
+		loopWhenStopped();
+	}
+}
+
+#pragma region ------------------------------------------------- Private methods
+
+void SlotsMain::loopWhenSpinning()
+{
+	for(int i = 0; i < NREELS; i++) {
+		game.reels[i].ProcessWhenSpinning();
+	}
+
+	if(isIdle()) {
+		game.spinning = false;
+		cmdReels(ReelCommands::RESET);
+		od.ShowState("Stopped ");
+		if(game.spinPayoff) {
+			game.ChangeBet((game.spinPayoff * game.nCoins) - game.nCoins);
+		} else {
+			game.ChangeBet(-game.nCoins);
+		}
+		sevenSegDisplay.DisplayNumber(game.spinPayoff);
+	}
+}
+
+void SlotsMain::loopWhenStopped()
+{
+	if(startLever.isPressed()) {
+		startSpinning(false);
+	} else if(increaseBet.isPressed()) {
+		od.DisplayBigNumber(game.ChangeBet(1));
+	} else if(decreaseBet.isPressed()) {
+		od.DisplayBigNumber(game.ChangeBet(-1));
+	} else {
+		for(int i = 0; i < NREELS; i++) {
+			game.reels[i].ProcessWhenStopped(blinkLedState);
+		}
+		blinkLedsTimer();
+	}
+}
+
+void SlotsMain::inputLoops()
+{
 	// ezButtons loops
 
 	increaseBet.loop();
 	decreaseBet.loop();
 	startLever.loop();
-
-	if(game.spinning) {
-
-		cmdReels(ReelCommands::PROCESSSPINNING);
-
-		if(isIdle()) {
-			game.spinning = false;
-			cmdReels(ReelCommands::RESET);
-			od.ShowState("Stopped ");
-			if(game.spinPayoff) {
-				game.ChangeBet((game.spinPayoff * game.nCoins) - game.nCoins);
-			} else {
-				game.ChangeBet(-game.nCoins);
-			}
-			sevenSegDisplay.DisplayNumber(game.spinPayoff);
-		}
-
-	} else {
-
-		if(startLever.isPressed()) {
-			startSpinning(false);
-		} else if(increaseBet.isPressed()) {
-			od.DisplayBigNumber(game.ChangeBet(1));
-		} else if(decreaseBet.isPressed()) {
-			od.DisplayBigNumber(game.ChangeBet(-1));
-		} else {
-			cmdReels(ReelCommands::PROCESSSTOPPED);
-			blinkLedsTimer();
-		}
-	}
-	
-	// digitalWrite(signalLED1[1], spinning);
-	// digitalWrite(signalLED2[1], spinning);
 }
-
-#pragma region ------------------------------------------------- Private methods
 
 void SlotsMain::startSpinning(bool home)
 {
@@ -142,6 +155,7 @@ bool SlotsMain::isIdle()
 	return true;
 }
 
+// TODO: remoive this method -- it does not make sense.
 /**
  * Receives a command and performs the respective actions on all reels.
 */
@@ -175,14 +189,6 @@ void SlotsMain::cmdReels(ReelCommands cmd)
 
 			case ReelCommands::RESETWITHSTART:
 				game.reels[i].Reset(true);
-				break;
-
-			case ReelCommands::PROCESSSPINNING:
-				game.reels[i].ProcessSpinning();
-				break;
-
-			case ReelCommands::PROCESSSTOPPED:
-				game.reels[i].ProcessStopped(blinkLedState);
 				break;
 		}
 	}

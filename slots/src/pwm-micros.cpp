@@ -5,13 +5,12 @@
 
 #include "pwm-micros.h"
 
-PwmMicros::PwmMicros()
+/**
+ * Setup. Default is 10 ms cycle.
+ */
+void PwmMicros::Setup(const uint8_t pin, uint32_t cycleDuration = DEFAULTCYCLEDURATION)
 {
-	pwmCycleDuration = 10000;  // 10 ms in microseconds
-}
-
-void PwmMicros::Setup(const uint8_t pin)
-{
+	pwmCycleDuration = cycleDuration;
 	hardwarePin = pin;
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, LOW);

@@ -16,8 +16,6 @@
 enum class ReelCommands {
 	IDLE = 0,
 	INIT,
-	PROCESSSPINNING,
-	PROCESSSTOPPED,
 	RESET,
 	RESETWITHSTART,
 	START,
@@ -29,12 +27,16 @@ enum class ReelCommands {
 class SlotsMain
 {
 	private:
+
 		bool isIdle();
-		void calculateAllPayoffs();
 		void blinkLedsTimer();
-		void startSpinning(bool home);
+		void calculateAllPayoffs();
 		void cmdReels(ReelCommands cmd);
+		void inputLoops();
 		void ioSetup();
+		void loopWhenSpinning();
+		void loopWhenStopped();
+		void startSpinning(bool home);
 
 		// Private fields
 

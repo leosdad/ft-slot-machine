@@ -92,8 +92,8 @@ class Reel
 
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		void Reset(bool start);
-		void ProcessSpinning();
-		void ProcessStopped(bool blinkStatus);
+		void ProcessWhenSpinning();
+		void ProcessWhenStopped(bool blinkStatus);
 		void Simulate();
 		bool IsIdle();
 };

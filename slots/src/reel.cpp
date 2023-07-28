@@ -91,7 +91,7 @@ void Reel::Simulate()
 /**
  * State machine for each reel while spinning.
  */
-void Reel::ProcessSpinning()
+void Reel::ProcessWhenSpinning()
 {
 	// if(locked) {
 	// 	reelState = ReelState::IDLE;
@@ -142,7 +142,7 @@ void Reel::ProcessSpinning()
 /**
  * Set reel lock and LED status.
  */
-void Reel::ProcessStopped(bool blinkStatus)
+void Reel::ProcessWhenStopped(bool blinkStatus)
 {
 	ezLockBtn.loop();
 	lockLED.Loop();

@@ -24,17 +24,13 @@ ezButton decreaseBet(decreaseBetPin);
 
 // Slot machine objects
 
-Reel myReel[NREELS];
+Reel reels[NREELS];
 Game game;
+
+// Other objects
+
 SevenSeg sevenSegDisplay;
 OledShow od;
-
-#pragma endregion
-
-#pragma region ------------------------------------------------- Other variables
-
-uint16_t payoff[NPAYLINES] = {0, 0};	// Payoff for each payline
-uint16_t spinPayoff = 0;				// Payoff amount for last spin
 
 // LED blinking
 
@@ -49,15 +45,16 @@ void SlotsMain::Setup()
 	// Initialize objects
 
 	ioSetup();
+	game.Setup(reels);
 	cmdReels(ReelCommands::INIT);
 	od.Setup(DEBUGINFO);
 	sevenSegDisplay.Setup();
 
 	// Reset reels to home posiion and start game with initial bet
 
-	sevenSegDisplay.DisplayNumber(spinPayoff);
+	sevenSegDisplay.DisplayNumber(game.spinPayoff);
 	startSpinning(true);
-	od.DisplayBet(game.SetBet(STARTCOINS));
+	od.DisplayBigNumber(game.SetBet(STARTCOINS));
 }
 
 void SlotsMain::Loop()
@@ -76,13 +73,12 @@ void SlotsMain::Loop()
 			game.spinning = false;
 			cmdReels(ReelCommands::RESET);
 			od.ShowState("Stopped ");
-			if(spinPayoff) {
-				game.ChangeBet((spinPayoff * game.nCoins) - game.nCoins);
+			if(game.spinPayoff) {
+				game.ChangeBet((game.spinPayoff * game.nCoins) - game.nCoins);
 			} else {
 				game.ChangeBet(-game.nCoins);
 			}
-			od.DisplayBet(game.nCoins);
-			sevenSegDisplay.DisplayNumber(spinPayoff);
+			sevenSegDisplay.DisplayNumber(game.spinPayoff);
 		}
 
 	} else {
@@ -90,11 +86,9 @@ void SlotsMain::Loop()
 		if(startLever.isPressed()) {
 			startSpinning(false);
 		} else if(increaseBet.isPressed()) {
-			game.ChangeBet(1);
-			od.DisplayBet(game.nCoins);
+			od.DisplayBigNumber(game.ChangeBet(1));
 		} else if(decreaseBet.isPressed()) {
-			game.ChangeBet(-1);
-			od.DisplayBet(game.nCoins);
+			od.DisplayBigNumber(game.ChangeBet(-1));
 		} else {
 			cmdReels(ReelCommands::PROCESSSTOPPED);
 			blinkLedsTimer();
@@ -109,12 +103,9 @@ void SlotsMain::Loop()
 
 void SlotsMain::startSpinning(bool home)
 {
-	if(home) {
-		game.SetBet(0);
-	}
 	cmdReels(home ? ReelCommands::STARTHOME : ReelCommands::START);
 	calculateAllPayoffs();
-	od.ShowReelPreview(game, myReel, payoff);
+	od.ShowReelPreview(game);
 	game.playing = true;
 	game.spinning = true;
 	od.ShowState("Spinning");
@@ -128,12 +119,12 @@ void SlotsMain::calculateAllPayoffs()
 	if(game.playing) {
 		uint16_t total = 0;
 		for(int l = 0; l < NPAYLINES; l++) {
-			total += payoff[l] = payoffs.Calculate(l, myReel);
+			total += game.payoff[l] = payoffs.Calculate(l, game.reels);
 		}
 		if(total) {
 			game.totalWins++;
 		}
-		spinPayoff += total;
+		game.spinPayoff += total;
 		game.totalSpins++;
 	}
 }
@@ -144,7 +135,7 @@ void SlotsMain::calculateAllPayoffs()
 bool SlotsMain::isIdle()
 {
 	for(int i = 0; i < NREELS; i++) {
-		if(!myReel[i].IsIdle()) {
+		if(!game.reels[i].IsIdle()) {
 			return false;
 		}
 	}
@@ -159,7 +150,7 @@ void SlotsMain::cmdReels(ReelCommands cmd)
 	for(int i = 0; i < NREELS; i++) {
 		switch(cmd) {
 			case ReelCommands::INIT:
-				myReel[i] = Reel(
+				game.reels[i] = Reel(
 					motorOut[i],
 					encoderPin[i],
 					homeSensorPin[i],
@@ -171,27 +162,27 @@ void SlotsMain::cmdReels(ReelCommands cmd)
 				break;
 
 			case ReelCommands::START:
-				myReel[i].Start(false, 0);
+				game.reels[i].Start(false, 0);
 				break;
 
 			case ReelCommands::STARTHOME:
-				myReel[i].Start(true, 0);
+				game.reels[i].Start(true, 0);
 				break;
 
 			case ReelCommands::RESET:
-				myReel[i].Reset(false);
+				game.reels[i].Reset(false);
 				break;
 
 			case ReelCommands::RESETWITHSTART:
-				myReel[i].Reset(true);
+				game.reels[i].Reset(true);
 				break;
 
 			case ReelCommands::PROCESSSPINNING:
-				myReel[i].ProcessSpinning();
+				game.reels[i].ProcessSpinning();
 				break;
 
 			case ReelCommands::PROCESSSTOPPED:
-				myReel[i].ProcessStopped(blinkLedState);
+				game.reels[i].ProcessStopped(blinkLedState);
 				break;
 		}
 	}

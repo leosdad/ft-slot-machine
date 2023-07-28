@@ -21,16 +21,16 @@ class OledShow
 
 		OledDisplayDriver odd;
 		Payline payline;
-		bool displayDebugInfo;
+		bool debugMode;
 
 	public:
 
-		void Setup(bool displayDebugInfo);
-		void DisplayBet(uint16_t nCoins);
+		void Setup(bool debugMode);
+		void DisplayBigNumber(uint16_t number);
 
-		// Debug only
+		// For debugging
 
-		void ShowReelPreview(Game game, Reel reels[NREELS], uint16_t payoff[NPAYLINES]);
+		void ShowReelPreview(Game game);
 		void ShowState(const char *str);
 };
 

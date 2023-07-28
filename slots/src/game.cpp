@@ -11,24 +11,28 @@
 void Game::Setup(Reel myReels[NREELS])
 {
 	reels = myReels;
+
+	for(int l = 0; l < NPAYLINES; l++) {
+		payoff[l] = 0;
+	}
 }
 
 /**
- * Increments the number of coins by the amount given.
+ * Sets the bet to the amount given.
  */
-uint16_t Game::SetBet(uint16_t bet)
+uint8_t Game::SetBet(uint8_t bet)
 {
-	nCoins = constrain(bet, 0, MAXCOINS);
-	return nCoins;
+	currentBet = constrain(bet, 0, MAXCOINS);
+	return currentBet;
 }
 
 /**
- * Increments the number of coins by the amount given.
+ * Increments the bet by the amount given.
  */
-uint16_t Game::ChangeBet(uint16_t bet)
+uint8_t Game::ChangeBet(int8_t bet)
 {
-	nCoins = constrain(nCoins + bet, 0, MAXCOINS);
-	return nCoins;
+	currentBet = constrain(currentBet + bet, 0, MAXCOINS);
+	return currentBet;
 }
 
 // ------------------------------------------------------------------------- End

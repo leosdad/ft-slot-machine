@@ -18,14 +18,17 @@ class Game
 
 		bool playing = false;			// Game status
 		bool spinning = false;			// Reels spinning status
+		uint8_t currentBet = 0;			// Current bet
 		uint16_t nCoins = 0;			// Current number of coins
 		uint16_t totalSpins = 0;		// Total spins since the beginning
 		uint16_t totalWins = 0;			// Total wins since the beginning
-		Reel *reels;
+		uint16_t spinPayoff = 0;		// Payoff amount for last spin
+		uint16_t payoff[NPAYLINES];		// Payoff for each payline
+		Reel *reels;					// Game reels
 
 		void Setup(Reel reels[NREELS]);
-		uint16_t SetBet(uint16_t bet);
-		uint16_t ChangeBet(uint16_t bet);
+		uint8_t SetBet(uint8_t bet);
+		uint8_t ChangeBet(int8_t bet);
 };
 
 // ------------------------------------------------------------------------- End

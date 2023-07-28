@@ -5,7 +5,7 @@
 
 #include "motor-driver.h"
 
-// ------------------------------------------------------------- Private methods
+// ---------------------------------------------------- Private member functions
 
 void MotorDriver::initMotor(const uint8_t motorPorts[2])
 {
@@ -61,7 +61,7 @@ MotorDriver::MotorDriver()
 // 	initMotor(v);
 // }
 
-// -------------------------------------------------------------- Public methods
+// ----------------------------------------------------- Public member functions
 
 void MotorDriver::Init(const uint8_t motorPorts[2])
 {

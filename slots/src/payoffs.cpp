@@ -6,7 +6,7 @@
 
 #include "payoffs.h"
 
-// --------------------------------------------------------------- Class members
+// ---------------------------------------------------- Private member functions
 
 /**
  * Looks for a payoff combination from the reel positions. If found, returns the
@@ -15,7 +15,7 @@
  * @param paylineIndex Index of the desired payline.
  * @param symbolPositions Array of symbol positions to be displayed (0-11).
  */
-uint16_t Payoffs::Calculate(int paylineIndex, Reel *reels)
+uint16_t Payoffs::calculatePayline(int paylineIndex, Reel *reels)
 {
 	for(int c = 0; c < NCOMBINATIONS; c++) {
 
@@ -38,6 +38,27 @@ uint16_t Payoffs::Calculate(int paylineIndex, Reel *reels)
 	}
 
 	return 0;
+}
+
+// ----------------------------------------------------- Public member functions
+
+/**
+ * Calculates the payoff for all paylines
+ */
+uint16_t Payoffs::CalculateTotalPayoff(Game *game)
+{
+	game->spinPayoff = 0;
+
+	for(int l = 0; l < NPAYLINES; l++) {
+		game->paylines[l].Payoff = calculatePayline(l, game->reels);
+		game->spinPayoff += game->paylines[l].Payoff;
+	}
+
+	if(game->spinPayoff) {
+		game->totalWins++;
+	}
+
+	return game->spinPayoff;
 }
 
 // ------------------------------------------------------------------------- End

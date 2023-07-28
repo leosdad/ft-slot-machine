@@ -15,8 +15,10 @@
 // --------------------------------------------------------------------- Defines
 
 #define DEBUGINFO		true	// Show debug data on the OLED display
-#define STARTCOINS		3
-#define MAXCOINS		9
+#define INITIALBET		3
+#define MAXBET			9
+#define STARTCOINS		200
+#define MAXCOINS		999999
 #define BLINKINTERVAL	350
 #define BTNDEBOUNCE		50
 #define NPAYLINES       2

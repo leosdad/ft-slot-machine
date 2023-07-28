@@ -65,20 +65,20 @@ class Reel
 		ezButton ezLockBtn{0};		// Initialize to a default pin number (you can change this default if needed)
 		PwmMicros lockLED;			// Lock LED PWM driver
 
-		// Private methods
+		// Private member functions
 
 		void lockAndUnlock();
 
 	public:
 
+		// Variables
+
 		uint16_t symbolPos = 0;		// Position of symbol to be displayed (0-11)
 		uint8_t extraTurns = 0;		// Number of extra 360° revolutions
 
-		// Constructors
+		// Public member functions
 
-		Reel();
-
-		Reel(
+		void Setup(
 			const uint8_t motorPins[2],
 			const uint8_t encoderPin,
 			const uint8_t homeSensorPin,
@@ -87,8 +87,6 @@ class Reel
 			const uint8_t motorSpeedValue,
 			int *reelComposition
 		);
-
-		// Public methods
 
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		void Reset(bool start);

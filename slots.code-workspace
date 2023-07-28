@@ -8,30 +8,14 @@
 		},
 		{
 			"path": "../doc"
+		},
+		{
+			"path": "C:/Users/Rubem Pechansky/AppData/Local/Temp/arduino/sketches/5FB473444206401453A47D6F82D1EE16/sketch/src"
 		}
 	],
 	"settings": {
 		"files.exclude": {
 			"**/*.rpp": true
-		},
-		"files.associations": {
-			"settings.json": "jsonc",
-			".eslintrc.json": "jsonc",
-			"*.schema.json": "jsonc",
-			"*.defaults": "json",
-			"*.bindings": "ini",
-			"*.htm": "html",
-			"*.html": "html",
-			"*.js.njk": "jinja-js",
-			"*.html.njk": "jinja-html",
-			"*scss.njk": "jinja-css",
-			"*.njk": "jinja",
-			"*.log": "log",
-			"*.conf": "hocon",
-			"*.json": "json",
-			"*.js5": "json5",
-			"launch.json": "jsonc",
-			"new": "cpp"
 		},
 		"cSpell.enableFiletypes": [
 			"!text",

@@ -15,7 +15,7 @@
 class Payline
 {
 	public:
-		// uint16_t payoff = 0;
+		uint16_t Payoff = 0;
 		uint8_t GetLineSymbol(uint8_t line, uint8_t nReel, Reel reel);
 };
 

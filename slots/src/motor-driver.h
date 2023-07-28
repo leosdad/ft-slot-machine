@@ -39,7 +39,7 @@ class MotorDriver
 		uint8_t motorHome, motorEnd;
 		bool reversePolarity = false;
 
-		// ------------------------ Private methods
+		// --------------- Private member functions
 
 		void initMotor(const uint8_t motorPorts[2]);
 		void initEncoder(const uint8_t encoder);

@@ -8,7 +8,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "../slots.h"
-#include "oled-show.h"
+#include "oled-display.h"
 #include "payoffs.h"
 
 // ----------------------------------------------------------------------- Types
@@ -16,10 +16,6 @@
 enum class ReelCommands {
 	IDLE = 0,
 	INIT,
-	RESET,
-	RESETWITHSTART,
-	START,
-	STARTHOME
 };
 
 // ----------------------------------------------------------- Class declaration
@@ -28,15 +24,13 @@ class SlotsMain
 {
 	private:
 
-		bool isIdle();
 		void blinkLedsTimer();
-		void calculateAllPayoffs();
-		void cmdReels(ReelCommands cmd);
-		void inputLoops();
+		void inputLoop();
 		void ioSetup();
 		void loopWhenSpinning();
 		void loopWhenStopped();
-		void startSpinning(bool home);
+		void startGame(bool home);
+		void stopGame();
 
 		// Private fields
 

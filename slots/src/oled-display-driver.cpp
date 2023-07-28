@@ -11,7 +11,7 @@
 #include <font11x16.h>
 #include <font16x32digits.h>
 
-// -------------------------------------------------------------- Public methods
+// ----------------------------------------------------- Public member functions
 
 void OledDisplayDriver::Setup()
 {

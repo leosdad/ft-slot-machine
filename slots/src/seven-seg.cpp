@@ -6,7 +6,7 @@
 
 #include "seven-seg.h"
 
-// -------------------------------------------------------------- Public methods
+// ----------------------------------------------------- Public member functions
 
 // Reset seven-segment display
 void SevenSeg::Setup()

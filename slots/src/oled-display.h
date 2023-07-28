@@ -26,11 +26,9 @@ class OledShow
 	public:
 
 		void Setup(bool debugMode);
-		void DisplayBigNumber(uint16_t number);
-
-		// For debugging
-
-		void ShowReelPreview(Game game);
+		uint16_t DisplayBet(uint16_t number);
+		uint16_t DisplayCoins(uint16_t number);
+		void DisplayDebugInfo(Game game);
 		void ShowState(const char *str);
 };
 

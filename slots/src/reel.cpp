@@ -8,11 +8,7 @@
 
 // --------------------------------------------------------------- Class members
 
-Reel::Reel()
-{
-};
-
-Reel::Reel(
+void Reel::Setup(
 	const uint8_t motorPins[2],
 	const uint8_t encoderPinNumber,
 	const uint8_t homeSensorPin,
@@ -42,7 +38,7 @@ void Reel::Reset(bool start)
 }
 
 /**
- * Does the necessary calculations, draws 3 symbols and starts the reels.
+ * Does the necessary calculations, draws a symbol and starts the reel.
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
@@ -62,7 +58,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 		extraTurns = previousExtraTurns + TrueRandom.random(0, 3);
 #endif
 
-		// Draws the final position for each wheel
+		// Draws the final position for this wheel
 #if CALIBRATE
 		symbolPos = 0;
 #else
@@ -71,7 +67,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 
 	}
 
-	// Calculates the number of steps necessary to reach each position
+	// Calculates the number of steps necessary to reach the end position
 
 	finalSteps = stepOffsets[symbolPos];
 	reelState = ReelState::START;
@@ -89,7 +85,7 @@ void Reel::Simulate()
 }
 
 /**
- * State machine for each reel while spinning.
+ * State machine for this reel while spinning.
  */
 void Reel::ProcessWhenSpinning()
 {
@@ -99,7 +95,6 @@ void Reel::ProcessWhenSpinning()
 	// }
 
 	ezHomeSensor.loop();
-	// lockLED.Loop();
 
 	// ezHomeSensor.loop();
 
@@ -168,6 +163,5 @@ bool Reel::IsIdle()
 {
 	return reelState == ReelState::IDLE;
 }
-
 
 // ------------------------------------------------------------------------- End

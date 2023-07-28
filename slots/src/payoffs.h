@@ -8,7 +8,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "../slots.h"
-#include "payline.h"
+#include "game.h"
 #include "reel.h"
 
 // --------------------------------------------------------------------- Defines
@@ -27,9 +27,9 @@ struct payoffItem {
 
 // ------------------------------------------------------------------- Constants
 
-// Static constants
+// Global static constants
 
-static const uint8_t payoffMultiplier = 3;
+static const uint8_t payoffMultiplier = 1;
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{1, 1, 1}, 172},
 	{{3, 3, 3}, 86},
@@ -59,11 +59,13 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 
 class Payoffs
 {
-	public:
-		uint16_t Calculate(int paylineIndex, Reel *reels);
-
 	private:
-		Payline payline;
+		static Payline payline;
+
+		static uint16_t calculatePayline(int paylineIndex, Reel *reels);
+
+	public:
+		static uint16_t CalculateTotalPayoff(Game *game);
 };
 
 // ------------------------------------------------------------------------- End

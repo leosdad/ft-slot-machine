@@ -10,15 +10,8 @@
 #include "../slots.h"
 #include "game.h"
 
-// --------------------------------------------------------------------- Defines
-
-#define NCOMBINATIONS	22
-
 // ---------------------------------------------------------------------- Struct
 
-/**
- * Each line is: reel 0, reel 1, reel 2, payoff. 0 on a reel means "any".
- */
 struct payoffItem {
 	uint8_t symbol[NREELS];
 	uint16_t payoff;
@@ -28,7 +21,11 @@ struct payoffItem {
 
 // Global static constants
 
-static const uint8_t payoffMultiplier = 1;
+static const uint8_t payoffMultiplier = PAYMULTIPLIER;
+
+/**
+ * 0 (zero) here means any symbol.
+ */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{1, 1, 1}, 172},
 	{{3, 3, 3}, 86},

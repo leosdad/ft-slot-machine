@@ -43,3 +43,18 @@ void PwmMicros::SetValue(uint8_t value)
 	pwmOnTime = pwmCycleDuration * constrain(value, 0, 255) / 256;
 	pwmOffTime = pwmCycleDuration - pwmOnTime;
 }
+
+void PwmMicros::Set(bool on)
+{
+	SetValue(on ? 255 : 0);
+}
+
+void PwmMicros::TurnOn()
+{
+	SetValue(255);
+}
+
+void PwmMicros::TurnOff()
+{
+	SetValue(0);
+}

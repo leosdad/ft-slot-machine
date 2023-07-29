@@ -14,18 +14,6 @@
 #include "motor-driver.h"
 #include "pwm-micros.h"
 
-// ----------------------------------------------------------------- Debug flags
-
-// Set to true for faster tests
-#define SPEEDUP true
-
-// Set to true for reel speed calibration
-#define CALIBRATE false
-
-// Set to true to simulate gameplay without actually moving anything
-#define SIMULATE false
-#define SIMULATE_DELAY	50
-
 // ----------------------------------------------------------- Class declaration
 
 class Reel
@@ -51,14 +39,12 @@ class Reel
 		uint8_t rotations;			// Rotation counter
 
 		// Must be initialized and won't ever change
-		// TODO: convert to constants
 
 		uint8_t encoderPin;			// Encoder motor pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
-		int *composition;			// Reel composition
 		MotorDriver motor{0, 0};	// Motor that spins this reel
 		ezButton ezHomeSensor{0};	// ezButton home sensor object
-		ezButton ezLockBtn{0};		// ezButton lock button object
+		ezButton ezLockButton{0};		// ezButton lock button object
 		PwmMicros lockLED;			// Lock LED PWM driver object
 
 	public:
@@ -78,14 +64,11 @@ class Reel
 			const uint8_t homeSensorPin,
 			const uint8_t lockButtonPin,
 			const uint8_t lockLEDPinNumber,
-			const uint8_t motorSpeedValue,
-			int *reelComposition
+			const uint8_t motorSpeedValue
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		// void Reset(bool start);
 		void ProcessWhenSpinning();
 		void ProcessWhenStopped(bool blinkStatus);
-		void Simulate();
 		bool IsIdle();
 };
 

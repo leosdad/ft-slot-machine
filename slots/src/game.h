@@ -45,16 +45,13 @@ class Game
 		void StartReels(bool home);
 		bool IsIdle();
 		void LockUnlock();
-		// void ResetReels(bool start);
-
 		void InitReels(
 			const uint8_t motorPins[NREELS][2],
 			const uint8_t encoderPin[NREELS],
 			const uint8_t homeSensorPin[NREELS],
 			const uint8_t lockButtonPin[NREELS],
 			const uint8_t lockLEDPinNumber[NREELS],
-			const uint8_t motorSpeedValue[NREELS],
-			int **reelComposition
+			const uint8_t motorSpeedValue[NREELS]
 		);
 };
 

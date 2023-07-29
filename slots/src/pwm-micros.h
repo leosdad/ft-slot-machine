@@ -23,6 +23,9 @@ class PwmMicros
 		void Setup(const uint8_t pin, uint32_t cycleDuration = DEFAULTCYCLEDURATION);
 		void Setup(const uint8_t pin, const uint8_t value);
 		void SetValue(const uint8_t value);
+		void Set(bool on);
+		void TurnOn();
+		void TurnOff();
 		void Loop();
 };
 

@@ -29,7 +29,7 @@ Game game;
 // Other objects
 
 SevenSeg sevenSegDisplay;
-OledShow od;
+OledDisplay od;
 
 // LED blinking
 
@@ -45,8 +45,8 @@ void SlotsMain::Setup()
 
 	ioSetup();
 	game.Setup(reels);
-	game.InitReels(motorOut, encoderPin, homeSensorPin, lockButtonPin,
-		lockLEDPin, motorSpeed, (int **)reelComposition);
+	game.InitReels(motorOut, encoderPin, homeSensorPin,
+		lockButtonPin, lockLEDPin, motorSpeed);
 	od.Setup(DEBUGINFO);
 	sevenSegDisplay.Setup();
 
@@ -153,13 +153,13 @@ void SlotsMain::blinkLedsTimer()
  */
 void SlotsMain::ioSetup()
 {
-	startLever.setDebounceTime(50);
-	increaseBet.setDebounceTime(50);
-	decreaseBet.setDebounceTime(50);
+	startLever.setDebounceTime(EZBTNDEBOUNCE);
+	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
+	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
 
 	pinMode(signalLED1[0], OUTPUT);
-	pinMode(signalLED1[0], OUTPUT);
-	pinMode(signalLED2[1], OUTPUT);
+	pinMode(signalLED1[1], OUTPUT);
+	pinMode(signalLED2[0], OUTPUT);
 	pinMode(signalLED2[1], OUTPUT);
 }
 

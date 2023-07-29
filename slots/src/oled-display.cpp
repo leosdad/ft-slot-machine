@@ -5,8 +5,6 @@
 // -------------------------------------------------------------------- Includes
 
 #include "oled-display.h"
-// #include <iostream>
-#include <string.h>
 
 // ------------------------------------------------------------ Global constants
 
@@ -14,7 +12,7 @@ const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chy", "Mln", "Bel
 
 // ---------------------------------------------------- Private member functions
 
-uint8_t OledShow::getSize(uint8_t number)
+uint8_t OledDisplay::getSize(uint8_t number)
 {
 	uint8_t digits = 1;
 
@@ -31,7 +29,7 @@ uint8_t OledShow::getSize(uint8_t number)
 /**
  * Displays some permanent info on the OLED display.
  */
-void OledShow::Setup(bool debug)
+void OledDisplay::Setup(bool debug)
 {
 	odd.Setup();
 	debugMode = debug;
@@ -46,7 +44,7 @@ void OledShow::Setup(bool debug)
 	}
 }
 
-uint16_t OledShow::DisplayCoins(uint16_t number)
+uint16_t OledDisplay::DisplayCoins(uint16_t number)
 {
 	if(debugMode) {
 		odd.PrintS(1, 8, "    ");
@@ -61,7 +59,7 @@ uint16_t OledShow::DisplayCoins(uint16_t number)
 	return number;
 }
 
-uint16_t OledShow::DisplayBet(uint16_t number)
+uint16_t OledDisplay::DisplayBet(uint16_t number)
 {
 	if(debugMode) {
 		odd.PrintN(1, 3, number);
@@ -76,7 +74,7 @@ uint16_t OledShow::DisplayBet(uint16_t number)
 /**
  * Shows the state and already drawn symbols of the three reels on the OLED display.
  */
-void OledShow::DisplayDebugInfo(Game game)
+void OledDisplay::DisplayDebugInfo(Game game)
 {
 	if(!debugMode) {
 		return;
@@ -109,7 +107,7 @@ void OledShow::DisplayDebugInfo(Game game)
 	}
 }
 
-void OledShow::ShowState(const char *str)
+void OledDisplay::ShowState(const char *str)
 {
 	if(debugMode) {
 		odd.PrintS(0, 0, str);

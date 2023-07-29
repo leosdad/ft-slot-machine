@@ -21,24 +21,7 @@ void MotorDriver::initEncoder(const uint8_t _encoder)
 	pinMode(encoder, INPUT_PULLUP);
 }
 
-// void MotorDriver::initSwitches(const uint8_t switches[2], bool pullups)
-// {
-// 	motorHome = switches[0];
-// 	motorEnd = switches[1];
-// 	if(pullups) {
-// 		pinMode(motorHome, INPUT_PULLUP);
-// 		pinMode(motorEnd, INPUT_PULLUP);
-// 	}
-// }
-
 // ---------------------------------------------------------------- Constructors
-
-// MotorDriver::MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder, const uint8_t switches[2], bool pullups)
-// {
-// 	initMotor(motorPorts);
-// 	initEncoder(encoder);
-// 	initSwitches(switches, pullups);
-// }
 
 MotorDriver::MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder)
 {
@@ -50,16 +33,6 @@ MotorDriver::MotorDriver(const uint8_t motorPorts[2])
 {
 	initMotor(motorPorts);
 }
-
-MotorDriver::MotorDriver()
-{
-}
-
-// MotorDriver::MotorDriver(const uint8_t motorPortA, const uint8_t motorPortB)
-// {
-// 	const uint8_t v[2] = {motorPortA, motorPortB};
-// 	initMotor(v);
-// }
 
 // ----------------------------------------------------- Public member functions
 

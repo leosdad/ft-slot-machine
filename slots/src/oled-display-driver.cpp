@@ -7,9 +7,9 @@
 #include <Tiny4kOLED.h>
 
 #include <font8x16atari.h>
-#include <ModernDos.h>
 #include <font11x16.h>
 #include <font16x32digits.h>
+#include <ModernDos.h>
 
 // ----------------------------------------------------- Public member functions
 

@@ -14,40 +14,25 @@ void Reel::Setup(
 	const uint8_t homeSensorPin,
 	const uint8_t lockButtonPin,
 	const uint8_t lockLEDPinNumber,
-	const uint8_t motorSpeedValue,
-	int *reelComposition
+	const uint8_t motorSpeedValue
 )
 {
 	encoderPin = encoderPinNumber;
 	motorSpeed = motorSpeedValue;
-	composition = reelComposition;
 
 	lockLED.Setup(lockLEDPinNumber);
 	motor = MotorDriver(motorPins, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPin);
-	ezLockBtn = ezButton(lockButtonPin);
-	ezLockBtn.setDebounceTime(BTNDEBOUNCE);
+	ezLockButton = ezButton(lockButtonPin);
+	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
 }
-
-// void Reel::Reset(bool start)
-// {
-// 	lockable = true;
-// 	locked = false;
-// 	rotations = 0;
-// 	reelState = start ? ReelState::START : ReelState::IDLE;
-// }
 
 /**
  * Does the necessary calculations, draws a symbol and starts the reel.
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
-	// currentSignal = 0;
-	// lastChange = 0;
-	// counter = 0;
-	// rotations = 0;
-
-	lockLED.SetValue(locked ? 255 : 0);
+	lockLED.Set(locked);
 
 	if(locked) {
 		return;
@@ -63,19 +48,11 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	} else {
 
 		// Sets the amount of initial full turns per reel
-#if SPEEDUP || CALIBRATE || SIMULATE
-		extraTurns = 0;
-#else
-		extraTurns = previousExtraTurns + TrueRandom.random(0, 3);
-#endif
+		extraTurns = speedUp || calibrate ? 0 :
+			previousExtraTurns + TrueRandom.random(0, 3);
 
 		// Draws the final position for this wheel
-#if CALIBRATE
-		symbolPos = 0;
-#else
-		symbolPos = TrueRandom.random(NREELSYMBOLS);
-#endif
-
+		symbolPos = calibrate ? 0 : TrueRandom.random(NREELSYMBOLS);
 	}
 
 	// Calculates the number of steps necessary to reach the end position
@@ -87,20 +64,17 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * Used for testing without moving anything.
- */
-void Reel::Simulate()
-{
-	delay(SIMULATE_DELAY);
-	reelState = ReelState::IDLE;
-}
-
-/**
  * Loop called while spinning and state machine for this reel.
  */
 void Reel::ProcessWhenSpinning()
 {
 	ezHomeSensor.loop();
+
+	if(simulate) {
+		delay(SIMULATE_DELAY);
+		reelState = ReelState::IDLE;
+		return;
+	}
 
 	// State machine for this reel
 
@@ -150,20 +124,20 @@ void Reel::ProcessWhenSpinning()
  */
 void Reel::ProcessWhenStopped(bool blinkStatus)
 {
-	// ezLockBtn.loop();
+	// ezLockButton.loop();
 	// lockLED.Loop();
 
 	// if(lockable) {
-	// 	if(ezLockBtn.isPressed()) {
+	// 	if(ezLockButton.isPressed()) {
 	// 		locked = !locked;
 	// 	}
 	// 	if(locked) {
-	// 		lockLED.SetValue(255);
+	// 		lockLED.TurnOn();
 	// 	} else {
 	// 		lockLED.SetValue(blinkStatus ? 10 : 0);
 	// 	}
 	// } else {
-	// 	lockLED.SetValue(0);
+	// 	lockLED.TurnOff();
 	// }
 }
 

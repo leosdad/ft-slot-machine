@@ -50,11 +50,8 @@ class MotorDriver
 		/**
 		 * Constructor.
 		*/
-		// MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder, const uint8_t switches[2], bool pullups);
 		MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder);
-		// MotorDriver(const uint8_t motorPortA, const uint8_t motorPortB);
 		MotorDriver(const uint8_t motorPorts[2]);
-		MotorDriver();
 
 		void Init(const uint8_t motorPorts[2]);
 		void Init(const uint8_t motorPorts[2], const uint8_t encoder);

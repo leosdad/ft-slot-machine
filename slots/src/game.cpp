@@ -165,8 +165,7 @@ void Game::InitReels(
 	const uint8_t homeSensorPin[NREELS],
 	const uint8_t lockButtonPin[NREELS],
 	const uint8_t lockLEDPin[NREELS],
-	const uint8_t motorSpeed[NREELS],
-	int **reelComposition
+	const uint8_t motorSpeed[NREELS]
 ) {
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].Setup(
@@ -175,8 +174,7 @@ void Game::InitReels(
 			homeSensorPin[i],
 			lockButtonPin[i],
 			lockLEDPin[i],
-			motorSpeed[i],
-			(int *)reelComposition[i]
+			motorSpeed[i]
 		);
 	}
 }

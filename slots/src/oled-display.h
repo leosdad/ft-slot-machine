@@ -13,7 +13,7 @@
 
 // ----------------------------------------------------------- Class declaration
 
-class OledShow
+class OledDisplay
 {
 	private:
 

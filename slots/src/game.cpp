@@ -5,51 +5,9 @@
 // -------------------------------------------------------------------- Includes
 
 #include "game.h"
+#include "locks.h"
 
-// ---------------------------------------------------- Private member functions
-
-// TODO: perhaps create a Locks class
-
-/**
- * Lock / unlock logic.
- */
-void Game::calcLock()
-{
-	// TODO: this logic does not need to be called from the loop; only
-	// after a lock button or the bet incr/decr are pressed
-
-	uint8_t currentLocked = 0;
-	uint8_t maxLockable = min(2, currentBet / 3);
-
-	for(int i = 0; i < NREELS; i++) {
-		if(reels[i].locked) {
-			currentLocked++;
-		}
-	}
-
-	if(currentLocked < maxLockable) {
-		for(int i = 0; i < NREELS; i++) {
-			reels[i].lockable = true;
-		}
-	} else if(currentLocked == maxLockable) {
-		for(int i = 0; i < NREELS; i++) {
-			if(!reels[i].locked) {
-				reels[i].lockable = false;
-				reels[i].locked = false;
-			}
-		}
-	} else {	// (currentLocked > maxLockable)
-		for(int i = NREELS - 1; i >= 0;  i--) {
-			if(reels[i].locked) {
-				reels[i].locked = false;
-				currentLocked--;
-				if(currentLocked <= maxLockable) {
-					break;
-				}
-			}
-		}
-	}
-}
+Locks locks;
 
 // ----------------------------------------------------- Public member functions
 
@@ -67,12 +25,27 @@ void Game::Setup(Reel _reels[NREELS])
 	}
 }
 
+void Game::LoopWhenSpinning()
+{
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].LoopWhenSpinning();
+	}
+}
+
+void Game::LoopWhenStopped()
+{
+	locks.Loop(this);
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].LoopWhenStopped(locks.blinkLedState);
+	}
+}
+
 /**
  * Sets the current bet to the amount given.
  */
-uint8_t Game::SetBet(uint8_t bet)
+uint8_t Game::SetBet(int8_t bet)
 {
-	currentBet = constrain(bet, 0, MAXBET);
+	currentBet = constrain(min(nCoins, bet), 0, MAXBET);
 	return currentBet;
 }
 
@@ -81,59 +54,35 @@ uint8_t Game::SetBet(uint8_t bet)
  */
 uint8_t Game::ChangeBet(int8_t bet)
 {
-	currentBet = constrain(currentBet + bet, 0, MAXBET);
+	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
 	return currentBet;
 }
 
 void Game::StartReels(bool home)
 {
-	uint8_t xTurns = 0;
+	locks.AllowNext(home || nCoins == 0 ? Locks::NextState::FORBIDDEN :
+		Locks::NextState::AUTO);
+
+	uint8_t additionalTurns = 0;
 
 	for(int i = 0; i < NREELS; i++) {
-		xTurns = reels[i].Start(home, xTurns);
-	}
-}
-
-void Game::ProcessWhenSpinning()
-{
-	for(int i = 0; i < NREELS; i++) {
-		reels[i].ProcessWhenSpinning();
-	}
-}
-
-void Game::ProcessWhenStopped(int blinkLedState)
-{
-	for(int i = 0; i < NREELS; i++) {
-		// calcLock();
-		reels[i].ProcessWhenStopped(blinkLedState);
+		additionalTurns = reels[i].Start(home, additionalTurns);
 	}
 }
 
 /**
- * Lock / unlock logic after a spin is completed.
+ * Actions after a spin is completed.
  */
-void Game::LockUnlock()
+void Game::StopSpin()
 {
-	// bool allowNext = true;
-
-	// for(int i = 0; i < NREELS; i++) {
-	// 	if(reels[i].locked) {
-	// 		allowNext = false;
-	// 		break;
-	// 	}
-	// }
-
-	// if(allowNext) {
-	// 	for(int i = 0; i < NREELS; i++) {
-	// 		reels[i].lockable = true;
-	// 		reels[i].locked = false;
-	// 	}
-	// } else {
-	// 	for(int i = 0; i < NREELS; i++) {
-	// 		reels[i].lockable = false;
-	// 		reels[i].locked = false;
-	// 	}
-	// }
+	spinning = false;
+	locks.LockUnlock(this);
+	if(playing) {
+		nCoins = constrain(nCoins + spinPayoff * currentBet, 0, MAXCOINS);
+	}
+	if(spinPayoff) {
+		locks.AllowNext(Locks::NextState::FORBIDDEN);
+	}
 }
 
 /**
@@ -148,13 +97,6 @@ bool Game::IsIdle()
 	}
 	return true;
 }
-
-// void Game::ResetReels(bool start)
-// {
-// 	for(int i = 0; i < NREELS; i++) {
-// 		reels[i].Reset(start);
-// 	}
-// }
 
 /**
  * Set up the hardware pins and some variables.

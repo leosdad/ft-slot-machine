@@ -67,8 +67,8 @@ class Reel
 			const uint8_t motorSpeedValue
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void ProcessWhenSpinning();
-		void ProcessWhenStopped(bool blinkStatus);
+		void LoopWhenSpinning();
+		void LoopWhenStopped(bool blinkStatus);
 		bool IsIdle();
 };
 

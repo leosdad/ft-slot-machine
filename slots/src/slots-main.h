@@ -17,7 +17,6 @@ class SlotsMain
 {
 	private:
 
-		void blinkLedsTimer();
 		void inputLoop();
 		void ioSetup();
 		void loopWhenSpinning();

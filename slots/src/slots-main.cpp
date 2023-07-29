@@ -31,12 +31,6 @@ Game game;
 SevenSeg sevenSegDisplay;
 OledDisplay od;
 
-// LED blinking
-
-unsigned long blinkPreviousMs = 0;
-const long blinkInterval = BLINKINTERVAL;
-int blinkLedState = LOW;
-
 #pragma endregion ----------------------------------------------- Setup and Loop
 
 void SlotsMain::Setup()
@@ -75,7 +69,7 @@ void SlotsMain::Loop()
 
 void SlotsMain::loopWhenSpinning()
 {
-	game.ProcessWhenSpinning();
+	game.LoopWhenSpinning();
 	if(game.IsIdle()) {
 		stopSpin();
 	}
@@ -83,8 +77,7 @@ void SlotsMain::loopWhenSpinning()
 
 void SlotsMain::loopWhenStopped()
 {
-	game.ProcessWhenStopped(blinkLedState);
-	blinkLedsTimer();
+	game.LoopWhenStopped();
 
 	if(startLever.isPressed()) {
 		if(game.currentBet) {
@@ -97,16 +90,10 @@ void SlotsMain::loopWhenStopped()
 	}
 }
 
-void SlotsMain::inputLoop()
-{
-	// ezButtons loops
-	increaseBet.loop();
-	decreaseBet.loop();
-	startLever.loop();
-}
-
 void SlotsMain::startSpin(bool home)
 {
+	// TODO: move to Game class
+
 	game.StartReels(home);
 	if(!home) {
 		payoffs.CalculateTotalPayoff(&game);
@@ -115,7 +102,7 @@ void SlotsMain::startSpin(bool home)
 	game.totalSpins++;
 	game.spinning = true;
 	if(game.playing) {
-		game.nCoins -= game.currentBet;
+		game.nCoins = constrain(game.nCoins - game.currentBet, 0, MAXCOINS);
 		od.DisplayCoins(game.nCoins);
 	}
 	od.DisplayDebugInfo(game);
@@ -124,28 +111,19 @@ void SlotsMain::startSpin(bool home)
 
 void SlotsMain::stopSpin()
 {
-	game.spinning = false;
-	game.LockUnlock();
-
+	game.StopSpin();
+	od.DisplayBet(game.SetBet(game.currentBet));
 	od.ShowState("Stopped ");
-	if(game.playing) {
-		game.nCoins += game.spinPayoff * game.currentBet;
-	}
 	od.DisplayCoins(game.nCoins);
 	sevenSegDisplay.DisplayNumber(game.spinPayoff * game.currentBet);
 }
 
-/**
- * Timer for blinking reel lock LEDs
- */
-void SlotsMain::blinkLedsTimer()
+void SlotsMain::inputLoop()
 {
-	unsigned long currMs = millis();
-
-	if(currMs - blinkPreviousMs >= blinkInterval) {
-		blinkPreviousMs = currMs;
-		blinkLedState = !blinkLedState;
-	}
+	// ezButtons loops
+	increaseBet.loop();
+	decreaseBet.loop();
+	startLever.loop();
 }
 
 /**

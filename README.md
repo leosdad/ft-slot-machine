@@ -16,8 +16,7 @@ Heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), an o
 
 - [DFPlayerMini_Fast](https://github.com/PowerBroker2/DFPlayerMini_Fast)
 - [ezButton Library for Arduino](https://github.com/ArduinoGetStarted/button)
-- [ezOutput](https://arduinogetstarted.com/tutorials/arduino-output-library)
 - [Tiny4kOLED](https://www.arduino.cc/reference/en/libraries/tiny4koled/)
 - [TinyOLED-Fonts](https://github.com/datacute/TinyOLED-Fonts)
 - [TrueRandom](https://github.com/sirleech/TrueRandom)
-- [Wire](https://www.arduino.cc/reference/en/language/functions/communication/wire/)
+- [Wire](https://www.arduino.cc/reference/en/language/functions/communication/wire/) for I²C communication

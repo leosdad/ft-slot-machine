@@ -66,7 +66,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 /**
  * Loop called while spinning and state machine for this reel.
  */
-void Reel::ProcessWhenSpinning()
+void Reel::LoopWhenSpinning()
 {
 	ezHomeSensor.loop();
 
@@ -117,28 +117,26 @@ void Reel::ProcessWhenSpinning()
 	}
 }
 
-// TODO: move to Locks class
-
 /**
  * Loop called when stopped. Sets reel lock and LED status.
  */
-void Reel::ProcessWhenStopped(bool blinkStatus)
+void Reel::LoopWhenStopped(bool blinkStatus)
 {
-	// ezLockButton.loop();
-	// lockLED.Loop();
+	ezLockButton.loop();
+	lockLED.Loop();
 
-	// if(lockable) {
-	// 	if(ezLockButton.isPressed()) {
-	// 		locked = !locked;
-	// 	}
-	// 	if(locked) {
-	// 		lockLED.TurnOn();
-	// 	} else {
-	// 		lockLED.SetValue(blinkStatus ? 10 : 0);
-	// 	}
-	// } else {
-	// 	lockLED.TurnOff();
-	// }
+	if(lockable) {
+		if(ezLockButton.isPressed()) {
+			locked = !locked;
+		}
+		if(locked) {
+			lockLED.TurnOn();
+		} else {
+			lockLED.SetValue(blinkStatus ? 10 : 0);
+		}
+	} else {
+		lockLED.TurnOff();
+	}
 }
 
 /**

@@ -23,9 +23,10 @@
 
 // Game constants
 
+#define STARTCOINS		100
+#define MAXCOINS		9999	// Up to 16384
 #define MAXBET			9		// 6 to 12
-#define NPAYLINES       2		// 1 to 3
-#define STARTCOINS		200
+#define NPAYLINES       1		// 1 to 3
 #define PAYMULTIPLIER	1
 #define INITIALBET		3
 #define NCOMBINATIONS	22		// Number of payoff combinations

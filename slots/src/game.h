@@ -15,36 +15,30 @@
 
 class Game
 {
-	private:
-
-		void calcLock();
-
 	public:
 
 		// Variables
 
 		bool playing = false;			// Game status
 		bool spinning = false;			// Reels spinning status
-		uint8_t currentBet = 0;			// Current bet
-		uint16_t nCoins = 0;			// Current number of coins
+		int8_t currentBet = 0;			// Current bet (signed)
+		int16_t nCoins = 0;				// Current number of coins (signed)
 		uint16_t totalSpins = 0;		// Total spins since the beginning
 		uint16_t totalWins = 0;			// Total wins since the beginning
 		uint16_t spinPayoff = 0;		// Payoff amount for last spin
 		Reel reels[NREELS];				// Game reels
 		Payline paylines[NPAYLINES];	// Game paylines
-		bool allowLocking = false;
-		// bool allowNext = false;
 
 		// Member functions
 
 		void Setup(Reel reels[NREELS]);
-		uint8_t SetBet(uint8_t bet);
+		uint8_t SetBet(int8_t bet);
 		uint8_t ChangeBet(int8_t bet);
-		void ProcessWhenSpinning();
-		void ProcessWhenStopped(int blinkLedState);
+		void LoopWhenSpinning();
+		void LoopWhenStopped();
 		void StartReels(bool home);
 		bool IsIdle();
-		void LockUnlock();
+		void StopSpin();
 		void InitReels(
 			const uint8_t motorPins[NREELS][2],
 			const uint8_t encoderPin[NREELS],

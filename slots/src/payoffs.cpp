@@ -15,7 +15,7 @@
  * @param paylineIndex Index of the desired payline.
  * @param symbolPositions Array of symbol positions to be displayed (0-11).
  */
-uint16_t Payoffs::calculatePayline(int paylineIndex, Reel *reels)
+uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 {
 	for(int c = 0; c < NCOMBINATIONS; c++) {
 
@@ -23,7 +23,7 @@ uint16_t Payoffs::calculatePayline(int paylineIndex, Reel *reels)
 
 		for(int i = 0; i < NREELS; i++) {
 			if(payoffTable[c].symbol[i] != 0 &&
-				payline.GetLineSymbol(paylineIndex, i, reels[i]) !=
+				payline.GetLineSymbol(paylineIndex, i, game.reels[i]) !=
 				(int16_t)(payoffTable[c].symbol[i])) {
 
 				isValidCombination = false;
@@ -50,7 +50,7 @@ uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 	game->spinPayoff = 0;
 
 	for(int l = 0; l < NPAYLINES; l++) {
-		game->paylines[l].Payoff = calculatePayline(l, game->reels);
+		game->paylines[l].Payoff = calculatePayline(*game, l);
 		game->spinPayoff += game->paylines[l].Payoff;
 	}
 

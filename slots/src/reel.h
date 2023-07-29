@@ -45,27 +45,21 @@ class Reel
 
 		ReelState reelState;		// Machine state
 		byte currentSignal;			// Used for encoder debouncing
-		uint16_t counter;			// Position counter
-		uint16_t finalSteps = 0;	// Steps after sensor is triggered
-		uint8_t rotations = 0;		// Rotation counter
 		unsigned long lastChange; 	// In microseconds; Used with encoders
+		uint16_t nSteps;			// Steps counter
+		uint16_t finalSteps;		// Steps after sensor is triggered
+		uint8_t rotations;			// Rotation counter
 
-		// Must be initialized, don't ever change
+		// Must be initialized and won't ever change
+		// TODO: convert to constants
 
 		uint8_t encoderPin;			// Encoder motor pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
 		int *composition;			// Reel composition
-
-		// Non-scalar types
-
-		MotorDriver motor{0,0};		// Motor that corresponds to this reel
-		ezButton ezHomeSensor{0};	// Initialize to a default pin number (you can change this default if needed)
-		ezButton ezLockBtn{0};		// Initialize to a default pin number (you can change this default if needed)
-		PwmMicros lockLED;			// Lock LED PWM driver
-
-		// Private member functions
-
-		void lockAndUnlock();
+		MotorDriver motor{0, 0};	// Motor that spins this reel
+		ezButton ezHomeSensor{0};	// ezButton home sensor object
+		ezButton ezLockBtn{0};		// ezButton lock button object
+		PwmMicros lockLED;			// Lock LED PWM driver object
 
 	public:
 
@@ -87,9 +81,8 @@ class Reel
 			const uint8_t motorSpeedValue,
 			int *reelComposition
 		);
-
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void Reset(bool start);
+		// void Reset(bool start);
 		void ProcessWhenSpinning();
 		void ProcessWhenStopped(bool blinkStatus);
 		void Simulate();

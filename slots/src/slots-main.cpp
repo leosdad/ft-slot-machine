@@ -71,6 +71,8 @@ void SlotsMain::Loop()
 
 #pragma region ---------------------------------------- Private member functions
 
+// TODO: Move some code from here to the Game class
+
 void SlotsMain::loopWhenSpinning()
 {
 	game.ProcessWhenSpinning();

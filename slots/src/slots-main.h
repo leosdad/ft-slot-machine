@@ -11,13 +11,6 @@
 #include "oled-display.h"
 #include "payoffs.h"
 
-// ----------------------------------------------------------------------- Types
-
-enum class ReelCommands {
-	IDLE = 0,
-	INIT,
-};
-
 // ----------------------------------------------------------- Class declaration
 
 class SlotsMain

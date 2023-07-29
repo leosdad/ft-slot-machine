@@ -10,7 +10,7 @@
 
 // ------------------------------------------------------------ Global constants
 
-const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chr", "Mln", "Bel", "Org", "Lmn", "Grp"};
+const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chy", "Mln", "Bel", "Org", "Lmn", "Grp"};
 
 // ---------------------------------------------------- Private member functions
 
@@ -85,25 +85,27 @@ void OledShow::DisplayDebugInfo(Game game)
 	odd.PrintN(0, 10, game.totalSpins);
 	odd.PrintN(0, 14, game.totalWins);
 
+#if NPAYLINES == 1
 	uint8_t x = 1;
+	for(int i = 0; i < NREELS; i++, x += 3) {
+		odd.PrintS(2, x++, "X");
+		odd.PrintN(2, x, game.reels[i].extraTurns);
+	}
+#endif
 
 #if NPAYLINES < 3
-	// for(int i = 0; i < NREELS; i++, x+=3) {
-	// 	odd.PrintS(1, x++, "T");
-	// 	odd.PrintN(1, x, game.reels[i].extraTurns);
-	// }
 	odd.PrintS(1, 13, "    ");
 	odd.PrintN(1, 13, game.spinPayoff * game.currentBet);
 #endif
 
-	x = 4 - NPAYLINES;
+	uint8_t y = 4 - NPAYLINES;
 
 	for(int l = 0; l < NPAYLINES; l++) {
-		odd.PrintS(x + l, 1, symbolNames[payline.GetLineSymbol(l, 0, game.reels[0])]);
-		odd.PrintS(x + l, 5, symbolNames[payline.GetLineSymbol(l, 1, game.reels[1])]);
-		odd.PrintS(x + l, 9, symbolNames[payline.GetLineSymbol(l, 2, game.reels[2])]);
-		odd.PrintS(x + l, 13, "   ");
-		odd.PrintN(x + l, 13, game.paylines[l].Payoff);
+		odd.PrintS(y + l, 1, symbolNames[payline.GetLineSymbol(l, 0, game.reels[0])]);
+		odd.PrintS(y + l, 5, symbolNames[payline.GetLineSymbol(l, 1, game.reels[1])]);
+		odd.PrintS(y + l, 9, symbolNames[payline.GetLineSymbol(l, 2, game.reels[2])]);
+		odd.PrintS(y + l, 13, "   ");
+		odd.PrintN(y + l, 13, game.paylines[l].Payoff);
 	}
 }
 

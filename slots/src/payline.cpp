@@ -6,33 +6,36 @@
 
 #include "payline.h"
 
-#pragma region --------------------------------------------------------- Defines
+// ---------------------------------------------------------------------- Macros
 
-// Macros
+// Symbol positions
 
-#define CALCN1(l)	(l > 0 ? l - 1 : l + NREELSYMBOLS - 1)
-#define CALCN2(l)	(l)
-#define CALCN3(l)	(l < NREELSYMBOLS - 1 ? l + 1 : 0 )
+#define POS1(n)	(n > 0 ? n - 1 : n + NREELSYMBOLS - 1)
+#define POS2(n)	(n)
+#define POS3(n)	(n < NREELSYMBOLS - 1 ? n + 1 : 0 )
 
-#pragma endregion
+// Paylines
 
-// --------------------------------------------------------------- Class members
+#define LINE1(n)	(reelComposition[n][POS1(reel.symbolPos)])
+#define LINE2(n)	(reelComposition[n][POS2(reel.symbolPos)])
+#define LINE3(n)	(reelComposition[n][POS3(reel.symbolPos)])
 
-/**
- * Returns the current symbol number of the line and reel specified.
- */
+// ----------------------------------------------------- Public member functions
+
 uint8_t Payline::GetLineSymbol(uint8_t line, uint8_t nReel, Reel reel)
 {
-	const int *symbols = reelComposition[line];
-
-	switch(line) {
-		case 0:
-			return symbols[CALCN1(reel.symbolPos)];
-		case 1:
-			return symbols[CALCN2(reel.symbolPos)];
-		case 2:
-			return symbols[CALCN3(reel.symbolPos)];
-	}
+	#if NPAYLINES == 1
+		return LINE2(nReel);
+	#else
+		switch(line) {
+			case 0:
+				return LINE1(nReel);
+			case 1:
+				return LINE2(nReel);
+			case 2:
+				return LINE3(nReel);
+		}
+	#endif
 }
 
 // ------------------------------------------------------------------------- End

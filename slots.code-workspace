@@ -4,14 +4,14 @@
 			"path": "."
 		},
 		{
-			"path": "C:/Users/Rubem Pechansky/Documents/Arduino/libraries"
-		},
-		{
 			"path": "../doc"
 		},
-		{
-			"path": "C:/Users/Rubem Pechansky/AppData/Local/Temp/arduino/sketches/5FB473444206401453A47D6F82D1EE16/sketch/src"
-		}
+		// {
+		// 	"path": "C:/Users/Rubem Pechansky/Documents/Arduino/libraries"
+		// },
+		// {
+		// 	"path": "C:/Users/Rubem Pechansky/AppData/Local/Temp/arduino/sketches/5FB473444206401453A47D6F82D1EE16/sketch/src"
+		// }
 	],
 	"settings": {
 		"files.exclude": {

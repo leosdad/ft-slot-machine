@@ -17,13 +17,11 @@
 #define DEBUGINFO		true	// Show debug data on the OLED display
 #define INITIALBET		3
 #define MAXBET			9
+#define NPAYLINES       1		// 1 to 3
 #define STARTCOINS		200
-#define MAXCOINS		99999
 #define BLINKINTERVAL	350
 #define BTNDEBOUNCE		50
-#define NPAYLINES       2
-
-// --------------------------------------------------------------------- Defines
+// #define MAXCOINS		99999
 
 // Hardware-dependent, cannot be changed
 
@@ -58,8 +56,8 @@ static const uint8_t decreaseBetPin = 50;
 // Output pins
 
 static const uint8_t lockLEDPin[NREELS] = {34, 36, 38};
-static const uint8_t signalLED1[2] = {2, 3};	// 0V and 9V, respectively
-static const uint8_t signalLED2[2] = {6, 7};	// 0V and 9V, respectively
+static const uint8_t signalLED1[2] = {2, 3};	// 0 V, 9 V
+static const uint8_t signalLED2[2] = {6, 7};	// 0 V, 9 V
 static const uint8_t Servo = 44;
 
 // ------------------------------------------------------------- Other constants

@@ -29,19 +29,24 @@ void Reel::Setup(
 	ezLockBtn.setDebounceTime(BTNDEBOUNCE);
 }
 
-void Reel::Reset(bool start)
-{
-	lockable = true;
-	locked = false;
-	rotations = 0;
-	reelState = start ? ReelState::START : ReelState::IDLE;
-}
+// void Reel::Reset(bool start)
+// {
+// 	lockable = true;
+// 	locked = false;
+// 	rotations = 0;
+// 	reelState = start ? ReelState::START : ReelState::IDLE;
+// }
 
 /**
  * Does the necessary calculations, draws a symbol and starts the reel.
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
+	// currentSignal = 0;
+	// lastChange = 0;
+	// counter = 0;
+	// rotations = 0;
+
 	lockLED.SetValue(locked ? 255 : 0);
 
 	if(locked) {
@@ -82,7 +87,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * Does not move anything. Useful for quick testing for payoffs, etc.
+ * Used for testing without moving anything.
  */
 void Reel::Simulate()
 {
@@ -91,33 +96,30 @@ void Reel::Simulate()
 }
 
 /**
- * State machine for this reel while spinning.
+ * Loop called while spinning and state machine for this reel.
  */
 void Reel::ProcessWhenSpinning()
 {
-	// if(locked) {
-	// 	reelState = ReelState::IDLE;
-	// 	return;
-	// }
-
 	ezHomeSensor.loop();
 
-	// ezHomeSensor.loop();
+	// State machine for this reel
 
 	switch(reelState) {
 
 		case ReelState::START:
+
 			rotations = extraTurns;
 			motor.RotateCW(motorSpeed);
 			reelState = ReelState::SENSING;
 			break;
 
 		case ReelState::SENSING:
+
 			if(ezHomeSensor.isReleased()) {
 				if(rotations > 0) {
 					rotations--;
 				} else {
-					counter = finalSteps;
+					nSteps = finalSteps;
 					currentSignal = digitalRead(encoderPin);
 					reelState = ReelState::COUNTING;
 				}
@@ -125,12 +127,13 @@ void Reel::ProcessWhenSpinning()
 			break;
 
 		case ReelState::COUNTING:
+
 			if(((micros() - lastChange) > debouncePeriod) &&
 				(digitalRead(encoderPin) != currentSignal)) {
 				lastChange = micros();
 				currentSignal = !currentSignal;
 				if(currentSignal) {	// RISING flank
-					if(counter-- + homeOffset == 0) {
+					if(nSteps-- + homeOffset == 0) {
 						motor.Brake();
 						reelState = ReelState::IDLE;
 					}
@@ -140,26 +143,28 @@ void Reel::ProcessWhenSpinning()
 	}
 }
 
+// TODO: move to Locks class
+
 /**
- * Set reel lock and LED status.
+ * Loop called when stopped. Sets reel lock and LED status.
  */
 void Reel::ProcessWhenStopped(bool blinkStatus)
 {
-	ezLockBtn.loop();
-	lockLED.Loop();
+	// ezLockBtn.loop();
+	// lockLED.Loop();
 
-	if(lockable) {
-		if(ezLockBtn.isPressed()) {
-			locked = !locked;
-		}
-		if(locked) {
-			lockLED.SetValue(255);
-		} else {
-			lockLED.SetValue(blinkStatus ? 10 : 0);
-		}
-	} else {
-		lockLED.SetValue(0);
-	}
+	// if(lockable) {
+	// 	if(ezLockBtn.isPressed()) {
+	// 		locked = !locked;
+	// 	}
+	// 	if(locked) {
+	// 		lockLED.SetValue(255);
+	// 	} else {
+	// 		lockLED.SetValue(blinkStatus ? 10 : 0);
+	// 	}
+	// } else {
+	// 	lockLED.SetValue(0);
+	// }
 }
 
 /**

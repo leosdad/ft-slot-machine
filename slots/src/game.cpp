@@ -6,84 +6,16 @@
 
 #include "game.h"
 
-// --------------------------------------------------------------- Class members
+// ---------------------------------------------------- Private member functions
 
-void Game::Setup(Reel myReels[NREELS])
-{
-	for(int i = 0; i < NREELS; i++) {
-		reels[i] = myReels[i];
-	}
-	// reels = myReels;
-
-	for(int l = 0; l < NPAYLINES; l++) {
-		paylines[l].Payoff = 0;
-	}
-}
-
-/**
- * Sets the bet to the amount given.
- */
-uint8_t Game::SetBet(uint8_t bet)
-{
-	currentBet = constrain(bet, 0, MAXBET);
-	return currentBet;
-}
-
-/**
- * Increments the bet by the amount given.
- */
-uint8_t Game::ChangeBet(int8_t bet)
-{
-	currentBet = constrain(currentBet + bet, 0, MAXBET);
-	return currentBet;
-}
-
-void Game::ProcessWhenSpinning()
-{
-	for(int i = 0; i < NREELS; i++) {
-		reels[i].ProcessWhenSpinning();
-	}
-}
-
-void Game::ProcessWhenStopped(int blinkLedState)
-{
-	for(int i = 0; i < NREELS; i++) {
-		CalcLock();
-		reels[i].ProcessWhenStopped(blinkLedState);
-	}
-}
-
-void Game::StartReels(bool home)
-{
-	for(int i = 0; i < NREELS; i++) {
-		reels[i].Start(home, 0);
-	}
-}
-
-void Game::ResetReels(bool start)
-{
-	for(int i = 0; i < NREELS; i++) {
-		reels[i].Reset(start);
-	}
-}
-
-/*
-Besides, reel locking will not be possible in the following situations:
-
-In the first turn of each game session 
-After a turn where you have locked one or two reels 
-After a turn where you have won in one or more paylines 
-After a turn where you have lost all your money 
-After a turn where you have configured a winning combination, even if you have not bet on it. For example, if you have bet 1 coin for the last turn and obtained two watermelons in line 2 (upper payline), you will not be able to lock any reel. 
-
-*/
+// TODO: perhaps create a Locks class
 
 /**
  * Lock / unlock logic.
  */
-void Game::CalcLock()
+void Game::calcLock()
 {
-	// TODO: this logic does not need to be inside the loop; only
+	// TODO: this logic does not need to be called from the loop; only
 	// after a lock button or the bet incr/decr are pressed
 
 	uint8_t currentLocked = 0;
@@ -119,31 +51,89 @@ void Game::CalcLock()
 	}
 }
 
+// ----------------------------------------------------- Public member functions
+
+/**
+ * Initializes the game. Must be called from the main Setup() function.
+ */
+void Game::Setup(Reel _reels[NREELS])
+{
+	for(int i = 0; i < NREELS; i++) {
+		reels[i] = _reels[i];
+	}
+
+	for(int l = 0; l < NPAYLINES; l++) {
+		paylines[l].Payoff = 0;
+	}
+}
+
+/**
+ * Sets the current bet to the amount given.
+ */
+uint8_t Game::SetBet(uint8_t bet)
+{
+	currentBet = constrain(bet, 0, MAXBET);
+	return currentBet;
+}
+
+/**
+ * Increments the bet by the amount given.
+ */
+uint8_t Game::ChangeBet(int8_t bet)
+{
+	currentBet = constrain(currentBet + bet, 0, MAXBET);
+	return currentBet;
+}
+
+void Game::StartReels(bool home)
+{
+	uint8_t xTurns = 0;
+
+	for(int i = 0; i < NREELS; i++) {
+		xTurns = reels[i].Start(home, xTurns);
+	}
+}
+
+void Game::ProcessWhenSpinning()
+{
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].ProcessWhenSpinning();
+	}
+}
+
+void Game::ProcessWhenStopped(int blinkLedState)
+{
+	for(int i = 0; i < NREELS; i++) {
+		// calcLock();
+		reels[i].ProcessWhenStopped(blinkLedState);
+	}
+}
+
 /**
  * Lock / unlock logic after a spin is completed.
  */
 void Game::LockUnlock()
 {
-	bool allowNext = true;
+	// bool allowNext = true;
 
-	for(int i = 0; i < NREELS; i++) {
-		if(reels[i].locked) {
-			allowNext = false;
-			break;
-		}
-	}
+	// for(int i = 0; i < NREELS; i++) {
+	// 	if(reels[i].locked) {
+	// 		allowNext = false;
+	// 		break;
+	// 	}
+	// }
 
-	if(allowNext) {
-		for(int i = 0; i < NREELS; i++) {
-			reels[i].lockable = true;
-			reels[i].locked = false;
-		}
-	} else {
-		for(int i = 0; i < NREELS; i++) {
-			reels[i].lockable = false;
-			reels[i].locked = false;
-		}
-	}
+	// if(allowNext) {
+	// 	for(int i = 0; i < NREELS; i++) {
+	// 		reels[i].lockable = true;
+	// 		reels[i].locked = false;
+	// 	}
+	// } else {
+	// 	for(int i = 0; i < NREELS; i++) {
+	// 		reels[i].lockable = false;
+	// 		reels[i].locked = false;
+	// 	}
+	// }
 }
 
 /**
@@ -159,6 +149,16 @@ bool Game::IsIdle()
 	return true;
 }
 
+// void Game::ResetReels(bool start)
+// {
+// 	for(int i = 0; i < NREELS; i++) {
+// 		reels[i].Reset(start);
+// 	}
+// }
+
+/**
+ * Set up the hardware pins and some variables.
+ */
 void Game::InitReels(
 	const uint8_t motorPins[NREELS][2],
 	const uint8_t encoderPin[NREELS],

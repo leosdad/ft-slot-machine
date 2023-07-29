@@ -10,8 +10,6 @@
 #include "../slots.h"
 #include "oled-display-driver.h"
 #include "game.h"
-#include "reel.h"
-#include "payline.h"
 
 // ----------------------------------------------------------- Class declaration
 

@@ -9,13 +9,12 @@
 
 #include "../slots.h"
 #include "game.h"
-#include "reel.h"
 
 // --------------------------------------------------------------------- Defines
 
 #define NCOMBINATIONS	22
 
-// -------------------------------------------------------------000------ Struct
+// ---------------------------------------------------------------------- Struct
 
 /**
  * Each line is: reel 0, reel 1, reel 2, payoff. 0 on a reel means "any".
@@ -62,7 +61,7 @@ class Payoffs
 	private:
 		static Payline payline;
 
-		static uint16_t calculatePayline(int paylineIndex, Reel *reels);
+		static uint16_t calculatePayline(Game game, int paylineIndex);
 
 	public:
 		static uint16_t CalculateTotalPayoff(Game *game);

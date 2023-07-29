@@ -135,10 +135,10 @@ void SlotsMain::ioSetup()
 	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
 
-	pinMode(signalLED1[0], OUTPUT);
-	pinMode(signalLED1[1], OUTPUT);
-	pinMode(signalLED2[0], OUTPUT);
-	pinMode(signalLED2[1], OUTPUT);
+	// pinMode(signalLED1[0], OUTPUT);
+	// pinMode(signalLED1[1], OUTPUT);
+	// pinMode(signalLED2[0], OUTPUT);
+	// pinMode(signalLED2[1], OUTPUT);
 }
 
 #pragma endregion

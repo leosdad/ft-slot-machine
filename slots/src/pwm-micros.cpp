@@ -44,6 +44,7 @@ void PwmMicros::SetValue(uint8_t value)
 	pwmOffTime = pwmCycleDuration - pwmOnTime;
 }
 
+// Boolean set to maximum brightness or fully off.
 void PwmMicros::Set(bool on)
 {
 	SetValue(on ? 255 : 0);

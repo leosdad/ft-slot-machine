@@ -6,8 +6,10 @@
 
 #include "game.h"
 #include "locks.h"
+#include "cheering.h"
 
 Locks locks;
+Cheering cheering;
 
 // ----------------------------------------------------- Public member functions
 
@@ -35,6 +37,8 @@ void Game::LoopWhenSpinning()
 void Game::LoopWhenStopped()
 {
 	locks.Loop(this);
+	cheering.Loop(this);
+
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].LoopWhenStopped(locks.blinkLedState);
 	}
@@ -60,6 +64,7 @@ uint8_t Game::ChangeBet(int8_t bet)
 
 void Game::StartReels(bool home)
 {
+	cheering.Stop();
 	locks.AllowNext(home || nCoins == 0 ? Locks::NextState::FORBIDDEN :
 		Locks::NextState::AUTO);
 

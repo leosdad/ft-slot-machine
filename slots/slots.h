@@ -30,11 +30,14 @@
 #define PAYMULTIPLIER	1
 #define INITIALBET		3
 #define NCOMBINATIONS	22		// Number of payoff combinations
+#define CHEERALOT		22		// Minimum payoff for extra cheering
 
 // Time constants
 
-#define BLINKINTERVAL	350
-#define SIMULATE_DELAY	50
+#define LOCKBLINKMS		350
+#define CHEERNORMALMS	550
+#define CHEERALOTMS		120
+#define SIMULATEDELAY	50
 #define EZBTNDEBOUNCE	50
 
 // Hardware-dependent constants, cannot be changed

@@ -12,7 +12,6 @@ Locks::Locks()
 {
 	blinkPreviousMs = 0;
 	blinkLedState = LOW;
-	// allowLocking = false;
 	allowNext = false;
 }
 
@@ -24,7 +23,7 @@ void Locks::Loop(Game *game)
 	// Timer for blinking reel lock LEDs
 	unsigned long currMs = millis();
 
-	if(currMs - blinkPreviousMs >= BLINKINTERVAL) {
+	if(currMs - blinkPreviousMs >= LOCKBLINKMS) {
 		blinkPreviousMs = currMs;
 		blinkLedState = !blinkLedState;
 	}

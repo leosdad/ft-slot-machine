@@ -71,7 +71,7 @@ void Reel::LoopWhenSpinning()
 	ezHomeSensor.loop();
 
 	if(simulate) {
-		delay(SIMULATE_DELAY);
+		delay(SIMULATEDELAY);
 		reelState = ReelState::IDLE;
 		return;
 	}

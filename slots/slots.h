@@ -27,10 +27,11 @@
 #define MAXCOINS		9999	// Up to 16384
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
+#define BALLVALUE		101		// How much is needed to get a ball
+#define MAXBALLS		6		// Up to 7
 #define PAYMULTIPLIER	1
 #define INITIALBET		3
 #define NCOMBINATIONS	22		// Number of payoff combinations
-#define CHEERALOT		22		// Minimum payoff for extra cheering
 
 // Time constants
 
@@ -78,18 +79,6 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 
 // ---------------------------------------------------------------- Arduino pins
 
-// Motor pins
-
-static const uint8_t motor1Out[2] = {46, 12};
-static const uint8_t motor2Out[2] = {11, 10};
-static const uint8_t motor3Out[2] = {9, 8};
-
-static const uint8_t motorOut[NREELS][2] = {
-	{46, 12},
-	{11, 10},
-	{9, 8}
-};
-
 // Input pins
 
 static const uint8_t homeSensorPin[NREELS] = {29, 31, 33};
@@ -102,10 +91,11 @@ static const uint8_t decreaseBetPin = 50;
 
 // Output pins
 
+static const uint8_t motorOut[NREELS][2] = { {46, 12}, {11, 10}, {9, 8} };
 static const uint8_t lockLEDPin[NREELS] = {34, 36, 38};
 static const uint8_t signalLED1[2] = {2, 3};	// 0 V, 9 V
 static const uint8_t signalLED2[2] = {6, 7};	// 0 V, 9 V
-static const uint8_t Servo = 44;
+static const uint8_t servoPin = 44;
 
 // ------------------------------------------------------------------------- End
 

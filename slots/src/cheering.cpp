@@ -13,6 +13,8 @@ Cheering::Cheering()
 {
 	blinkPreviousMs = 0;
 	blinkLedState = LOW;
+	digitalWrite(signalLED1[0], LOW);
+	digitalWrite(signalLED2[0], LOW);
 	analogWrite(signalLED1[0], 0);
 	analogWrite(signalLED2[0], 0);
 }
@@ -23,15 +25,14 @@ Cheering::Cheering()
 void Cheering::Loop(Game *game)
 {
 	if(game->spinPayoff) {
-		bool cheerALot = game->spinPayoff / payoffMultiplier > CHEERALOT;
 		unsigned long currMs = millis();
 
-		if(currMs - blinkPreviousMs >= (cheerALot ? CHEERALOTMS : CHEERNORMALMS)) {
+		if(currMs - blinkPreviousMs >= (game->newBall ? CHEERALOTMS : CHEERNORMALMS)) {
 			blinkPreviousMs = currMs;
 			blinkLedState = !blinkLedState;
 		}
 	
-		int value = cheerALot ? 255 : 10;
+		int value = game->newBall ? 255 : 10;
 		analogWrite(signalLED1[1], blinkLedState ? value : 0);
 		analogWrite(signalLED2[1], blinkLedState ? 0 : value);
 	}

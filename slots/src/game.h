@@ -26,6 +26,8 @@ class Game
 		uint16_t totalSpins = 0;		// Total spins since the beginning
 		uint16_t totalWins = 0;			// Total wins since the beginning
 		uint16_t spinPayoff = 0;		// Payoff amount for last spin
+		uint8_t nBalls = 0;				// Number of balls won
+		bool newBall = false;			// Activated when a new ball is won
 		Reel reels[NREELS];				// Game reels
 		Payline paylines[NPAYLINES];	// Game paylines
 

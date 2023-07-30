@@ -6,9 +6,11 @@
 
 #include "game.h"
 #include "locks.h"
+#include "ball-feeder.h"
 #include "cheering.h"
 
 Locks locks;
+BallFeeder ballFeeder;
 Cheering cheering;
 
 // ----------------------------------------------------- Public member functions
@@ -38,6 +40,7 @@ void Game::LoopWhenStopped()
 {
 	locks.Loop(this);
 	cheering.Loop(this);
+	ballFeeder.Loop();
 
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].LoopWhenStopped(locks.blinkLedState);
@@ -64,14 +67,15 @@ uint8_t Game::ChangeBet(int8_t bet)
 
 void Game::StartReels(bool home)
 {
+	newBall = false;
 	cheering.Stop();
 	locks.AllowNext(home || nCoins == 0 ? Locks::NextState::FORBIDDEN :
 		Locks::NextState::AUTO);
 
-	uint8_t additionalTurns = 0;
+	uint8_t xtraTurns = 0;
 
 	for(int i = 0; i < NREELS; i++) {
-		additionalTurns = reels[i].Start(home, additionalTurns);
+		xtraTurns = reels[i].Start(home, xtraTurns);
 	}
 }
 
@@ -84,6 +88,20 @@ void Game::StopSpin()
 	locks.LockUnlock(this);
 	if(playing) {
 		nCoins = constrain(nCoins + spinPayoff * currentBet, 0, MAXCOINS);
+
+		if(nCoins - nBalls * BALLVALUE > BALLVALUE) {
+
+			nBalls++;
+			newBall = true;
+
+			// Feed a new ball
+
+			ballFeeder.Attach(servoPin);
+			ballFeeder.Feed();
+			delay(200);	// TODO
+			ballFeeder.Return();
+			ballFeeder.Detach();
+		}
 	}
 	if(spinPayoff) {
 		locks.AllowNext(Locks::NextState::FORBIDDEN);

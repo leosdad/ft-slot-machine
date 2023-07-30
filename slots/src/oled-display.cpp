@@ -84,11 +84,14 @@ void OledDisplay::DisplayDebugInfo(Game game)
 	odd.PrintN(0, 14, game.totalWins);
 
 #if NPAYLINES == 1
-	uint8_t x = 1;
-	for(int i = 0; i < NREELS; i++, x += 3) {
-		odd.PrintS(2, x++, "X");
-		odd.PrintN(2, x, game.reels[i].extraTurns);
-	}
+	// uint8_t x = 1;
+	// for(int i = 0; i < NREELS; i++, x += 3) {
+	// 	odd.PrintS(2, x++, "X");
+	// 	odd.PrintN(2, x, game.reels[i].extraTurns);
+	// }
+	// odd.PrintS(2, 0, "            ");
+	odd.PrintN(2, 0, game.nBalls);
+	odd.PrintN(2, 5, game.newBall);
 #endif
 
 #if NPAYLINES < 3

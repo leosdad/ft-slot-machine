@@ -11,8 +11,8 @@ void MotorDriver::initMotor(const uint8_t motorPorts[2])
 {
 	motorOutA = motorPorts[0];
 	motorOutB = motorPorts[1];
-	pinMode(motorOutA, OUTPUT);
-	pinMode(motorOutB, OUTPUT);
+	pinMode(motorOutA, OUTPUT);		// Possibly not necessary for analogWrite()
+	pinMode(motorOutB, OUTPUT);		// Possibly not necessary for analogWrite()
 }
 
 void MotorDriver::initEncoder(const uint8_t _encoder)

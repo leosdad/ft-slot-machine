@@ -3,8 +3,11 @@
 #define OUTPUT_TESTS_H
 
 void outputTestsSetup();
+
 void lockLEDTests();
-void redLEDTests();
+void signalLEDTests();
+void lockLEDTestsAnalog();
+void signalLEDTestsAnalog();
 void motorTests();
 void powerOutputsTests();
 

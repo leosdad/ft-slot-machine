@@ -1,6 +1,7 @@
 
 void inputTestsSetup();
+
 void pushButtonTests();
 void encoderTests();
-void sensorTests();
-void toggleTests();
+void homeSensorTests();
+void lockButtonTests();

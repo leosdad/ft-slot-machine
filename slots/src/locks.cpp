@@ -8,6 +8,8 @@
 
 // ----------------------------------------------------- Public member functions
 
+// TODO: Use analogWrite()
+
 Locks::Locks()
 {
 	blinkPreviousMs = 0;

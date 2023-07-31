@@ -81,9 +81,9 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 
 // Input pins
 
-static const uint8_t homeSensorPin[NREELS] = {29, 31, 33};
+static const uint8_t homeSensorPin[NREELS] = {48, 42, 43};
 static const uint8_t lockButtonPin[NREELS] = {35, 37, 39};
-static const uint8_t encoderPin[NREELS] = {28, 30, 32};
+static const uint8_t encoderPin[NREELS] = {33, 31, 29};
 
 static const uint8_t leverButtonPin = 53;
 static const uint8_t increaseBetPin = 52;
@@ -91,10 +91,10 @@ static const uint8_t decreaseBetPin = 50;
 
 // Output pins
 
-static const uint8_t motorOut[NREELS][2] = { {46, 12}, {11, 10}, {9, 8} };
-static const uint8_t lockLEDPin[NREELS] = {34, 36, 38};
-static const uint8_t signalLED1[2] = {2, 3};	// 0 V, 9 V
-static const uint8_t signalLED2[2] = {6, 7};	// 0 V, 9 V
+static const uint8_t motorOut[NREELS][2] = { {12, 11}, {10, 9}, {8, 7} };
+static const uint8_t lockLEDPin[NREELS] = {2, 3, 5};
+static const uint8_t signalLED1 = 4;
+static const uint8_t signalLED2 = 13;
 static const uint8_t servoPin = 44;
 
 // ------------------------------------------------------------------------- End

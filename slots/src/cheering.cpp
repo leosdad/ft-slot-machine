@@ -13,10 +13,8 @@ Cheering::Cheering()
 {
 	blinkPreviousMs = 0;
 	blinkLedState = LOW;
-	digitalWrite(signalLED1[0], LOW);
-	digitalWrite(signalLED2[0], LOW);
-	analogWrite(signalLED1[0], 0);
-	analogWrite(signalLED2[0], 0);
+	analogWrite(signalLED1, 0);
+	analogWrite(signalLED2, 0);
 }
 
 /**
@@ -33,15 +31,15 @@ void Cheering::Loop(Game *game)
 		}
 	
 		int value = game->newBall ? 255 : 10;
-		analogWrite(signalLED1[1], blinkLedState ? value : 0);
-		analogWrite(signalLED2[1], blinkLedState ? 0 : value);
+		analogWrite(signalLED1, blinkLedState ? value : 0);
+		analogWrite(signalLED2, blinkLedState ? 0 : value);
 	}
 }
 
 void Cheering::Stop()
 {
-	analogWrite(signalLED1[1], 0);
-	analogWrite(signalLED2[1], 0);
+	analogWrite(signalLED1, 0);
+	analogWrite(signalLED2, 0);
 }
 
 // ------------------------------------------------------------------------- End

@@ -41,11 +41,19 @@ class Reel
 		// Must be initialized and won't ever change
 
 		uint8_t encoderPin;			// Encoder motor pin
+		uint8_t lockLEDPin;			// Lock LED pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
 		MotorDriver motor{0, 0};	// Motor that spins this reel
 		ezButton ezHomeSensor{0};	// ezButton home sensor object
-		ezButton ezLockButton{0};		// ezButton lock button object
+		ezButton ezLockButton{0};	// ezButton lock button object
+
 		PwmMicros lockLED;			// Lock LED PWM driver object
+		unsigned long previousMillis;        // will store last time LED was updated
+		// const long interval;               // fade interval (milliseconds)
+		int brightness;                      // how bright the LED is
+		int fadeAmount;                      // how many points to fade the LED by
+		int offset;
+		bool pm;
 
 	public:
 
@@ -67,6 +75,7 @@ class Reel
 			const uint8_t motorSpeedValue
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
+		void InitFadeTimer(int o);
 		void LoopWhenSpinning();
 		void LoopWhenStopped(bool blinkStatus);
 		bool IsIdle();

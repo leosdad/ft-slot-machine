@@ -20,6 +20,8 @@ Cheering cheering;
  */
 void Game::Setup(Reel _reels[NREELS])
 {
+	ballFeeder.Attach(servoPin);
+
 	for(int i = 0; i < NREELS; i++) {
 		reels[i] = _reels[i];
 	}
@@ -86,6 +88,7 @@ void Game::StopSpin()
 {
 	spinning = false;
 	locks.LockUnlock(this);
+
 	if(playing) {
 		nCoins = constrain(nCoins + spinPayoff * currentBet, 0, MAXCOINS);
 
@@ -95,17 +98,20 @@ void Game::StopSpin()
 			newBall = true;
 
 			// Feed a new ball
-
-			ballFeeder.Attach(servoPin);
-			ballFeeder.Feed();
-			delay(200);	// TODO
-			ballFeeder.Return();
-			ballFeeder.Detach();
+			
+			// ballFeeder.Feed();
+			// delay(1000);	// TODO
+			// ballFeeder.Return();
+			// delay(1000);
 		}
 	}
 	if(spinPayoff) {
 		locks.AllowNext(Locks::NextState::FORBIDDEN);
 	}
+
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].InitFadeTimer(i);
+	}	
 }
 
 /**
@@ -126,19 +132,19 @@ bool Game::IsIdle()
  */
 void Game::InitReels(
 	const uint8_t motorPins[NREELS][2],
-	const uint8_t encoderPin[NREELS],
-	const uint8_t homeSensorPin[NREELS],
-	const uint8_t lockButtonPin[NREELS],
-	const uint8_t lockLEDPin[NREELS],
+	const uint8_t encoderPins[NREELS],
+	const uint8_t homeSensorPins[NREELS],
+	const uint8_t lockButtonPins[NREELS],
+	const uint8_t lockLEDPins[NREELS],
 	const uint8_t motorSpeed[NREELS]
 ) {
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].Setup(
 			motorPins[i],
-			encoderPin[i],
-			homeSensorPin[i],
-			lockButtonPin[i],
-			lockLEDPin[i],
+			encoderPins[i],
+			homeSensorPins[i],
+			lockButtonPins[i],
+			lockLEDPins[i],
 			motorSpeed[i]
 		);
 	}

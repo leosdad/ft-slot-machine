@@ -9,21 +9,22 @@
 // --------------------------------------------------------------- Class members
 
 void Reel::Setup(
-	const uint8_t motorPins[2],
+	const uint8_t motorOutPinNumbers[2],
 	const uint8_t encoderPinNumber,
-	const uint8_t homeSensorPin,
-	const uint8_t lockButtonPin,
+	const uint8_t homeSensorPinNumber,
+	const uint8_t lockButtonPinNumber,
 	const uint8_t lockLEDPinNumber,
 	const uint8_t motorSpeedValue
 )
 {
 	encoderPin = encoderPinNumber;
 	motorSpeed = motorSpeedValue;
-
+	lockLEDPin = lockLEDPinNumber;
 	lockLED.Setup(lockLEDPinNumber);
-	motor = MotorDriver(motorPins, encoderPin);
-	ezHomeSensor = ezButton(homeSensorPin);
-	ezLockButton = ezButton(lockButtonPin);
+
+	motor = MotorDriver(motorOutPinNumbers, encoderPin);
+	ezHomeSensor = ezButton(homeSensorPinNumber);
+	ezLockButton = ezButton(lockButtonPinNumber);
 	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
 }
 
@@ -33,6 +34,8 @@ void Reel::Setup(
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
 	lockLED.Set(locked);
+
+	// If reel is locked, Does nothing
 
 	if(locked) {
 		return;
@@ -117,6 +120,15 @@ void Reel::LoopWhenSpinning()
 	}
 }
 
+void Reel::InitFadeTimer(int o)
+{
+	offset = o;
+	// previousMillis = 0;
+	// brightness = 0;    
+	// fadeAmount = 5;
+	pm = false;
+}
+
 /**
  * Loop called when stopped. Sets reel lock and LED status.
  */
@@ -124,6 +136,7 @@ void Reel::LoopWhenStopped(bool blinkStatus)
 {
 	ezLockButton.loop();
 	lockLED.Loop();
+	// unsigned long currentMillis = millis();
 
 	if(lockable) {
 		if(ezLockButton.isPressed()) {
@@ -133,6 +146,18 @@ void Reel::LoopWhenStopped(bool blinkStatus)
 			lockLED.TurnOn();
 		} else {
 			lockLED.SetValue(blinkStatus ? 10 : 0);
+			// if(blinkStatus != pm) {
+			// 	analogWrite(lockLEDPin, blinkStatus ? 10 : 0);
+			// 	pm = offset ? blinkStatus : !blinkStatus;
+			// }
+			// if(currentMillis = (100 * offset) - previousMillis >= 10) {
+			// 	previousMillis = currentMillis;
+			// 	analogWrite(lockLEDPin, brightness);
+			// 	brightness = brightness + fadeAmount;
+			// 	if(brightness <= 0 || brightness >= 55) {
+			// 		fadeAmount = -fadeAmount;
+			// 	}
+			// }
 		}
 	} else {
 		lockLED.TurnOff();

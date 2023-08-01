@@ -39,8 +39,8 @@ void SlotsMain::Setup()
 
 	ioSetup();
 	game.Setup(reels);
-	game.InitReels(motorOut, encoderPin, homeSensorPin,
-		lockButtonPin, lockLEDPin, motorSpeed);
+	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
+		lockButtonPins, lockLEDPins, motorSpeed);
 	od.Setup(DEBUGINFO);
 	sevenSegDisplay.Setup();
 

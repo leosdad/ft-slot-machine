@@ -4,8 +4,9 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "ball-feeder.h"
 #include <Arduino.h>
+
+#include "ball-feeder.h"
 
 // ----------------------------------------------------- Public member functions
 
@@ -15,6 +16,7 @@
 void BallFeeder::Attach(uint8_t pin)
 {
 	servo1.attach(pin);
+	servo1.write(0);
 }
 
 void BallFeeder::Detach()

@@ -120,23 +120,14 @@ void Reel::LoopWhenSpinning()
 	}
 }
 
-void Reel::InitFadeTimer(int o)
-{
-	offset = o;
-	// previousMillis = 0;
-	// brightness = 0;    
-	// fadeAmount = 5;
-	pm = false;
-}
-
 /**
  * Loop called when stopped. Sets reel lock and LED status.
  */
-void Reel::LoopWhenStopped(bool blinkStatus)
+void Reel::LoopWhenStopped(bool changeBrightness, int brightness)
 {
 	ezLockButton.loop();
 	lockLED.Loop();
-	// unsigned long currentMillis = millis();
+	unsigned long currentMillis = millis();
 
 	if(lockable) {
 		if(ezLockButton.isPressed()) {
@@ -145,19 +136,9 @@ void Reel::LoopWhenStopped(bool blinkStatus)
 		if(locked) {
 			lockLED.TurnOn();
 		} else {
-			lockLED.SetValue(blinkStatus ? 10 : 0);
-			// if(blinkStatus != pm) {
-			// 	analogWrite(lockLEDPin, blinkStatus ? 10 : 0);
-			// 	pm = offset ? blinkStatus : !blinkStatus;
-			// }
-			// if(currentMillis = (100 * offset) - previousMillis >= 10) {
-			// 	previousMillis = currentMillis;
-			// 	analogWrite(lockLEDPin, brightness);
-			// 	brightness = brightness + fadeAmount;
-			// 	if(brightness <= 0 || brightness >= 55) {
-			// 		fadeAmount = -fadeAmount;
-			// 	}
-			// }
+			if(changeBrightness) {
+				lockLED.SetValue(brightness);
+			}
 		}
 	} else {
 		lockLED.TurnOff();

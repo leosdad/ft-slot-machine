@@ -16,8 +16,10 @@ class Locks
 {
 	private:
 
-		unsigned long blinkPreviousMs;
+		unsigned long previousMs;
 		bool allowNext;
+		int16_t prevBrightness;
+		int16_t fadeAmount;
 
 	public:
 
@@ -29,7 +31,8 @@ class Locks
 			FORBIDDEN
 		};
 
-		int blinkLedState;
+		int16_t brightness;
+		bool changeBrightness;
 
 		Locks();
 

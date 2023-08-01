@@ -12,8 +12,10 @@
 
 Locks::Locks()
 {
-	blinkPreviousMs = 0;
-	blinkLedState = LOW;
+	previousMs = 0;
+	prevBrightness = LOCKFADEMINB - 1;
+	brightness = LOCKFADEMINB;
+	fadeAmount = LOCKFADESTEP;
 	allowNext = false;
 }
 
@@ -22,12 +24,20 @@ Locks::Locks()
  */
 void Locks::Loop(Game *game)
 {
-	// Timer for blinking reel lock LEDs
+	// Triangle wave to control LED brightness
+
 	unsigned long currMs = millis();
 
-	if(currMs - blinkPreviousMs >= LOCKBLINKMS) {
-		blinkPreviousMs = currMs;
-		blinkLedState = !blinkLedState;
+	if(currMs - previousMs >= LOCKFADEMS) {
+		previousMs = currMs;
+		changeBrightness = brightness != prevBrightness;
+		if(brightness != prevBrightness) {
+			prevBrightness = brightness;
+		}
+		brightness = brightness + fadeAmount;
+		if(brightness <= LOCKFADEMINB || brightness >= LOCKFADEMAXB) {
+			fadeAmount = -fadeAmount;
+		}	
 	}
 
 	// TODO: does not need to be called all the time

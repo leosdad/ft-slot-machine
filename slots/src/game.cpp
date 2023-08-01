@@ -45,7 +45,7 @@ void Game::LoopWhenStopped()
 	ballFeeder.Loop();
 
 	for(int i = 0; i < NREELS; i++) {
-		reels[i].LoopWhenStopped(locks.blinkLedState);
+		reels[i].LoopWhenStopped(locks.changeBrightness, locks.brightness);
 	}
 }
 
@@ -108,10 +108,6 @@ void Game::StopSpin()
 	if(spinPayoff) {
 		locks.AllowNext(Locks::NextState::FORBIDDEN);
 	}
-
-	for(int i = 0; i < NREELS; i++) {
-		reels[i].InitFadeTimer(i);
-	}	
 }
 
 /**

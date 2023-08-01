@@ -35,7 +35,10 @@
 
 // Time constants
 
-#define LOCKBLINKMS		350
+#define LOCKFADEMS		30
+#define LOCKFADEMINB	0		// Minimum brightness for lock LED fade
+#define LOCKFADEMAXB	35		// Maximum brightness for lock LED fade
+#define LOCKFADESTEP	1		// Lock LED fade step size
 #define CHEERNORMALMS	550
 #define CHEERALOTMS		120
 #define SIMULATEDELAY	50

@@ -45,7 +45,7 @@ void Game::LoopWhenStopped()
 	ballFeeder.Loop();
 
 	for(int i = 0; i < NREELS; i++) {
-		reels[i].LoopWhenStopped(locks.changeBrightness, locks.brightness);
+		reels[i].LoopWhenStopped(locks.blinkLedState);
 	}
 }
 

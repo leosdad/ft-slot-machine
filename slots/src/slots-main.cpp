@@ -131,6 +131,9 @@ void SlotsMain::inputLoop()
  */
 void SlotsMain::ioSetup()
 {
+	digitalWrite(signalLED1Gnd, LOW);
+	digitalWrite(signalLED2Gnd, LOW);
+
 	startLever.setDebounceTime(EZBTNDEBOUNCE);
 	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);

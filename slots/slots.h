@@ -35,10 +35,8 @@
 
 // Time constants
 
-#define LOCKFADEMS		30
-#define LOCKFADEMINB	0		// Minimum brightness for lock LED fade
-#define LOCKFADEMAXB	35		// Maximum brightness for lock LED fade
-#define LOCKFADESTEP	1		// Lock LED fade step size
+#define LOCKBLINKON		50
+#define LOCKBLINKOFF	300
 #define CHEERNORMALMS	550
 #define CHEERALOTMS		120
 #define SIMULATEDELAY	50
@@ -84,7 +82,7 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 
 // Input pins
 
-static const uint8_t homeSensorPins[NREELS] = {48, 42, 43};
+static const uint8_t homeSensorPins[NREELS] = {41, 42, 43};
 static const uint8_t lockButtonPins[NREELS] = {35, 37, 39};
 static const uint8_t encoderPins[NREELS] = {33, 31, 29};
 static const uint8_t leverButtonPin = 53;
@@ -95,8 +93,10 @@ static const uint8_t decreaseBetPin = 50;
 
 static const uint8_t motorOutPins[NREELS][2] = { {12, 11}, {10, 9}, {8, 7} };
 static const uint8_t lockLEDPins[NREELS] = {34, 36, 38};
-static const uint8_t signalLED1Pin = 4;		// Left LED
-static const uint8_t signalLED2Pin = 13;	// Right LED
+static const uint8_t signalLED1Pin = 6;		// Left LED
+static const uint8_t signalLED1Gnd = 5;		// Left LED
+static const uint8_t signalLED2Pin = 3;		// Right LED
+static const uint8_t signalLED2Gnd = 2;		// Right LED
 static const uint8_t servoPin = 44;
 
 // ------------------------------------------------------------------------- End

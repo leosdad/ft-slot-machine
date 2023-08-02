@@ -12,7 +12,6 @@
 
 #include "../slots.h"
 #include "motor-driver.h"
-#include "pwm-micros.h"
 
 // ----------------------------------------------------------- Class declaration
 
@@ -46,7 +45,6 @@ class Reel
 		MotorDriver motor{0, 0};	// Motor that spins this reel
 		ezButton ezHomeSensor{0};	// ezButton home sensor object
 		ezButton ezLockButton{0};	// ezButton lock button object
-		PwmMicros lockLED;			// Lock LED PWM driver object
 
 	public:
 
@@ -69,7 +67,7 @@ class Reel
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		void LoopWhenSpinning();
-		void LoopWhenStopped(bool changeBrightness, int brightness);
+		void LoopWhenStopped(bool blinkStatus);
 		bool IsIdle();
 };
 

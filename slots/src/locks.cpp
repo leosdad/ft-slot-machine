@@ -5,6 +5,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "locks.h"
+#include "../slots.h"
 
 // ----------------------------------------------------- Public member functions
 
@@ -12,10 +13,8 @@
 
 Locks::Locks()
 {
-	previousMs = 0;
-	prevBrightness = LOCKFADEMINB - 1;
-	brightness = LOCKFADEMINB;
-	fadeAmount = LOCKFADESTEP;
+	blinkPreviousMs = 0;
+	blinkLedState = LOW;
 	allowNext = false;
 }
 
@@ -24,21 +23,12 @@ Locks::Locks()
  */
 void Locks::Loop(Game *game)
 {
-	// Triangle wave to control LED brightness
+    unsigned long currMs = millis();
 
-	unsigned long currMs = millis();
-
-	if(currMs - previousMs >= LOCKFADEMS) {
-		previousMs = currMs;
-		changeBrightness = brightness != prevBrightness;
-		if(brightness != prevBrightness) {
-			prevBrightness = brightness;
-		}
-		brightness = brightness + fadeAmount;
-		if(brightness <= LOCKFADEMINB || brightness >= LOCKFADEMAXB) {
-			fadeAmount = -fadeAmount;
-		}	
-	}
+    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
+        blinkPreviousMs = currMs;
+        blinkLedState = !blinkLedState;
+    }
 
 	// TODO: does not need to be called all the time
 	CalcLock(game);

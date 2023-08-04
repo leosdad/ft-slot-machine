@@ -12,6 +12,7 @@
 
 #include "../slots.h"
 #include "motor-driver.h"
+#include "pwm-micros.h"
 
 // ----------------------------------------------------------- Class declaration
 
@@ -40,11 +41,11 @@ class Reel
 		// Must be initialized and won't ever change
 
 		uint8_t encoderPin;			// Encoder motor pin
-		uint8_t lockLEDPin;			// Lock LED pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
 		MotorDriver motor{0, 0};	// Motor that spins this reel
 		ezButton ezHomeSensor{0};	// ezButton home sensor object
 		ezButton ezLockButton{0};	// ezButton lock button object
+		PwmMicros lockLED;			// Lock LED PWM driver object
 
 	public:
 

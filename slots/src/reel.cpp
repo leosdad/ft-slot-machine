@@ -19,8 +19,6 @@ void Reel::Setup(
 {
 	encoderPin = encoderPinNumber;
 	motorSpeed = motorSpeedValue;
-	// lockLEDPin = lockLEDPinNumber;
-	// pinMode(lockLEDPin, OUTPUT);
 	lockLED.Setup(lockLEDPinNumber);
 
 	motor = MotorDriver(motorOutPinNumbers, encoderPin);
@@ -34,7 +32,6 @@ void Reel::Setup(
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
-	// digitalWrite(lockLEDPin, locked);
 	lockLED.Set(locked);
 
 	// If reel is locked, Does nothing
@@ -69,7 +66,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * Loop called while spinning and state machine for this reel.
+ * Loop called while spinning. Includes state machine for this reel.
  */
 void Reel::LoopWhenSpinning()
 {
@@ -135,14 +132,11 @@ void Reel::LoopWhenStopped(bool blinkStatus)
 			locked = !locked;
 		}
 		if(locked) {
-			// digitalWrite(lockLEDPin, HIGH);
 			lockLED.TurnOn();
 		} else {
-			// digitalWrite(lockLEDPin, blinkStatus);
 			lockLED.SetValue(blinkStatus ? LOCKBLINKVALUE : 0);
 		}
 	} else {
-		// digitalWrite(lockLEDPin, LOW);
 		lockLED.TurnOff();
 	}
 }

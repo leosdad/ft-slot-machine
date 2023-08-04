@@ -71,8 +71,7 @@ void Game::StartReels(bool home)
 {
 	newBall = false;
 	cheering.Stop();
-	locks.AllowNext(home || nCoins == 0 ? Locks::NextState::FORBIDDEN :
-		Locks::NextState::AUTO);
+	locks.AllowNext(this, home);
 
 	uint8_t xtraTurns = 0;
 
@@ -106,7 +105,7 @@ void Game::StopSpin()
 		}
 	}
 	if(spinPayoff) {
-		locks.AllowNext(Locks::NextState::FORBIDDEN);
+		locks.AllowNext(this);
 	}
 }
 

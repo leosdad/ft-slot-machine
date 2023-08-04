@@ -34,13 +34,11 @@ void Locks::Loop(Game *game)
 	CalcLock(game);
 }
 
-void Locks::AllowNext(NextState state)
+void Locks::AllowNext(Game *game, bool prevent = false)
 {
-	if(state == NextState::ALLOWED) {
-		allowNext = true;
-	} else if(state == NextState::FORBIDDEN) {
+	if(prevent || game->spinPayoff || game->nCoins == 0) {
 		allowNext = false;
-	} else {	// AUTO
+	} else {
 		if(!allowNext) {
 			allowNext = true;
 		}

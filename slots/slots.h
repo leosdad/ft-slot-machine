@@ -23,27 +23,27 @@
 
 // Game constants
 
-#define STARTCOINS		100
+#define STARTCOINS		100		// Player coins when game starts
 #define MAXCOINS		9999	// Up to 16384
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
-#define BALLVALUE		101		// How much is needed to get a ball
+#define BALLVALUE		101		// How much is needed to retrieve a ball
 #define MAXBALLS		6		// Up to 7
-#define PAYMULTIPLIER	1
-#define INITIALBET		3
+#define PAYMULTIPLIER	1		// Default payoff multiplier
+#define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	22		// Number of payoff combinations
 
-// Time constants
+// Time and hardware constants
 
-#define LOCKBLINKON		50
-#define LOCKBLINKOFF	300
+#define LOCKBLINKON		80
+#define LOCKBLINKOFF	500
 #define LOCKBLINKVALUE	15
 #define CHEERNORMALMS	550
 #define CHEERALOTMS		120
 #define SIMULATEDELAY	50
 #define EZBTNDEBOUNCE	50
 
-// Hardware-dependent constants, cannot be changed
+// Model-dependent constants, cannot be changed
 
 #define NREELS		    3
 #define NSYMBOLS	    8

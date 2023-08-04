@@ -21,20 +21,12 @@ class Locks
 
 	public:
 
-		// Enums
-
-		enum class NextState {
-			AUTO = 0,
-			ALLOWED,
-			FORBIDDEN
-		};
-
 		int blinkLedState;
 
 		Locks();
 
 		void Loop(Game *game);
-		void AllowNext(NextState state);
+		void AllowNext(Game *game, bool prevent = false);
 		void LockUnlock(Game *game);
 		void CalcLock(Game *game);
 };

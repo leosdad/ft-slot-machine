@@ -40,6 +40,7 @@ class Game
 		void LoopWhenStopped();
 		void StartReels(bool home);
 		bool IsIdle();
+		void StartSpin(bool home);
 		void StopSpin();
 		void InitReels(
 			const uint8_t motorPins[NREELS][2],

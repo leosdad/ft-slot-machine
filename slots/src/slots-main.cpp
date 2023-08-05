@@ -23,12 +23,12 @@ ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 
-// Slot machine objects
+// Slot machine variabless
 
 Reel reels[NREELS];
 Game game;
 
-// Other objects
+// Other variabless
 
 SevenSeg sevenSegDisplay;
 OledDisplay od;
@@ -62,18 +62,9 @@ void SlotsMain::loopWhenStopped()
 
 void SlotsMain::startSpin(bool home)
 {
-	// TODO: move to Game class
-
 	od.DisplayPayoff(0);
-	game.StartReels(home);
-	if(!home) {
-		payoffs.CalculateTotalPayoff(&game);
-		game.playing = true;
-	}
-	game.totalSpins++;
-	game.spinning = true;
+	game.StartSpin(home);
 	if(game.playing) {
-		game.nCoins = constrain(game.nCoins - game.currentBet, 0, MAXCOINS);
 		od.DisplayBet(game.currentBet);
 		if(!home /* TODO: include a timer to show coins */) {
 			sevenSegDisplay.DisplayNumber(game.nCoins);
@@ -94,7 +85,7 @@ void SlotsMain::stopSpin()
 
 void SlotsMain::inputLoop()
 {
-	// ezButtons loops
+	// ezButtons
 
 	increaseBet.loop();
 	decreaseBet.loop();

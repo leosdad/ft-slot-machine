@@ -24,10 +24,6 @@ class SlotsMain
 		void startSpin(bool home);
 		void stopSpin();
 
-		// Private fields
-
-		Payoffs payoffs;
-
 	public:
 		void Setup();
 		void Loop();

@@ -8,10 +8,12 @@
 #include "locks.h"
 #include "ball-feeder.h"
 #include "cheering.h"
+#include "payoffs.h"
 
 Locks locks;
 BallFeeder ballFeeder;
 Cheering cheering;
+Payoffs payoffs;
 
 // ----------------------------------------------------- Public member functions
 
@@ -87,6 +89,20 @@ void Game::StartReels(bool home)
 
 	for(int i = 0; i < NREELS; i++) {
 		xtraTurns = reels[i].Start(home, xtraTurns);
+	}
+}
+
+void Game::StartSpin(bool home)
+{
+	StartReels(home);
+	if(!home) {
+		payoffs.CalculateTotalPayoff(this);
+		playing = true;
+	}
+	totalSpins++;
+	spinning = true;
+	if(playing) {
+		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
 	}
 }
 

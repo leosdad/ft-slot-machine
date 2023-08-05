@@ -44,8 +44,16 @@ void Game::LoopWhenStopped()
 	cheering.Loop(this);
 	ballFeeder.Loop();
 
+	bool changed = false;
+
 	for(int i = 0; i < NREELS; i++) {
-		reels[i].LoopWhenStopped(locks.blinkLedState);
+		if(reels[i].LoopWhenStopped(locks.blinkLedState)) {
+			changed = true;
+		}
+	}
+
+	if(changed) {
+		locks.CalcLock(this);
 	}
 }
 
@@ -55,6 +63,7 @@ void Game::LoopWhenStopped()
 uint8_t Game::SetBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, bet), 0, MAXBET);
+	locks.CalcLock(this);
 	return currentBet;
 }
 
@@ -64,6 +73,7 @@ uint8_t Game::SetBet(int8_t bet)
 uint8_t Game::ChangeBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
+	locks.CalcLock(this);
 	return currentBet;
 }
 
@@ -104,9 +114,6 @@ void Game::StopSpin()
 			// delay(1000);
 		}
 	}
-	// if(spinPayoff) {
-	// 	locks.AllowNext(this);
-	// }
 }
 
 /**

@@ -20,14 +20,13 @@ class Locks
 		bool allowNext;
 		bool preventNext;
 
-		void calcLock(Game *game);
-
 	public:
 
 		int blinkLedState;
 
 		Locks();
 
+		void CalcLock(Game *game);
 		void LoopWhenStopped(Game *game);
 		void AllowNext(bool preventNext);
 		void LockUnlock(Game *game);

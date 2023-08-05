@@ -7,16 +7,37 @@
 #include "locks.h"
 #include "../slots.h"
 
-// ---------------------------------------------------- Private member functions
+// ----------------------------------------------------- Public member functions
+
+/**
+ * Constructor.
+ */
+Locks::Locks()
+{
+	blinkPreviousMs = 0;
+	blinkLedState = LOW;
+	allowNext = false;
+	preventNext = false;
+}
+
+/**
+ * Called while reels are stopped
+ */
+void Locks::LoopWhenStopped(Game *game)
+{
+    unsigned long currMs = millis();
+
+    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
+        blinkPreviousMs = currMs;
+        blinkLedState = !blinkLedState;
+    }
+}
 
 /**
  * Activates and deactivates the lock state according to the current bet
  */
-void Locks::calcLock(Game *game)
+void Locks::CalcLock(Game *game)
 {
-	// TODO: this logic does not need to be called from the loop; only
-	// after a lock button or the bet incr/decr are pressed
-
 	if(!allowNext) {
 		for(int i = 0; i < NREELS; i++) {
 			game->reels[i].lockable = false;
@@ -63,35 +84,6 @@ void Locks::calcLock(Game *game)
 		}
 
 	}
-}
-
-// ----------------------------------------------------- Public member functions
-
-/**
- * Constructor.
- */
-Locks::Locks()
-{
-	blinkPreviousMs = 0;
-	blinkLedState = LOW;
-	allowNext = false;
-	preventNext = false;
-}
-
-/**
- * Called while reels are stopped
- */
-void Locks::LoopWhenStopped(Game *game)
-{
-    unsigned long currMs = millis();
-
-    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
-        blinkPreviousMs = currMs;
-        blinkLedState = !blinkLedState;
-    }
-
-	// TODO: does not need to be called all the time
-	calcLock(game);
 }
 
 /**

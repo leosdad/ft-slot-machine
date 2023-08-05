@@ -121,15 +121,19 @@ void Reel::LoopWhenSpinning()
 
 /**
  * Loop called when stopped. Sets reel lock and LED status.
+ * @returns Returns true if lock button status has changed.
  */
-void Reel::LoopWhenStopped(bool blinkStatus)
+bool Reel::LoopWhenStopped(bool blinkStatus)
 {
 	ezLockButton.loop();
 	lockLED.Loop();
 
+	bool changed = false;
+
 	if(lockable) {
 		if(ezLockButton.isPressed()) {
 			locked = !locked;
+			changed = true;
 		}
 		if(locked) {
 			lockLED.TurnOn();
@@ -139,6 +143,8 @@ void Reel::LoopWhenStopped(bool blinkStatus)
 	} else {
 		lockLED.TurnOff();
 	}
+
+	return changed;
 }
 
 /**

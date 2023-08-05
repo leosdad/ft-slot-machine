@@ -33,7 +33,7 @@ class Game
 
 		// Member functions
 
-		void Setup(Reel reels[NREELS]);
+		void Setup();
 		uint8_t SetBet(int8_t bet);
 		uint8_t ChangeBet(int8_t bet);
 		void LoopWhenSpinning();

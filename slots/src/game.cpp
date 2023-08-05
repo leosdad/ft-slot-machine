@@ -14,19 +14,16 @@ Locks locks;
 BallFeeder ballFeeder;
 Cheering cheering;
 Payoffs payoffs;
+Reel reels[NREELS];
 
 // ----------------------------------------------------- Public member functions
 
 /**
  * Initializes the game. Must be called from the main Setup() function.
  */
-void Game::Setup(Reel _reels[NREELS])
+void Game::Setup()
 {
 	ballFeeder.Attach(servoPin);
-
-	for(int i = 0; i < NREELS; i++) {
-		reels[i] = _reels[i];
-	}
 
 	for(int l = 0; l < NPAYLINES; l++) {
 		paylines[l].Payoff = 0;

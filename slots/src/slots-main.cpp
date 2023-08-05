@@ -25,7 +25,6 @@ ezButton decreaseBet(decreaseBetPin);
 
 // Slot machine variabless
 
-Reel reels[NREELS];
 Game game;
 
 // Other variabless
@@ -66,7 +65,7 @@ void SlotsMain::startSpin(bool home)
 	game.StartSpin(home);
 	if(game.playing) {
 		od.DisplayBet(game.currentBet);
-		if(!home /* TODO: include a timer to show coins */) {
+		if(!home) {
 			sevenSegDisplay.DisplayNumber(game.nCoins);
 		}
 	}
@@ -117,7 +116,7 @@ void SlotsMain::Setup()
 	sevenSegDisplay.Setup();
 	sevenSegDisplay.ScrollMessage("HELLO   ");
 	ioSetup();
-	game.Setup(reels);
+	game.Setup();
 	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
 		lockButtonPins, lockLEDPins, motorSpeed);
 	od.Setup(DEBUGINFO);

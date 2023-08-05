@@ -18,6 +18,7 @@ class Locks
 
 		unsigned long blinkPreviousMs;
 		bool allowNext;
+		bool preventNext;
 
 		void calcLock(Game *game);
 
@@ -28,7 +29,7 @@ class Locks
 		Locks();
 
 		void LoopWhenStopped(Game *game);
-		void AllowNext(Game *game, bool prevent = false);
+		void AllowNext(bool preventNext);
 		void LockUnlock(Game *game);
 };
 

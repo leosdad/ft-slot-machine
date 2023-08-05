@@ -71,7 +71,7 @@ void Game::StartReels(bool home)
 {
 	newBall = false;
 	cheering.Stop();
-	locks.AllowNext(this, home);
+	locks.AllowNext(home);
 
 	uint8_t xtraTurns = 0;
 
@@ -104,9 +104,9 @@ void Game::StopSpin()
 			// delay(1000);
 		}
 	}
-	if(spinPayoff) {
-		locks.AllowNext(this);
-	}
+	// if(spinPayoff) {
+	// 	locks.AllowNext(this);
+	// }
 }
 
 /**

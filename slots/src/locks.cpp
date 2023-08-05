@@ -71,6 +71,7 @@ Locks::Locks()
 	blinkPreviousMs = 0;
 	blinkLedState = LOW;
 	allowNext = false;
+	preventNext = false;
 }
 
 /**
@@ -92,15 +93,9 @@ void Locks::LoopWhenStopped(Game *game)
 /**
  * Determines if lock will be allowed for the next spin.
  */
-void Locks::AllowNext(Game *game, bool prevent = false)
+void Locks::AllowNext(bool prevent)
 {
-	if(prevent || game->spinPayoff || game->nCoins == 0) {
-		allowNext = false;
-	} else {
-		if(!allowNext) {
-			allowNext = true;
-		}
-	}
+	preventNext = prevent;
 }
 
 /**
@@ -108,10 +103,18 @@ void Locks::AllowNext(Game *game, bool prevent = false)
  */
 void Locks::LockUnlock(Game *game)
 {
-	for(int i = 0; i < NREELS; i++) {
-		if(game->reels[i].locked) {
-			allowNext = false;
-			break;
+	if(preventNext) {
+		allowNext = false;
+		preventNext = false;
+	} else if(game->spinPayoff) {
+		allowNext = false;
+	} else {
+		allowNext = true;
+		for(int i = 0; i < NREELS; i++) {
+			if(game->reels[i].locked) {
+				allowNext = false;
+				break;
+			}
 		}
 	}
 

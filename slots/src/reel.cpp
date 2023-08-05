@@ -29,6 +29,7 @@ void Reel::Setup(
 
 /**
  * Does the necessary calculations, draws a symbol and starts the reel.
+ * @returns Returns the number of additional turns for this reel.
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {

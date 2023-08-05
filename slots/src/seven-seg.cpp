@@ -15,10 +15,10 @@ void SevenSeg::Setup()
 	Display::Init(false);
 }
 
-void SevenSeg::DisplayNumber(unsigned long value)
+void SevenSeg::DisplayNumber(long value, int lastPos = DISPLAYCHARS - 1)
 {
 	Display::Stop();
-	Display::U2s(displayBuffer, value);
+	Display::ConvertNumber(displayBuffer, value, lastPos);
 	Display::Show(displayBuffer);
 }
 

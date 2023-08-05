@@ -43,7 +43,7 @@
 #define SIMULATEDELAY	50
 #define EZBTNDEBOUNCE	50
 
-// Model-dependent constants, cannot be changed
+// ft model-dependent constants, cannot be changed
 
 #define NREELS		    3
 #define NSYMBOLS	    8

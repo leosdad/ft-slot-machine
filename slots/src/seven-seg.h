@@ -20,7 +20,7 @@ class SevenSeg
 
 	public:
 		void Setup();
-		void DisplayNumber(unsigned long value);
+		void DisplayNumber(long value, int lastPos = DISPLAYCHARS - 1);
 		void ScrollMessage(char* msg);
 		void FlashMessage(char* msg);
 };

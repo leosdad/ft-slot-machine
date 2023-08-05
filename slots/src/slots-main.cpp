@@ -64,7 +64,7 @@ void SlotsMain::startSpin(bool home)
 {
 	// TODO: move to Game class
 
-	od.DisplayPayoff(0, false);
+	od.DisplayPayoff(0);
 	game.StartReels(home);
 	if(!home) {
 		payoffs.CalculateTotalPayoff(&game);

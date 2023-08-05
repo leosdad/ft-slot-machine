@@ -9,6 +9,9 @@
 
 // ---------------------------------------------------- Private member functions
 
+/**
+ * Activates and deactivates the lock state according to the current bet
+ */
 void Locks::calcLock(Game *game)
 {
 	// TODO: this logic does not need to be called from the loop; only
@@ -46,8 +49,9 @@ void Locks::calcLock(Game *game)
 			}
 		}
 
-	} else {	// (currentLocked > maxLockable)
+	} else {
 
+		// (currentLocked > maxLockable)
 		for(int i = NREELS - 1; i >= 0;  i--) {
 			if(game->reels[i].locked) {
 				game->reels[i].locked = false;

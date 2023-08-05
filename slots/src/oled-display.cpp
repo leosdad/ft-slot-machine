@@ -10,7 +10,7 @@
 
 const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chy", "Mln", "Bel", "Org", "Lmn", "Grp"};
 
-uint8_t getSize(uint8_t number)
+uint8_t getSize(uint16_t number)
 {
 	uint8_t digits = 1;
 
@@ -27,15 +27,15 @@ uint8_t getSize(uint8_t number)
 /**
  * Displays big numbers, right-aligned.
  */
-void OledDisplay::displayNumber(uint16_t number, uint8_t xPos, uint8_t prevDigits, uint8_t maxDigits)
+void OledDisplay::displayNumber(uint16_t number, uint8_t xPos, uint8_t maxDigits)
 {
 	uint8_t size = getSize(number);
 
 	// Erase previous digits if needed
 
-	if(prevDigits > size) {
+	if(size > 0) {
 		odd.SetFont(Font::MONO_BOLD);
-		for(int i = 0; i < prevDigits - size; i++) {
+		for(int i = 0; i < maxDigits - size; i++) {
 			odd.PrintS(2, xPos + i * 2, "  ");
 			odd.PrintS(3, xPos + i * 2, "  ");
 		}
@@ -54,7 +54,6 @@ void OledDisplay::Setup(bool debug)
 {
 	odd.Setup();
 	debugMode = debug;
-	lastSize = 4;
 
 	if(debugMode) {
 		odd.PrintS(1, 0, "Bt");
@@ -66,17 +65,14 @@ void OledDisplay::Setup(bool debug)
 	}
 }
 
-void OledDisplay::DisplayPayoff(uint16_t payoff, bool updateSize = false)
+void OledDisplay::DisplayPayoff(uint16_t payoff)
 {
 	if(debugMode) {
 		odd.PrintS(1, 8, "    ");
 		odd.PrintN(1, 8, payoff);
 	} else {
 		payoff = min(payoff, 9999);
-		displayNumber(payoff, 7, lastSize, 4);
-		if(updateSize) {
-			lastSize = getSize(payoff);
-		}
+		displayNumber(payoff, 7, 4);
 	}
 }
 
@@ -85,7 +81,7 @@ void OledDisplay::DisplayBet(uint16_t bet)
 	if(debugMode) {
 		odd.PrintN(1, 3, bet);
 	} else {
-		displayNumber(bet, 1, 0, 1);
+		displayNumber(bet, 1, 1);
 	}
 }
 

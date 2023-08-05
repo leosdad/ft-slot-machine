@@ -20,15 +20,14 @@ class OledDisplay
 		OledDisplayDriver odd;
 		Payline payline;
 		bool debugMode;
-		uint16_t lastSize;
 
-		void displayNumber(uint16_t number, uint8_t xPos, uint8_t prevDigits, uint8_t maxDigits);
+		void displayNumber(uint16_t number, uint8_t xPos, uint8_t maxDigits);
 
 	public:
 
 		void Setup(bool debugMode);
 		void DisplayBet(uint16_t number);
-		void DisplayPayoff(uint16_t number, bool updateSize = false);
+		void DisplayPayoff(uint16_t number);
 		void DisplayDebugInfo(Game game);
 		void ShowState(const char *str);
 };

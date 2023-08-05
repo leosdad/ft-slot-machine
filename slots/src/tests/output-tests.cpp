@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #include "../../slots.h"
-#include "../oled-display.h"
+#include "../oled-display-driver.h"
 #include "./output-tests.h"
 
 OledDisplayDriver oledDOut;

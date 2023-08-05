@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
 #include "../../slots.h"
-#include "../oled-display.h"
+#include "../oled-display-driver.h"
 #include "./input-tests.h"
 
 OledDisplayDriver oledDIn;

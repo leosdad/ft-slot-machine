@@ -6,13 +6,11 @@
 
 #include "oled-display.h"
 
-// ------------------------------------------------------------ Global constants
+// ---------------------------------------------- Global constants and functions
 
 const char *symbolNames[NSYMBOLS + 1] = {"All", "Svn", "Ban", "Chy", "Mln", "Bel", "Org", "Lmn", "Grp"};
 
-// ---------------------------------------------------- Private member functions
-
-uint8_t OledDisplay::getSize(uint8_t number)
+uint8_t getSize(uint8_t number)
 {
 	uint8_t digits = 1;
 
@@ -24,6 +22,29 @@ uint8_t OledDisplay::getSize(uint8_t number)
 	return digits;
 }
 
+// ---------------------------------------------------- Private member functions
+
+/**
+ * Displays big numbers, right-aligned.
+ */
+void OledDisplay::displayNumber(uint16_t number, uint8_t xPos, uint8_t prevDigits, uint8_t maxDigits)
+{
+	uint8_t size = getSize(number);
+
+	// Erase previous digits if needed
+
+	if(prevDigits > size) {
+		odd.SetFont(Font::MONO_BOLD);
+		for(int i = 0; i < prevDigits - size; i++) {
+			odd.PrintS(2, xPos + i * 2, "  ");
+			odd.PrintS(3, xPos + i * 2, "  ");
+		}
+	}
+
+	odd.SetFont(Font::DIGITS_EXTRALARGE);
+	odd.PrintN(2, xPos + (maxDigits - size) * 2, number);
+}
+
 // ----------------------------------------------------- Public member functions
 
 /**
@@ -33,42 +54,39 @@ void OledDisplay::Setup(bool debug)
 {
 	odd.Setup();
 	debugMode = debug;
+	lastSize = 4;
 
 	if(debugMode) {
 		odd.PrintS(1, 0, "Bt");
-		odd.PrintS(1, 5, "Co");
+		odd.PrintS(1, 5, "Py");
 	} else {
 		odd.SetFont(Font::MONO_BOLD);
-		odd.PrintS(2, 11, "Coins");
-		odd.PrintS(3, 8, "Bet");
+		odd.PrintS(0, 1, "Bet");
+		odd.PrintS(0, 9, "Payoff");
 	}
 }
 
-uint16_t OledDisplay::DisplayCoins(uint16_t number)
+void OledDisplay::DisplayPayoff(uint16_t payoff, bool updateSize = false)
 {
 	if(debugMode) {
 		odd.PrintS(1, 8, "    ");
-		odd.PrintN(1, 8, number);
+		odd.PrintN(1, 8, payoff);
 	} else {
-		odd.SetFont(Font::DIGITS_EXTRALARGE);
-		odd.PrintS(1, 2, "    ");
-		odd.PrintN(1, 2, number);
-		// odd.PrintN(1, 8 * 3 - 8 * getSize(number), number);
+		payoff = min(payoff, 9999);
+		displayNumber(payoff, 7, lastSize, 4);
+		if(updateSize) {
+			lastSize = getSize(payoff);
+		}
 	}
-
-	return number;
 }
 
-uint16_t OledDisplay::DisplayBet(uint16_t number)
+void OledDisplay::DisplayBet(uint16_t bet)
 {
 	if(debugMode) {
-		odd.PrintN(1, 3, number);
+		odd.PrintN(1, 3, bet);
 	} else {
-		odd.SetFont(Font::MONO_BOLD);
-		odd.PrintN(3, 12, number);
+		displayNumber(bet, 1, 0, 1);
 	}
-
-	return number;
 }
 
 /**

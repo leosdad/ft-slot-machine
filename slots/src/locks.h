@@ -19,16 +19,17 @@ class Locks
 		unsigned long blinkPreviousMs;
 		bool allowNext;
 
+		void calcLock(Game *game);
+
 	public:
 
 		int blinkLedState;
 
 		Locks();
 
-		void Loop(Game *game);
+		void LoopWhenStopped(Game *game);
 		void AllowNext(Game *game, bool prevent = false);
 		void LockUnlock(Game *game);
-		void CalcLock(Game *game);
 };
 
 // ------------------------------------------------------------------------- End

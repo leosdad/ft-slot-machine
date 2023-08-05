@@ -32,9 +32,7 @@ struct payoffItem {
 	SpecialFeatures features;
 };
 
-// ------------------------------------------------------------------- Constants
-
-// Global static constants
+// ----------------------------------------------------- Global static constants
 
 static const uint8_t payoffMultiplier = PAYMULTIPLIER;
 

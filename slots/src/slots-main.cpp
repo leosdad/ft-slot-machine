@@ -2,7 +2,7 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-// -------------------------------------------------------------------- Includes
+#pragma region -------------------------------------------------------- Includes
 
 #include <ezButton.h>
 #include <TrueRandom.h>
@@ -12,6 +12,8 @@
 #include "motor-driver.h"
 #include "game.h"
 #include "reel.h"
+
+#pragma endregion
 
 #pragma region ------------------------------------------------ Global variables
 
@@ -31,41 +33,9 @@ Game game;
 SevenSeg sevenSegDisplay;
 OledDisplay od;
 
-#pragma endregion ----------------------------------------------- Setup and Loop
-
-void SlotsMain::Setup()
-{
-	// Initialize objects
-
-	ioSetup();
-	game.Setup(reels);
-	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
-		lockButtonPins, lockLEDPins, motorSpeed);
-	od.Setup(DEBUGINFO);
-	sevenSegDisplay.Setup();
-
-	// Reset reels to home position and start game with initial values
-
-	sevenSegDisplay.DisplayNumber(0);
-	od.DisplayCoins(game.nCoins = STARTCOINS);
-	od.DisplayBet(game.SetBet(INITIALBET));
-	startSpin(true);
-}
-
-void SlotsMain::Loop()
-{
-	inputLoop();
-
-	if(game.spinning) {
-		loopWhenSpinning();
-	} else {
-		loopWhenStopped();
-	}
-}
+#pragma endregion
 
 #pragma region ---------------------------------------- Private member functions
-
-// TODO: Move some code from here to the Game class
 
 void SlotsMain::loopWhenSpinning()
 {
@@ -94,6 +64,7 @@ void SlotsMain::startSpin(bool home)
 {
 	// TODO: move to Game class
 
+	od.DisplayPayoff(0, false);
 	game.StartReels(home);
 	if(!home) {
 		payoffs.CalculateTotalPayoff(&game);
@@ -103,7 +74,10 @@ void SlotsMain::startSpin(bool home)
 	game.spinning = true;
 	if(game.playing) {
 		game.nCoins = constrain(game.nCoins - game.currentBet, 0, MAXCOINS);
-		od.DisplayCoins(game.nCoins);
+		od.DisplayBet(game.currentBet);
+		if(!home /* TODO: include a timer to show coins */) {
+			sevenSegDisplay.DisplayNumber(game.nCoins);
+		}
 	}
 	od.DisplayDebugInfo(game);
 	od.ShowState("Spinning");
@@ -114,29 +88,68 @@ void SlotsMain::stopSpin()
 	game.StopSpin();
 	od.DisplayBet(game.SetBet(game.currentBet));
 	od.ShowState("Stopped ");
-	od.DisplayCoins(game.nCoins);
-	sevenSegDisplay.DisplayNumber(game.spinPayoff * game.currentBet);
+	sevenSegDisplay.DisplayNumber(game.nCoins);
+	od.DisplayPayoff(game.spinPayoff);
 }
 
 void SlotsMain::inputLoop()
 {
 	// ezButtons loops
+
 	increaseBet.loop();
 	decreaseBet.loop();
 	startLever.loop();
 }
 
-/**
- * Sets initial pin modes for the Mega 2560.
- */
 void SlotsMain::ioSetup()
 {
+	// Sets initial pin modes for the Mega 2560
+
 	digitalWrite(signalLED1Gnd, LOW);
 	digitalWrite(signalLED2Gnd, LOW);
+
+	// Initialize ezButtons
 
 	startLever.setDebounceTime(EZBTNDEBOUNCE);
 	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
+}
+
+#pragma endregion
+
+#pragma region ----------------------------------------- Public member functions
+
+void SlotsMain::Setup()
+{
+	// Initialize objects
+
+	sevenSegDisplay.Setup();
+	sevenSegDisplay.ScrollMessage("HELLO   ");
+	ioSetup();
+	game.Setup(reels);
+	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
+		lockButtonPins, lockLEDPins, motorSpeed);
+	od.Setup(DEBUGINFO);
+
+	// Reset reels to home position and start game with initial values
+
+	game.nCoins = STARTCOINS;
+	od.DisplayPayoff(game.spinPayoff);
+	game.SetBet(0);
+	od.DisplayBet(game.currentBet);
+	game.SetBet(INITIALBET);
+	startSpin(true);
+}
+
+void SlotsMain::Loop()
+{
+	inputLoop();
+
+	if(game.spinning) {
+		loopWhenSpinning();
+	} else {
+		loopWhenStopped();
+	}
 }
 
 #pragma endregion

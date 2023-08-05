@@ -7,45 +7,9 @@
 #include "locks.h"
 #include "../slots.h"
 
-// ----------------------------------------------------- Public member functions
+// ---------------------------------------------------- Private member functions
 
-// TODO: Use analogWrite()
-
-Locks::Locks()
-{
-	blinkPreviousMs = 0;
-	blinkLedState = LOW;
-	allowNext = false;
-}
-
-/**
- * Called while reels are stopped
- */
-void Locks::Loop(Game *game)
-{
-    unsigned long currMs = millis();
-
-    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
-        blinkPreviousMs = currMs;
-        blinkLedState = !blinkLedState;
-    }
-
-	// TODO: does not need to be called all the time
-	CalcLock(game);
-}
-
-void Locks::AllowNext(Game *game, bool prevent = false)
-{
-	if(prevent || game->spinPayoff || game->nCoins == 0) {
-		allowNext = false;
-	} else {
-		if(!allowNext) {
-			allowNext = true;
-		}
-	}
-}
-
-void Locks::CalcLock(Game *game)
+void Locks::calcLock(Game *game)
 {
 	// TODO: this logic does not need to be called from the loop; only
 	// after a lock button or the bet incr/decr are pressed
@@ -94,6 +58,48 @@ void Locks::CalcLock(Game *game)
 			}
 		}
 
+	}
+}
+
+// ----------------------------------------------------- Public member functions
+
+/**
+ * Constructor.
+ */
+Locks::Locks()
+{
+	blinkPreviousMs = 0;
+	blinkLedState = LOW;
+	allowNext = false;
+}
+
+/**
+ * Called while reels are stopped
+ */
+void Locks::LoopWhenStopped(Game *game)
+{
+    unsigned long currMs = millis();
+
+    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
+        blinkPreviousMs = currMs;
+        blinkLedState = !blinkLedState;
+    }
+
+	// TODO: does not need to be called all the time
+	calcLock(game);
+}
+
+/**
+ * Determines if lock will be allowed for the next spin.
+ */
+void Locks::AllowNext(Game *game, bool prevent = false)
+{
+	if(prevent || game->spinPayoff || game->nCoins == 0) {
+		allowNext = false;
+	} else {
+		if(!allowNext) {
+			allowNext = true;
+		}
 	}
 }
 

@@ -52,7 +52,7 @@ uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 
 	for(int l = 0; l < NPAYLINES; l++) {
 		game->paylines[l].Payoff = calculatePayline(*game, l);
-		game->spinPayoff += game->paylines[l].Payoff;
+		game->spinPayoff += game->paylines[l].Payoff * game->currentBet;
 	}
 
 	if(game->spinPayoff) {

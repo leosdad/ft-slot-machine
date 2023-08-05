@@ -16,7 +16,7 @@
 
 // Debug flags
 
-#define DEBUGINFO		true	// Show debug data on the OLED display
+#define DEBUGINFO		false	// Show debug data on the OLED display
 #define SPEEDUP			true	// Set to true for faster spins
 #define SIMULATE		false	// Set to true to simulate gameplay with no spins
 #define CALIBRATE		false	// Set to true for reel speed calibration

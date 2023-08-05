@@ -40,7 +40,7 @@ void Game::LoopWhenSpinning()
 
 void Game::LoopWhenStopped()
 {
-	locks.Loop(this);
+	locks.LoopWhenStopped(this);
 	cheering.Loop(this);
 	ballFeeder.Loop();
 
@@ -89,7 +89,7 @@ void Game::StopSpin()
 	locks.LockUnlock(this);
 
 	if(playing) {
-		nCoins = constrain(nCoins + spinPayoff * currentBet, 0, MAXCOINS);
+		nCoins = constrain(nCoins + spinPayoff, 0, MAXCOINS);
 
 		if(nCoins - nBalls * BALLVALUE > BALLVALUE) {
 

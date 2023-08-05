@@ -12,15 +12,26 @@
 void SevenSeg::Setup()
 {
 	Wire.begin();
-	Display::Init();
-	Display::Clear();
-	Display::Stop();
+	Display::Init(false);
 }
 
 void SevenSeg::DisplayNumber(unsigned long value)
 {
+	Display::Stop();
 	Display::U2s(displayBuffer, value);
 	Display::Show(displayBuffer);
+}
+
+void SevenSeg::ScrollMessage(char* msg)
+{
+	Display::Show(msg);
+	Display::Rotate(100);
+}
+
+void SevenSeg::FlashMessage(char* msg)
+{
+	Display::Show(msg);
+	Display::Flash(200);
 }
 
 // ------------------------------------------------------------------------- End

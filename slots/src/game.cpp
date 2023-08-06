@@ -52,7 +52,7 @@ void Game::LoopWhenStopped()
 	}
 
 	if(changed) {
-		locks.CalcLock(this);
+		locks.CalcLocked(this);
 	}
 }
 
@@ -62,7 +62,7 @@ void Game::LoopWhenStopped()
 uint8_t Game::SetBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, bet), 0, MAXBET);
-	locks.CalcLock(this);
+	locks.CalcLocked(this);
 	return currentBet;
 }
 
@@ -72,7 +72,7 @@ uint8_t Game::SetBet(int8_t bet)
 uint8_t Game::ChangeBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
-	locks.CalcLock(this);
+	locks.CalcLocked(this);
 	return currentBet;
 }
 

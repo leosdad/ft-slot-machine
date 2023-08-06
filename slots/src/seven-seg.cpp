@@ -15,6 +15,15 @@ void SevenSeg::Setup()
 	Display::Init(false);
 }
 
+void SevenSeg::Erase(int nChars)
+{
+	Display::Stop();
+	for(int i = 0; i < nChars; i++) {
+		displayBuffer[i] = ' ';
+	}
+	Display::Show(displayBuffer);
+}
+
 void SevenSeg::DisplayNumber(long value, int lastPos = DISPLAYCHARS - 1)
 {
 	Display::Stop();

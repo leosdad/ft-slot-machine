@@ -34,9 +34,9 @@ void Locks::LoopWhenStopped(Game *game)
 }
 
 /**
- * Activates and deactivates the lock state according to the current bet
+ * Activates and deactivates the reel lock state according to the current bet.
  */
-void Locks::CalcLock(Game *game)
+void Locks::CalcLocked(Game *game)
 {
 	if(!allowNext) {
 		for(int i = 0; i < NREELS; i++) {
@@ -95,7 +95,7 @@ void Locks::AllowNext(bool prevent)
 }
 
 /**
- * Lock / unlock logic after a spin is completed.
+ * Lock / unlock logic called once after a spin is completed.
  */
 void Locks::LockUnlock(Game *game)
 {

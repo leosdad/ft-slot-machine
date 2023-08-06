@@ -26,7 +26,7 @@ class Locks
 
 		Locks();
 
-		void CalcLock(Game *game);
+		void CalcLocked(Game *game);
 		void LoopWhenStopped(Game *game);
 		void AllowNext(bool preventNext);
 		void LockUnlock(Game *game);

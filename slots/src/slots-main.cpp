@@ -95,7 +95,9 @@ void SlotsMain::ioSetup()
 {
 	// Sets initial pin modes for the Mega 2560
 
-	digitalWrite(signalLED1Gnd, LOW);
+	digitalWrite(signalLED1Pin, LOW);
+	digitalWrite(signalLED2Gnd, LOW);
+	digitalWrite(signalLED1Pin, LOW);
 	digitalWrite(signalLED2Gnd, LOW);
 
 	// Initialize ezButtons

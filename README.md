@@ -1,5 +1,5 @@
 
-# fischertechnik / Arduino Mega pinball
+# fischertechnik / Arduino Mega slots
 
 Heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), an old software pinball game that I developed as a demo for my company back in 1998. In fact the symbol graphics are still the same.
 

@@ -23,11 +23,11 @@ ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 
-// Slot machine variabless
+// Slot machine variables
 
 Game game;
 
-// Other variabless
+// Other variables
 
 SevenSeg sevenSegDisplay;
 OledDisplay od;

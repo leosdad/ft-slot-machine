@@ -19,7 +19,6 @@ void Reel::Setup(
 {
 	encoderPin = encoderPinNumber;
 	motorSpeed = motorSpeedValue;
-	lockLED.Setup(lockLEDPinNumber);
 
 	motor = MotorDriver(motorOutPinNumbers, encoderPin);
 	ezHomeSensor = ezButton(homeSensorPinNumber);
@@ -33,8 +32,6 @@ void Reel::Setup(
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
-	lockLED.Set(locked);
-
 	// If reel is locked, Does nothing
 
 	if(locked) {
@@ -127,23 +124,22 @@ void Reel::LoopWhenSpinning()
 bool Reel::LoopWhenStopped(bool blinkStatus)
 {
 	ezLockButton.loop();
-	lockLED.Loop();
 
 	bool changed = false;
 
-	if(lockable) {
-		if(ezLockButton.isPressed()) {
-			locked = !locked;
-			changed = true;
-		}
-		if(locked) {
-			lockLED.TurnOn();
-		} else {
-			lockLED.SetValue(blinkStatus ? LOCKBLINKVALUE : 0);
-		}
-	} else {
-		lockLED.TurnOff();
-	}
+	// if(lockable) {
+	// 	if(ezLockButton.isPressed()) {
+	// 		locked = !locked;
+	// 		changed = true;
+	// 	}
+	// 	if(locked) {
+	// 		lockLED.TurnOn();
+	// 	} else {
+	// 		lockLED.SetValue(blinkStatus ? LOCKBLINKVALUE : 0);
+	// 	}
+	// } else {
+	// 	lockLED.TurnOff();
+	// }
 
 	return changed;
 }

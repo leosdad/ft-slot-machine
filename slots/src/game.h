@@ -7,7 +7,7 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "../slots.h"
+#include "slots.h"
 #include "reel.h"
 #include "payline.h"
 

@@ -1,3 +1,0 @@
-
-void servoTestsSetup();
-void servoTests();

@@ -5,7 +5,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "locks.h"
-#include "../slots.h"
+#include "slots.h"
 
 // ----------------------------------------------------- Public member functions
 

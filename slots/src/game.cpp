@@ -6,13 +6,9 @@
 
 #include "game.h"
 #include "locks.h"
-#include "ball-feeder.h"
-#include "cheering.h"
 #include "payoffs.h"
 
 Locks locks;
-BallFeeder ballFeeder;
-Cheering cheering;
 Payoffs payoffs;
 Reel reels[NREELS];
 
@@ -23,8 +19,6 @@ Reel reels[NREELS];
  */
 void Game::Setup()
 {
-	ballFeeder.Attach(servoPin);
-
 	for(int l = 0; l < NPAYLINES; l++) {
 		paylines[l].Payoff = 0;
 	}
@@ -40,8 +34,6 @@ void Game::LoopWhenSpinning()
 void Game::LoopWhenStopped()
 {
 	locks.LoopWhenStopped(this);
-	cheering.Loop(this);
-	ballFeeder.Loop();
 
 	bool changed = false;
 
@@ -73,13 +65,13 @@ uint8_t Game::ChangeBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
 	locks.CalcLocked(this);
+	Serial.println(currentBet);
 	return currentBet;
 }
 
 void Game::StartReels(bool home)
 {
 	newBall = false;
-	cheering.Stop();
 	locks.AllowNext(home);
 
 	uint8_t xtraTurns = 0;

@@ -1,3 +1,0 @@
-
-void testsSetup();
-void testsLoop();

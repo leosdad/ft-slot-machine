@@ -2,24 +2,24 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef PAYLINE_H
-#define PAYLINE_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
-#include "slots.h"
-#include "reel.h"
+#include "led-matrix.h"
+
+// ------------------------------------------------------------------- Variables
+
+extern LedMatrix ledMatrix;
 
 // ----------------------------------------------------------- Class declaration
 
-class Payline
+class Display
 {
 	public:
-		uint16_t Payoff = 0;
-
-		uint8_t GetLineSymbol(uint8_t line, uint8_t nReel, Reel reel);
+		void start();
+		void welcome();
+		void displayBet(uint8_t value);
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // PAYLINE_H

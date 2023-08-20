@@ -2,102 +2,73 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#pragma region -------------------------------------------------------- Includes
+// -------------------------------------------------------------------- Includes
 
 #include <ezButton.h>
-#include <TrueRandom.h>
+#include <arduino-timer.h>
 
 #include "slots-main.h"
-#include "seven-seg.h"
-#include "motor-driver.h"
+#include "led-matrix.h"
 #include "game.h"
 #include "reel.h"
+#include "display.h"
 
-#pragma endregion
+// ------------------------------------------------------------ Global variables
 
-#pragma region ------------------------------------------------ Global variables
-
-// EzButtons
-
+Game game;
+LedMatrix ledMatrix;
+Display display;
+auto timer = timer_create_default();
 ezButton startLever(leverButtonPin);
 ezButton increaseBet(increaseBetPin);
 ezButton decreaseBet(decreaseBetPin);
 
-// Slot machine variables
+uint8_t lastBet = 255;
 
-Game game;
+// ------------------------------------------------------------ Global functions
 
-// Other variables
-
-SevenSeg sevenSegDisplay;
-OledDisplay od;
-
-#pragma endregion
-
-#pragma region ---------------------------------------- Private member functions
-
-void SlotsMain::loopWhenSpinning()
+bool updateBet(void *)
 {
-	game.LoopWhenSpinning();
-	if(game.IsIdle()) {
-		stopSpin();
+	if(game.currentBet != lastBet) {
+		display.displayBet(game.currentBet);
+		lastBet = game.currentBet;
 	}
+	return true;
 }
 
-void SlotsMain::loopWhenStopped()
-{
-	game.LoopWhenStopped();
-
-	if(startLever.isPressed()) {
-		if(game.currentBet) {
-			startSpin(false);
-		}
-	} else if(increaseBet.isPressed()) {
-		od.DisplayBet(game.ChangeBet(1));
-	} else if(decreaseBet.isPressed()) {
-		od.DisplayBet(game.ChangeBet(-1));
-	}
-}
-
-void SlotsMain::startSpin(bool home)
-{
-	od.DisplayPayoff(0);
-	game.StartSpin(home);
-	if(game.playing) {
-		od.DisplayBet(game.currentBet);
-		if(!home) {
-			sevenSegDisplay.DisplayNumber(game.nCoins);
-		}
-	}
-	od.DisplayDebugInfo(game);
-	od.ShowState("Spinning");
-}
-
-void SlotsMain::stopSpin()
-{
-	game.StopSpin();
-	od.DisplayBet(game.SetBet(game.currentBet));
-	od.ShowState("Stopped ");
-	sevenSegDisplay.DisplayNumber(game.nCoins);
-	od.DisplayPayoff(game.spinPayoff);
-}
-
-void SlotsMain::inputLoop()
-{
-	// ezButtons
-
-	increaseBet.loop();
-	decreaseBet.loop();
-	startLever.loop();
-}
+// ---------------------------------------------------- Private member functions
 
 void SlotsMain::ioSetup()
 {
-	// Sets initial pin modes for the Mega 2560
+	// Set input pin modes
 
-	digitalWrite(signalLED1Pin, LOW);
-	digitalWrite(signalLED2Gnd, LOW);
-	digitalWrite(signalLED1Pin, LOW);
+	// pinMode(leverButtonPin, INPUT_PULLUP);
+	// pinMode(increaseBetPin, INPUT_PULLUP);
+	// pinMode(decreaseBetPin, INPUT_PULLUP);
+	pinMode(lockButtonPins[0], INPUT_PULLUP);
+	pinMode(lockButtonPins[1], INPUT_PULLUP);
+	pinMode(lockButtonPins[2], INPUT_PULLUP);
+
+	// Set output pin modes
+
+	pinMode(servoPin, OUTPUT);
+	pinMode(signalLED1Gnd, OUTPUT);
+	pinMode(signalLED2Gnd, OUTPUT);
+	pinMode(signalLED1Pin, OUTPUT);
+	pinMode(signalLED2Pin, OUTPUT);
+	pinMode(lockLEDPins[0], OUTPUT);
+	pinMode(lockLEDPins[1], OUTPUT);
+	pinMode(lockLEDPins[2], OUTPUT);
+	pinMode(motorOutPins[0][0], OUTPUT);
+	pinMode(motorOutPins[0][1], OUTPUT);
+	pinMode(motorOutPins[1][0], OUTPUT);
+	pinMode(motorOutPins[1][1], OUTPUT);
+	pinMode(motorOutPins[2][0], OUTPUT);
+	pinMode(motorOutPins[2][1], OUTPUT);
+
+	// Set fixed levels
+
+	digitalWrite(signalLED1Gnd, LOW);
 	digitalWrite(signalLED2Gnd, LOW);
 
 	// Initialize ezButtons
@@ -107,41 +78,65 @@ void SlotsMain::ioSetup()
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
 }
 
-#pragma endregion
+void SlotsMain::inputLoop()
+{
+	// process ezButtons
 
-#pragma region ----------------------------------------- Public member functions
+	increaseBet.loop();
+	decreaseBet.loop();
+	startLever.loop();
+
+	// Read ezButtons values
+
+	if(startLever.isPressed()) {
+		Serial.println("Start");
+	} else if(increaseBet.isPressed()) {
+		game.ChangeBet(1);
+	} else if(decreaseBet.isPressed()) {
+		game.ChangeBet(-1);
+	}
+}
+
+// ----------------------------------------------------- Public member functions
 
 void SlotsMain::Setup()
 {
-	// Initialize objects
+	Serial.begin(57600);
+	Serial.println("-----------------");
 
-	sevenSegDisplay.Setup();
-	sevenSegDisplay.ScrollMessage("HELLO   ");
+	// Initialize pins
+
 	ioSetup();
+
+	// Setup objects
+
+	ledMatrix.start();
+	display.start();
+	// gameMachine.Setup();
+	// mgr.addListener(new EvtTimeListener(80, true, (EvtAction)updateBet));
+	timer.every(80, updateBet);
+	// Start game proper
+
 	game.Setup();
+	display.welcome();
 	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
-		lockButtonPins, lockLEDPins, motorSpeed);
-	od.Setup(DEBUGINFO);
+	 	lockButtonPins, lockLEDPins, motorSpeed);
 
 	// Reset reels to home position and start game with initial values
 
 	game.nCoins = STARTCOINS;
-	od.DisplayPayoff(game.spinPayoff);
-	game.SetBet(0);
-	od.DisplayBet(game.currentBet);
+	// display.DisplayPayoff(game.spinPayoff);
+	// game.SetBet(0);
 	game.SetBet(INITIALBET);
-	startSpin(true);
+	game.StartSpin(true);
 }
 
 void SlotsMain::Loop()
 {
 	inputLoop();
-
-	if(game.spinning) {
-		loopWhenSpinning();
-	} else {
-		loopWhenStopped();
-	}
+	timer.tick();
 }
 
 #pragma endregion
+
+// ------------------------------------------------------------------------- End

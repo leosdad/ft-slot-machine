@@ -7,9 +7,7 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "../slots.h"
-#include "oled-display.h"
-#include "payoffs.h"
+#include "slots.h"
 
 // ----------------------------------------------------------- Class declaration
 
@@ -17,12 +15,8 @@ class SlotsMain
 {
 	private:
 
-		void inputLoop();
 		void ioSetup();
-		void loopWhenSpinning();
-		void loopWhenStopped();
-		void startSpin(bool home);
-		void stopSpin();
+		void inputLoop();
 
 	public:
 		void Setup();

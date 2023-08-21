@@ -16,18 +16,18 @@ class Locks
 {
 	private:
 
-		unsigned long blinkPreviousMs;
+		// unsigned long blinkPreviousMs;
 		bool allowNext;
 		bool preventNext;
 
 	public:
 
-		int blinkLedState;
+		// int blinkLedState;
 
 		Locks();
 
 		void CalcLocked(Game *game);
-		void LoopWhenStopped(Game *game);
+		// void LoopWhenStopped(Game *game);
 		void AllowNext(bool preventNext);
 		void LockUnlock(Game *game);
 };

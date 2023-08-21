@@ -2,12 +2,12 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef REEL_H
-#define REEL_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
 #include <ezButton.h>
+#include <ezLED.h>
 #include <TrueRandom.h>
 
 #include "slots.h"
@@ -30,12 +30,13 @@ class Reel
 
 		// Private fields
 
-		ReelState reelState;		// Machine state
+		ReelState reelState = ReelState::IDLE;	// Machine state
 		byte currentSignal;			// Used for encoder debouncing
 		unsigned long lastChange; 	// In microseconds; Used with encoders
 		uint16_t nSteps;			// Steps counter
 		uint16_t finalSteps;		// Steps after sensor is triggered
 		uint8_t rotations;			// Rotation counter
+		bool lastLockedValue = -1;
 
 		// Must be initialized and won't ever change
 
@@ -44,6 +45,12 @@ class Reel
 		MotorDriver motor{0, 0};	// Motor that spins this reel
 		ezButton ezHomeSensor{0};	// ezButton home sensor object
 		ezButton ezLockButton{0};	// ezButton lock button object
+		ezLED ezLockLED{0};			// ezLED lock LED object
+
+		bool idle();
+		bool start();
+		bool sensing();
+		bool counting();
 
 	public:
 
@@ -65,11 +72,8 @@ class Reel
 			const uint8_t motorSpeedValue
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void LoopWhenSpinning();
-		bool LoopWhenStopped(bool blinkStatus);
+		void Loop();
 		bool IsIdle();
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // REEL_H

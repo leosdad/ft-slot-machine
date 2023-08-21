@@ -6,7 +6,76 @@
 
 #include "reel.h"
 
-// --------------------------------------------------------------- Class members
+// ---------------------------------------------------- Private member functions
+
+bool Reel::idle()
+{
+	bool changed = false;
+
+	if(lockable) {
+		if(ezLockButton.isPressed()) {
+			locked = !locked;
+			changed = true;
+		}
+
+		if(locked != lastLockedValue) {
+			if(locked) {
+				ezLockLED.turnON();
+			} else {
+				ezLockLED.blink(2, 200, 0);
+			}
+			lastLockedValue = locked;
+		}
+
+	} else {
+		ezLockLED.turnOFF();
+	}
+
+	return changed;
+}
+
+bool Reel::start()
+{
+	rotations = extraTurns;
+	motor.RotateCW(motorSpeed);
+	reelState = ReelState::SENSING;
+}
+
+/**
+ * Decrements rotation counter and waits for the reel to reach the home position.
+ */
+bool Reel::sensing()
+{
+	if(ezHomeSensor.isReleased()) {
+		if(rotations > 0) {
+			rotations--;
+		} else {
+			nSteps = finalSteps;
+			currentSignal = digitalRead(encoderPin);
+			reelState = ReelState::COUNTING;
+		}
+	}
+}
+
+/**
+ * Counts pulses enough to reach the desired symbol, then stops.
+ */
+bool Reel::counting()
+{
+	// TODO: reduce speed
+	if(((micros() - lastChange) > debouncePeriod) && (digitalRead(encoderPin) != currentSignal)) {
+		lastChange = micros();
+		currentSignal = !currentSignal;
+		if(currentSignal) {	// RISING flank
+			if(nSteps-- + homeOffset == 0) {
+				motor.Brake();
+				reelState = ReelState::IDLE;
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------- Public member functions
 
 void Reel::Setup(
 	const uint8_t motorOutPinNumbers[2],
@@ -17,13 +86,22 @@ void Reel::Setup(
 	const uint8_t motorSpeedValue
 )
 {
+	// Setup objects
+
 	encoderPin = encoderPinNumber;
 	motorSpeed = motorSpeedValue;
-
 	motor = MotorDriver(motorOutPinNumbers, encoderPin);
+
+	// Initialize ezButtons
+
 	ezHomeSensor = ezButton(homeSensorPinNumber);
 	ezLockButton = ezButton(lockButtonPinNumber);
 	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
+	ezLockLED = ezLED(lockLEDPinNumber);
+
+	// Initialize variables
+
+	reelState = ReelState::IDLE;
 }
 
 /**
@@ -34,9 +112,9 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
 	// If reel is locked, Does nothing
 
-	if(locked) {
-		return;
-	}
+	// if(locked) {
+	// 	return;
+	// }
 
 	if(home) {
 
@@ -60,88 +138,52 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	finalSteps = stepOffsets[symbolPos];
 	reelState = ReelState::START;
 
+	if(locked) {
+		ezLockLED.turnON();
+	} else {
+		ezLockLED.turnOFF();
+	}
+
+	lastLockedValue = -1;
+
 	return extraTurns;
 }
 
 /**
- * Loop called while spinning. Includes state machine for this reel.
+ * State machine.
  */
-void Reel::LoopWhenSpinning()
+void Reel::Loop()
 {
-	ezHomeSensor.loop();
-
 	if(simulate) {
 		delay(SIMULATEDELAY);
 		reelState = ReelState::IDLE;
 		return;
 	}
 
+	ezHomeSensor.loop();
+	ezLockButton.loop();
+	ezLockLED.loop();
+
 	// State machine for this reel
 
 	switch(reelState) {
 
-		case ReelState::START:
+		case ReelState::IDLE:
+			idle();
+			break;
 
-			rotations = extraTurns;
-			motor.RotateCW(motorSpeed);
-			reelState = ReelState::SENSING;
+		case ReelState::START:
+			start();
 			break;
 
 		case ReelState::SENSING:
-
-			if(ezHomeSensor.isReleased()) {
-				if(rotations > 0) {
-					rotations--;
-				} else {
-					nSteps = finalSteps;
-					currentSignal = digitalRead(encoderPin);
-					reelState = ReelState::COUNTING;
-				}
-			}
+			sensing();
 			break;
 
 		case ReelState::COUNTING:
-
-			if(((micros() - lastChange) > debouncePeriod) &&
-				(digitalRead(encoderPin) != currentSignal)) {
-				lastChange = micros();
-				currentSignal = !currentSignal;
-				if(currentSignal) {	// RISING flank
-					if(nSteps-- + homeOffset == 0) {
-						motor.Brake();
-						reelState = ReelState::IDLE;
-					}
-				}
-			}
+			counting();
 			break;
 	}
-}
-
-/**
- * Loop called when stopped. Sets reel lock and LED status.
- * @returns Returns true if lock button status has changed.
- */
-bool Reel::LoopWhenStopped(bool blinkStatus)
-{
-	ezLockButton.loop();
-
-	bool changed = false;
-
-	// if(lockable) {
-	// 	if(ezLockButton.isPressed()) {
-	// 		locked = !locked;
-	// 		changed = true;
-	// 	}
-	// 	if(locked) {
-	// 		lockLED.TurnOn();
-	// 	} else {
-	// 		lockLED.SetValue(blinkStatus ? LOCKBLINKVALUE : 0);
-	// 	}
-	// } else {
-	// 	lockLED.TurnOff();
-	// }
-
-	return changed;
 }
 
 /**

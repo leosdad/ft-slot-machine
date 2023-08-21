@@ -4,7 +4,6 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include <ezButton.h>
 #include <arduino-timer.h>
 
 #include "slots-main.h"
@@ -19,11 +18,11 @@ Game game;
 LedMatrix ledMatrix;
 Display display;
 auto timer = timer_create_default();
-ezButton startLever(leverButtonPin);
-ezButton increaseBet(increaseBetPin);
-ezButton decreaseBet(decreaseBetPin);
 
 uint8_t lastBet = 255;
+
+// ezLED lockLED1{0};
+// ezLED lockLED2(lockLEDPins[1]);
 
 // ------------------------------------------------------------ Global functions
 
@@ -45,9 +44,9 @@ void SlotsMain::ioSetup()
 	// pinMode(leverButtonPin, INPUT_PULLUP);
 	// pinMode(increaseBetPin, INPUT_PULLUP);
 	// pinMode(decreaseBetPin, INPUT_PULLUP);
-	pinMode(lockButtonPins[0], INPUT_PULLUP);
-	pinMode(lockButtonPins[1], INPUT_PULLUP);
-	pinMode(lockButtonPins[2], INPUT_PULLUP);
+	// pinMode(lockButtonPins[0], INPUT_PULLUP);
+	// pinMode(lockButtonPins[1], INPUT_PULLUP);
+	// pinMode(lockButtonPins[2], INPUT_PULLUP);
 
 	// Set output pin modes
 
@@ -56,9 +55,9 @@ void SlotsMain::ioSetup()
 	pinMode(signalLED2Gnd, OUTPUT);
 	pinMode(signalLED1Pin, OUTPUT);
 	pinMode(signalLED2Pin, OUTPUT);
-	pinMode(lockLEDPins[0], OUTPUT);
-	pinMode(lockLEDPins[1], OUTPUT);
-	pinMode(lockLEDPins[2], OUTPUT);
+	// pinMode(lockLEDPins[0], OUTPUT);
+	// pinMode(lockLEDPins[1], OUTPUT);
+	// pinMode(lockLEDPins[2], OUTPUT);
 	pinMode(motorOutPins[0][0], OUTPUT);
 	pinMode(motorOutPins[0][1], OUTPUT);
 	pinMode(motorOutPins[1][0], OUTPUT);
@@ -73,9 +72,15 @@ void SlotsMain::ioSetup()
 
 	// Initialize ezButtons
 
+	startLever = ezButton(leverButtonPin);
+	increaseBet = ezButton(increaseBetPin);
+	decreaseBet = ezButton(decreaseBetPin);
+
 	startLever.setDebounceTime(EZBTNDEBOUNCE);
 	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
+
+	// lockLED1 = ezLED(lockLEDPins[0]);
 }
 
 void SlotsMain::inputLoop()
@@ -89,7 +94,7 @@ void SlotsMain::inputLoop()
 	// Read ezButtons values
 
 	if(startLever.isPressed()) {
-		Serial.println("Start");
+		game.StartSpin(false);
 	} else if(increaseBet.isPressed()) {
 		game.ChangeBet(1);
 	} else if(decreaseBet.isPressed()) {
@@ -112,22 +117,12 @@ void SlotsMain::Setup()
 
 	ledMatrix.start();
 	display.start();
-	// gameMachine.Setup();
-	// mgr.addListener(new EvtTimeListener(80, true, (EvtAction)updateBet));
 	timer.every(80, updateBet);
-	// Start game proper
 
-	game.Setup();
+	// Perform a home spin
+
 	display.welcome();
-	game.InitReels(motorOutPins, encoderPins, homeSensorPins,
-	 	lockButtonPins, lockLEDPins, motorSpeed);
-
-	// Reset reels to home position and start game with initial values
-
-	game.nCoins = STARTCOINS;
-	// display.DisplayPayoff(game.spinPayoff);
-	// game.SetBet(0);
-	game.SetBet(INITIALBET);
+	game.Setup();
 	game.StartSpin(true);
 }
 
@@ -135,6 +130,7 @@ void SlotsMain::Loop()
 {
 	inputLoop();
 	timer.tick();
+	game.Loop();
 }
 
 #pragma endregion

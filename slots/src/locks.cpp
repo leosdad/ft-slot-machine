@@ -14,8 +14,8 @@
  */
 Locks::Locks()
 {
-	blinkPreviousMs = 0;
-	blinkLedState = LOW;
+	// blinkPreviousMs = 0;
+	// blinkLedState = LOW;
 	allowNext = false;
 	preventNext = false;
 }
@@ -23,15 +23,15 @@ Locks::Locks()
 /**
  * Called while reels are stopped
  */
-void Locks::LoopWhenStopped(Game *game)
-{
-    unsigned long currMs = millis();
+// void Locks::LoopWhenStopped(Game *game)
+// {
+//     // unsigned long currMs = millis();
 
-    if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
-        blinkPreviousMs = currMs;
-        blinkLedState = !blinkLedState;
-    }
-}
+//     // if(currMs - blinkPreviousMs >= (blinkLedState ? LOCKBLINKON : LOCKBLINKOFF)) {
+//     //     blinkPreviousMs = currMs;
+//     //     // blinkLedState = !blinkLedState;
+//     // }
+// }
 
 /**
  * Activates and deactivates the reel lock state according to the current bet.

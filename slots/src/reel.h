@@ -11,7 +11,7 @@
 #include <TrueRandom.h>
 
 #include "slots.h"
-#include "motor-driver.h"
+#include "drivers/motor-driver.h"
 
 // ----------------------------------------------------------- Class declaration
 

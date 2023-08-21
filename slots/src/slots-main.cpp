@@ -7,7 +7,7 @@
 #include <arduino-timer.h>
 
 #include "slots-main.h"
-#include "led-matrix.h"
+#include "drivers/led-matrix.h"
 #include "game.h"
 #include "reel.h"
 #include "display.h"

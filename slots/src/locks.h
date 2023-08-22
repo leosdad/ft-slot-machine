@@ -2,13 +2,11 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef LOCKS_H
-#define LOCKS_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
-#include "slots.h"
-#include "game.h"
+#include "lock.h"
 
 // ----------------------------------------------------------- Class declaration
 
@@ -16,22 +14,20 @@ class Locks
 {
 	private:
 
-		// unsigned long blinkPreviousMs;
-		bool allowNext;
-		bool preventNext;
+		// bool allowNext;
+		// bool preventNext;
+		uint8_t lastLocked = -1;
+		uint8_t lastMaxLockable = -1;
+		uint8_t lastBetValue = -1;
+
+		void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable);
+		// void calculate();
 
 	public:
 
-		// int blinkLedState;
-
-		Locks();
-
-		void CalcLocked(Game *game);
-		// void LoopWhenStopped(Game *game);
-		void AllowNext(bool preventNext);
-		void LockUnlock(Game *game);
+		bool ledState = false;
+		void Setup();
+		void Loop(bool isSpinning);
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // LOCKS_H

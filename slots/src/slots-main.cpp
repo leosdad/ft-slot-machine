@@ -5,22 +5,22 @@
 // -------------------------------------------------------------------- Includes
 
 #include <arduino-timer.h>
-
 #include "slots-main.h"
 #include "drivers/led-matrix.h"
 #include "game.h"
 #include "reel.h"
 #include "display.h"
+#include "locks.h"
 
 // ------------------------------------------------------------ Global variables
 
 Game game;
+Locks locks;
 LedMatrix ledMatrix;
 Display display;
-auto timer = timer_create_default();
-
 uint8_t lastBet = 255;
-bool spinning = false;
+auto updateTimer = timer_create_default();
+auto lockLedsTimer = timer_create_default();
 
 // ------------------------------------------------------------ Global functions
 
@@ -30,6 +30,12 @@ bool updateBet(void *)
 		display.displayBet(game.currentBet);
 		lastBet = game.currentBet;
 	}
+	return true;
+}
+
+bool lockLedsFlash(void *)
+{
+	locks.ledState = !locks.ledState;
 	return true;
 }
 
@@ -71,12 +77,14 @@ void SlotsMain::inputLoop()
 
 	// Read ezButtons values
 
-	if(startLever.isPressed() && !spinning) {
-		game.StartSpin(false);
-	} else if(increaseBet.isPressed()) {
-		game.ChangeBet(1);
-	} else if(decreaseBet.isPressed()) {
-		game.ChangeBet(-1);
+	if(!spinning) {
+		if(startLever.isPressed()) {
+			game.StartSpin(false);
+		} else if(increaseBet.isPressed()) {
+			game.ChangeBet(1);
+		} else if(decreaseBet.isPressed()) {
+			game.ChangeBet(-1);
+		}
 	}
 }
 
@@ -96,11 +104,13 @@ void SlotsMain::Setup()
 
 	ledMatrix.start();
 	display.start();
-	timer.every(80, updateBet);
+	updateTimer.every(UPDATEBET, updateBet);	// TODO: remove constants
+	lockLedsTimer.every(LOCKBLINK, lockLedsFlash);
 
 	// Perform a first (home) spin
 
 	display.welcome();
+	locks.Setup();
 	game.Setup();
 	game.StartSpin(true);
 }
@@ -108,8 +118,10 @@ void SlotsMain::Setup()
 void SlotsMain::Loop()
 {
 	spinning = game.Loop();
+	updateTimer.tick();
+	lockLedsTimer.tick();
 	inputLoop();
-	timer.tick();
+	locks.Loop(spinning);
 }
 
 #pragma endregion

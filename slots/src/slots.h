@@ -36,16 +36,14 @@
 // Time and hardware constants
 
 #define BAUDRATE		57600
-#define LOCKBLINKON		2
-#define LOCKBLINKOFF	300
-// #define LOCKBLINKVALUE	15
+#define UPDATEBET		80
+#define LOCKBLINK		200
 #define CHEERNORMALMS	550
 #define CHEERALOTMS		120
 #define SIMULATEDELAY	50
 #define EZBTNDEBOUNCE	10
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
-// #define HOMEDEBOUNCE	7000	// For home sersor, in μs (microseconds)
 
 // Model-dependent constants, cannot be changed
 

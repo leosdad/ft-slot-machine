@@ -15,6 +15,8 @@
 class SlotsMain
 {
 	private:
+
+		bool spinning = false;
 		ezButton startLever{0};
 		ezButton increaseBet{0};
 		ezButton decreaseBet{0};
@@ -23,6 +25,7 @@ class SlotsMain
 		void inputLoop();
 
 	public:
+
 		void Setup();
 		void Loop();
 };

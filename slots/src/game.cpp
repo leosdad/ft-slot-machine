@@ -5,10 +5,10 @@
 // -------------------------------------------------------------------- Includes
 
 #include "game.h"
-// #include "locks.h"
 #include "payoffs.h"
 
-// Locks locks;
+// ------------------------------------------------------------ Global variables
+
 Payoffs payoffs;
 Reel reels[NREELS];
 
@@ -47,8 +47,6 @@ void Game::setupReels(
 			motorPins[i],
 			encoderPins[i],
 			homeSensorPins[i],
-			lockButtonPins[i],
-			lockLEDPins[i],
 			motorSpeed[i]
 		);
 	}

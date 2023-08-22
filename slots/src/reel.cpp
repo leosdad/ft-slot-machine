@@ -4,6 +4,11 @@
 
 // -------------------------------------------------------------------- Includes
 
+#include <ezButton.h>
+#include <ezLED.h>
+#include <TrueRandom.h>
+
+#include "slots.h"
 #include "reel.h"
 
 // ---------------------------------------------------- Private member functions
@@ -59,8 +64,6 @@ void Reel::Setup(
 	const uint8_t motorOutPinNumbers[2],
 	const uint8_t encoderPinNumber,
 	const uint8_t homeSensorPinNumber,
-	const uint8_t lockButtonPinNumber,
-	const uint8_t lockLEDPinNumber,
 	const uint8_t motorSpeedValue
 )
 {
@@ -83,9 +86,6 @@ void Reel::Setup(
 	homePin = homeSensorPinNumber;
 	motorSpeed = motorSpeedValue;
 	motor = MotorDriver(motorOutPinNumbers);
-	ezLockButton = ezButton(lockButtonPinNumber, INPUT_PULLUP);
-	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
-	ezLockLED = ezLED(lockLEDPinNumber);
 }
 
 /**
@@ -94,12 +94,6 @@ void Reel::Setup(
  */
 uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
-	// If reel is locked, Does nothing
-
-	if(locked) {
-		return;
-	}
-
 	if(home) {
 
 		// Move reel to home position
@@ -122,19 +116,11 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	finalSteps = stepOffsets[symbolPos];
 	reelState = ReelState::START;
 
-	if(locked) {
-		ezLockLED.turnON();
-	} else {
-		ezLockLED.turnOFF();
-	}
-
-	lastLockedValue = -1;
-
 	return extraTurns;
 }
 
 /**
- * State machine. Returns `true` if the reel is not idle.
+ * State machine. Returns `true` if the reel is spinning.
  */
 bool Reel::Loop()
 {

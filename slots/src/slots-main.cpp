@@ -35,8 +35,6 @@ bool updateBet(void *)
 
 // ---------------------------------------------------- Private member functions
 
-// TODO: move most of these to game class
-
 void SlotsMain::ioSetup()
 {
 	// Set output pin modes
@@ -46,12 +44,6 @@ void SlotsMain::ioSetup()
 	pinMode(signalLED2Gnd, OUTPUT);
 	pinMode(signalLED1Pin, OUTPUT);
 	pinMode(signalLED2Pin, OUTPUT);
-	// pinMode(motorOutPins[0][0], OUTPUT);
-	// pinMode(motorOutPins[0][1], OUTPUT);
-	// pinMode(motorOutPins[1][0], OUTPUT);
-	// pinMode(motorOutPins[1][1], OUTPUT);
-	// pinMode(motorOutPins[2][0], OUTPUT);
-	// pinMode(motorOutPins[2][1], OUTPUT);
 
 	// Set fixed levels
 
@@ -105,11 +97,10 @@ void SlotsMain::Setup()
 	display.start();
 	timer.every(80, updateBet);
 
-	// Perform a home spin
+	// Perform a first (home) spin
 
 	display.welcome();
 	game.Setup();
-	// updateBet(NULL);
 	game.StartSpin(true);
 }
 

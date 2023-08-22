@@ -10,43 +10,13 @@
 
 bool Reel::idle()
 {
-// }
-
-// bool Reel::waiting()
-// {
-	// ezLockLED.loop();
-
-	bool changed = false;
-
-	// if(lockable) {
-	// 	ezLockButton.loop();
-
-	// 	if(ezLockButton.isPressed()) {
-	// 		locked = !locked;
-	// 		changed = true;
-	// 	}
-
-	// 	if(locked != lastLockedValue) {
-	// 		if(locked) {
-	// 			ezLockLED.turnON();
-	// 		} else {
-	// 			ezLockLED.blink(LOCKBLINKON, LOCKBLINKOFF, 0);
-	// 		}
-	// 		lastLockedValue = locked;
-	// 	}
-
-	// } else {
-	// 	ezLockLED.turnOFF();
-	// }
-
-	return changed;
+	// Does nothing
 }
 
 bool Reel::start()
 {
 	rotations = extraTurns;
 	motor.RotateCW(motorSpeed);
-	// currentSignal = digitalRead(homePin);
 	reelState = ReelState::SENSING;
 }
 
@@ -64,20 +34,6 @@ bool Reel::sensing()
 			reelState = ReelState::COUNTING;
 		}
 	}
-
-	// if(((micros() - lastChange) > HOMEDEBOUNCE) && (digitalRead(homePin) != currentSignal)) {
-	// 	lastChange = micros();
-	// 	currentSignal = !currentSignal;
-	// 	if(!currentSignal) {	// RISING flank
-	// 		if(rotations > 0) {
-	// 			rotations--;
-	// 		} else {
-	// 			nSteps = finalSteps;
-	// 			currentSignal = digitalRead(encoderPin);
-	// 			reelState = ReelState::COUNTING;
-	// 		}
-	// 	}
-	// }
 }
 
 /**
@@ -85,8 +41,6 @@ bool Reel::sensing()
  */
 bool Reel::counting()
 {
-	// TODO: reduce speed gradually
-
 	if(((micros() - lastChange) > ENCODERDEBOUNCE) && (digitalRead(encoderPin) != currentSignal)) {
 		lastChange = micros();
 		currentSignal = !currentSignal;
@@ -142,9 +96,9 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 {
 	// If reel is locked, Does nothing
 
-	// if(locked) {
-	// 	return;
-	// }
+	if(locked) {
+		return;
+	}
 
 	if(home) {
 
@@ -213,13 +167,5 @@ bool Reel::Loop()
 
 	return reelState != ReelState::IDLE;
 }
-
-/**
- * Returns true if the reel is in idle state.
- */
-// bool Reel::IsIdle()
-// {
-// 	return reelState == ReelState::IDLE;
-// }
 
 // ------------------------------------------------------------------------- End

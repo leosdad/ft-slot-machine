@@ -14,13 +14,6 @@ Reel reels[NREELS];
 
 // ---------------------------------------------------- Private member functions
 
-// void Game::loopWhenSpinning()
-// {
-// 	for(int i = 0; i < NREELS; i++) {
-// 		reels[i].LoopWhenSpinning();
-// 	}
-// }
-
 // void Game::loopWhenStopped()
 // {
 // 	// locks.LoopWhenStopped(this);
@@ -60,19 +53,6 @@ void Game::setupReels(
 		);
 	}
 }
-
-/**
- * Returns true if all reels are in idle state.
- */
-// bool Game::isIdle()
-// {
-// 	for(int i = 0; i < NREELS; i++) {
-// 		if(!reels[i].IsIdle()) {
-// 			return false;
-// 		}
-// 	}
-// 	return true;
-// }
 
 /**
  * Sets the current bet to the amount given.
@@ -139,7 +119,6 @@ void Game::StartSpin(bool home)
 
 	for(int i = 0; i < NREELS; i++) {
 		xtraTurns = reels[i].Start(home, xtraTurns);
-		// reelSpinning[i] = false;
 	}
 	
 	if(!home) {
@@ -148,42 +127,10 @@ void Game::StartSpin(bool home)
 	}
 
 	totalSpins++;
-	// spinning = true;
 
 	if(playing) {
 		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
 	}
-}
-
-/**
- * Initializes the game. Must be called from the main Setup() function.
- */
-void Game::Setup()
-{
-	setupReels(motorOutPins, encoderPins, homeSensorPins,
-	 	lockButtonPins, lockLEDPins, motorSpeed);
-	init();
-	// startSpin(true);
-}
-
-/**
- * Returns `true` if the reels are still spinning.
- */
-bool Game::Loop()
-{
-	// if(spinning) {
-	// 	loopWhenSpinning();
-	// } else {
-	// 	loopWhenStopped();
-	// }
-	bool isSpinning = false;
-
-	for(int i = 0; i < NREELS; i++) {
-		if(reels[i].Loop()) {
-			isSpinning = true;
-		}
-	}
-	return isSpinning;
 }
 
 /**
@@ -194,6 +141,31 @@ uint8_t Game::ChangeBet(int8_t bet)
 	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
 	// locks.CalcLocked(this);
 	return currentBet;
+}
+
+/**
+ * Initializes the game. Must be called from the main Setup() function.
+ */
+void Game::Setup()
+{
+	setupReels(motorOutPins, encoderPins, homeSensorPins,
+	 	lockButtonPins, lockLEDPins, motorSpeed);
+	init();
+}
+
+/**
+ * Returns `true` if the reels are still spinning.
+ */
+bool Game::Loop()
+{
+	bool isSpinning = false;
+
+	for(int i = 0; i < NREELS; i++) {
+		if(reels[i].Loop()) {
+			isSpinning = true;
+		}
+	}
+	return isSpinning;
 }
 
 // ------------------------------------------------------------------------- End

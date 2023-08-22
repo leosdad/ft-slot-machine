@@ -23,7 +23,6 @@ class Reel
 
 		enum class ReelState {
 			IDLE = 0,
-			// WAITING,
 			START,
 			SENSING,
 			COUNTING,
@@ -74,7 +73,6 @@ class Reel
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		bool Loop();
-		// bool IsIdle();
 };
 
 // ------------------------------------------------------------------------- End

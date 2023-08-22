@@ -18,15 +18,9 @@ class Game
 	private:
 
 		bool playing = false;			// Game status
-		// bool spinning = false;			// Reels spinning status
-		// bool reelSpinning[NREELS];		// Status of each reel
-
-		// void loopWhenSpinning();
-		// void loopWhenStopped();
 		uint8_t setBet(int8_t bet);
 		void init();
 		void stopSpin();
-		// bool isIdle();
 		void setupReels(
 			const uint8_t motorPins[NREELS][2],
 			const uint8_t encoderPin[NREELS],

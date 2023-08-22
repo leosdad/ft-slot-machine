@@ -23,6 +23,7 @@ class Reel
 
 		enum class ReelState {
 			IDLE = 0,
+			// WAITING,
 			START,
 			SENSING,
 			COUNTING,
@@ -31,8 +32,8 @@ class Reel
 		// Private fields
 
 		ReelState reelState = ReelState::IDLE;	// Machine state
-		byte currentSignal;			// Used for encoder debouncing
-		unsigned long lastChange; 	// In microseconds; Used with encoders
+		byte currentSignal;			// Used for debouncing
+		unsigned long lastChange; 	// Used for debouncing
 		uint16_t nSteps;			// Steps counter
 		uint16_t finalSteps;		// Steps after sensor is triggered
 		uint8_t rotations;			// Rotation counter
@@ -41,9 +42,9 @@ class Reel
 		// Must be initialized and won't ever change
 
 		uint8_t encoderPin;			// Encoder motor pin
+		uint8_t homePin;			// Home sensor pin
 		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
-		MotorDriver motor{0, 0};	// Motor that spins this reel
-		ezButton ezHomeSensor{0};	// ezButton home sensor object
+		MotorDriver motor{0};		// Motor that spins this reel
 		ezButton ezLockButton{0};	// ezButton lock button object
 		ezLED ezLockLED{0};			// ezLED lock LED object
 
@@ -72,8 +73,8 @@ class Reel
 			const uint8_t motorSpeedValue
 		);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
-		void Loop();
-		bool IsIdle();
+		bool Loop();
+		// bool IsIdle();
 };
 
 // ------------------------------------------------------------------------- End

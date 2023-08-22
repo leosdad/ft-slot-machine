@@ -35,14 +35,14 @@ class MotorDriver
 		// Arduino pins
 
 		uint8_t motorOutA, motorOutB;
-		uint8_t encoder;
+		// uint8_t encoder;
 		uint8_t motorHome, motorEnd;
 		bool reversePolarity = false;
 
 		// --------------- Private member functions
 
 		void initMotor(const uint8_t motorPorts[2]);
-		void initEncoder(const uint8_t encoder);
+		// void initEncoder(const uint8_t encoder);
 		void initSwitches(const uint8_t switches[2], bool pullups);
 
 	public:
@@ -50,11 +50,11 @@ class MotorDriver
 		/**
 		 * Constructor.
 		*/
-		MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder);
+		// MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder);
 		MotorDriver(const uint8_t motorPorts[2]);
 
 		void Init(const uint8_t motorPorts[2]);
-		void Init(const uint8_t motorPorts[2], const uint8_t encoder);
+		// void Init(const uint8_t motorPorts[2], const uint8_t encoder);
 
 		/**
 		 * Rotate motor counterclockwise.

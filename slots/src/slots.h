@@ -17,8 +17,8 @@
 // Debug flags
 
 #define DEBUGINFO		false	// Show debug data on the OLED display
-#define SPEEDUP			true	// Set to true for faster spins
-#define SIMULATE		false	// Set to true to simulate gameplay with no spins
+#define SPEEDUP			true	// Remove extra reel spins
+#define SIMULATE		false	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
 
 // Game constants
@@ -35,15 +35,19 @@
 
 // Time and hardware constants
 
-#define LOCKBLINKON		80
-#define LOCKBLINKOFF	500
-#define LOCKBLINKVALUE	15
+#define BAUDRATE		57600
+#define LOCKBLINKON		2
+#define LOCKBLINKOFF	300
+// #define LOCKBLINKVALUE	15
 #define CHEERNORMALMS	550
 #define CHEERALOTMS		120
 #define SIMULATEDELAY	50
 #define EZBTNDEBOUNCE	10
+#define HOMEOFFSET		34		// Common position offset for home position
+#define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
+// #define HOMEDEBOUNCE	7000	// For home sersor, in μs (microseconds)
 
-// ft model-dependent constants, cannot be changed
+// Model-dependent constants, cannot be changed
 
 #define NREELS		    3
 #define NSYMBOLS	    8
@@ -69,18 +73,8 @@ struct payoffItem {
 
 // ------------------------------------------------------------------- Constants
 
-static const bool speedUp = SPEEDUP;		// Remove extra reel spins
-static const bool simulate = SIMULATE;		// Simulate gameplay without actually moving anything
-static const bool calibrate = CALIBRATE;	// Used for reel speed calibration
-
 // Speed for each motor. Similar motors may behave differently at slow speeds.
 static const uint8_t motorSpeed[NREELS] = {70, 90, 83};
-
-// Used with encoders. In μs (microseconds)
-static const unsigned long debouncePeriod = 1000;
-
-// Common position offset for home position
-static const uint16_t homeOffset = 34;
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

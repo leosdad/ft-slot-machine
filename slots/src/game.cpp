@@ -64,15 +64,15 @@ void Game::setupReels(
 /**
  * Returns true if all reels are in idle state.
  */
-bool Game::isIdle()
-{
-	for(int i = 0; i < NREELS; i++) {
-		if(!reels[i].IsIdle()) {
-			return false;
-		}
-	}
-	return true;
-}
+// bool Game::isIdle()
+// {
+// 	for(int i = 0; i < NREELS; i++) {
+// 		if(!reels[i].IsIdle()) {
+// 			return false;
+// 		}
+// 	}
+// 	return true;
+// }
 
 /**
  * Sets the current bet to the amount given.
@@ -89,7 +89,7 @@ uint8_t Game::setBet(int8_t bet)
  */
 void Game::stopSpin()
 {
-	spinning = false;
+	// spinning = false;
 	// locks.LockUnlock(this);
 
 	if(playing) {
@@ -139,6 +139,7 @@ void Game::StartSpin(bool home)
 
 	for(int i = 0; i < NREELS; i++) {
 		xtraTurns = reels[i].Start(home, xtraTurns);
+		// reelSpinning[i] = false;
 	}
 	
 	if(!home) {
@@ -147,7 +148,7 @@ void Game::StartSpin(bool home)
 	}
 
 	totalSpins++;
-	spinning = true;
+	// spinning = true;
 
 	if(playing) {
 		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
@@ -165,16 +166,24 @@ void Game::Setup()
 	// startSpin(true);
 }
 
-void Game::Loop()
+/**
+ * Returns `true` if the reels are still spinning.
+ */
+bool Game::Loop()
 {
 	// if(spinning) {
 	// 	loopWhenSpinning();
 	// } else {
 	// 	loopWhenStopped();
 	// }
+	bool isSpinning = false;
+
 	for(int i = 0; i < NREELS; i++) {
-		reels[i].Loop();
-	}	
+		if(reels[i].Loop()) {
+			isSpinning = true;
+		}
+	}
+	return isSpinning;
 }
 
 /**

@@ -20,9 +20,7 @@ Display display;
 auto timer = timer_create_default();
 
 uint8_t lastBet = 255;
-
-// ezLED lockLED1{0};
-// ezLED lockLED2(lockLEDPins[1]);
+bool spinning = false;
 
 // ------------------------------------------------------------ Global functions
 
@@ -37,17 +35,10 @@ bool updateBet(void *)
 
 // ---------------------------------------------------- Private member functions
 
+// TODO: move most of these to game class
+
 void SlotsMain::ioSetup()
 {
-	// Set input pin modes
-
-	// pinMode(leverButtonPin, INPUT_PULLUP);
-	// pinMode(increaseBetPin, INPUT_PULLUP);
-	// pinMode(decreaseBetPin, INPUT_PULLUP);
-	// pinMode(lockButtonPins[0], INPUT_PULLUP);
-	// pinMode(lockButtonPins[1], INPUT_PULLUP);
-	// pinMode(lockButtonPins[2], INPUT_PULLUP);
-
 	// Set output pin modes
 
 	pinMode(servoPin, OUTPUT);
@@ -55,15 +46,12 @@ void SlotsMain::ioSetup()
 	pinMode(signalLED2Gnd, OUTPUT);
 	pinMode(signalLED1Pin, OUTPUT);
 	pinMode(signalLED2Pin, OUTPUT);
-	// pinMode(lockLEDPins[0], OUTPUT);
-	// pinMode(lockLEDPins[1], OUTPUT);
-	// pinMode(lockLEDPins[2], OUTPUT);
-	pinMode(motorOutPins[0][0], OUTPUT);
-	pinMode(motorOutPins[0][1], OUTPUT);
-	pinMode(motorOutPins[1][0], OUTPUT);
-	pinMode(motorOutPins[1][1], OUTPUT);
-	pinMode(motorOutPins[2][0], OUTPUT);
-	pinMode(motorOutPins[2][1], OUTPUT);
+	// pinMode(motorOutPins[0][0], OUTPUT);
+	// pinMode(motorOutPins[0][1], OUTPUT);
+	// pinMode(motorOutPins[1][0], OUTPUT);
+	// pinMode(motorOutPins[1][1], OUTPUT);
+	// pinMode(motorOutPins[2][0], OUTPUT);
+	// pinMode(motorOutPins[2][1], OUTPUT);
 
 	// Set fixed levels
 
@@ -79,8 +67,6 @@ void SlotsMain::ioSetup()
 	startLever.setDebounceTime(EZBTNDEBOUNCE);
 	increaseBet.setDebounceTime(EZBTNDEBOUNCE);
 	decreaseBet.setDebounceTime(EZBTNDEBOUNCE);
-
-	// lockLED1 = ezLED(lockLEDPins[0]);
 }
 
 void SlotsMain::inputLoop()
@@ -93,7 +79,7 @@ void SlotsMain::inputLoop()
 
 	// Read ezButtons values
 
-	if(startLever.isPressed()) {
+	if(startLever.isPressed() && !spinning) {
 		game.StartSpin(false);
 	} else if(increaseBet.isPressed()) {
 		game.ChangeBet(1);
@@ -106,8 +92,8 @@ void SlotsMain::inputLoop()
 
 void SlotsMain::Setup()
 {
-	Serial.begin(57600);
-	Serial.println("-----------------");
+	// Serial.begin(BAUDRATE);
+	// Serial.println("---- Slots started ----");
 
 	// Initialize pins
 
@@ -123,14 +109,15 @@ void SlotsMain::Setup()
 
 	display.welcome();
 	game.Setup();
+	// updateBet(NULL);
 	game.StartSpin(true);
 }
 
 void SlotsMain::Loop()
 {
+	spinning = game.Loop();
 	inputLoop();
 	timer.tick();
-	game.Loop();
 }
 
 #pragma endregion

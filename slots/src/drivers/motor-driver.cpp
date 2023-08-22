@@ -15,19 +15,19 @@ void MotorDriver::initMotor(const uint8_t motorPorts[2])
 	pinMode(motorOutB, OUTPUT);		// Possibly not necessary for analogWrite()
 }
 
-void MotorDriver::initEncoder(const uint8_t _encoder)
-{
-	encoder = _encoder;
-	pinMode(encoder, INPUT_PULLUP);
-}
+// void MotorDriver::initEncoder(const uint8_t _encoder)
+// {
+// 	encoder = _encoder;
+// 	pinMode(encoder, INPUT_PULLUP);
+// }
 
 // ---------------------------------------------------------------- Constructors
 
-MotorDriver::MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder)
-{
-	initMotor(motorPorts);
-	initEncoder(encoder);
-}
+// MotorDriver::MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder)
+// {
+// 	initMotor(motorPorts);
+// 	initEncoder(encoder);
+// }
 
 MotorDriver::MotorDriver(const uint8_t motorPorts[2])
 {
@@ -41,11 +41,11 @@ void MotorDriver::Init(const uint8_t motorPorts[2])
 	initMotor(motorPorts);
 }
 
-void MotorDriver::Init(const uint8_t motorPorts[2], const uint8_t encoder)
-{
-	initMotor(motorPorts);
-	initEncoder(encoder);
-}
+// void MotorDriver::Init(const uint8_t motorPorts[2], const uint8_t encoder)
+// {
+// 	initMotor(motorPorts);
+// 	initEncoder(encoder);
+// }
 
 // Rotate at full speed
 

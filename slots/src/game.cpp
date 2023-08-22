@@ -124,13 +124,14 @@ void Game::StartSpin(bool home)
 	if(!home) {
 		payoffs.CalculateTotalPayoff(this);
 		playing = true;
+		totalSpins++;
 	}
-
-	totalSpins++;
 
 	if(playing) {
 		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
 	}
+
+	printDebugData(home);
 }
 
 /**
@@ -141,6 +142,72 @@ uint8_t Game::ChangeBet(int8_t bet)
 	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
 	// locks.CalcLocked(this);
 	return currentBet;
+}
+
+/**
+ * Print debug data on the serial port for each spin.
+ */
+void Game::printDebugData(bool home)
+{
+	if(home) {
+		Serial.println("---- Home spin ----");
+		Serial.println();
+		return;
+	}
+
+	static const char *symbolNames[NSYMBOLS + 1] = {
+		"Any",
+		"Seven",
+		"Banana",
+		"Cherry",
+		"Watermelon",
+		"Bell",
+		"Orange",
+		"Lemon",
+		"Grapes"
+	};
+
+	Serial.print("---- Spin #");
+	Serial.print(totalSpins);
+	Serial.print(" ----");
+	Serial.println();
+
+	Serial.print("Current bet: ");
+	Serial.print(currentBet);
+	Serial.print(" / Coins: ");
+	Serial.println(nCoins);
+
+	Serial.print("Extra turns: ");
+	for(int i = 0; i < NREELS; i++) {
+		Serial.print(reels[i].extraTurns);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Serial.print("Balls: ");
+	// Serial.println(nBalls);
+	// Serial.print(" ");
+	// Serial.println(newBall);
+
+	Serial.println("Lines and payoffs:");
+	for(int l = 0; l < NPAYLINES; l++) {
+		Serial.print("** ");
+		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 0, reels[0])]);
+		Serial.print(" ");
+		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 1, reels[1])]);
+		Serial.print(" ");
+		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 2, reels[2])]);
+		Serial.print(" ** ");
+		Serial.println(paylines[l].Payoff);
+	}
+
+	Serial.print("Total payoff: ");
+	Serial.println(spinPayoff);
+
+	Serial.print("Total wins: ");
+	Serial.println(totalWins);
+
+	Serial.println();
 }
 
 /**

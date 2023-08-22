@@ -21,6 +21,7 @@ class Game
 		uint8_t setBet(int8_t bet);
 		void init();
 		void stopSpin();
+		void printDebugData(bool home);
 		void setupReels(
 			const uint8_t motorPins[NREELS][2],
 			const uint8_t encoderPin[NREELS],

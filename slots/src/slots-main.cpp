@@ -84,8 +84,9 @@ void SlotsMain::inputLoop()
 
 void SlotsMain::Setup()
 {
-	// Serial.begin(BAUDRATE);
-	// Serial.println("---- Slots started ----");
+	Serial.begin(BAUDRATE);
+	Serial.println("Slots game started.");
+	Serial.println();
 
 	// Initialize pins
 

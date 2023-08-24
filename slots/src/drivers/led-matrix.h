@@ -8,8 +8,9 @@
 
 #include <MD_MAX72xx.h>
 #include <MD_MAX72xx_lib.h>
-#include "led-matrix-fixed-font.h"
-#include "led-matrix-fixed-num.h"
+// #include "../fonts/font5x7_fixed_single.h"
+#include "../fonts/font4x8_fixed_num.h"
+#include "../fonts/font3x5_fixed_num.h"
 
 extern MD_MAX72XX mx;
 

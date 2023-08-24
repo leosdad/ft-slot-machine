@@ -1,0 +1,110 @@
+.NAME font3x5_fixed
+.FONT_HEIGHT 5
+.HEIGHT 1
+.WIDTH 3
+.CHAR 32
+.NOTE  'Space'
+
+
+
+
+
+.CHAR 45
+.NOTE  '-'
+ 
+ 
+@@@
+ 
+ 
+.CHAR 46
+.NOTE  '.'
+ 
+
+
+@@
+@@
+.CHAR 47
+.NOTE  '/'
+ 
+  @
+ @
+@
+ 
+.CHAR 48
+.NOTE  '0'
+ @
+@ @
+@ @
+@ @
+ @
+.CHAR 49
+.NOTE '1'
+ @
+@@
+ @
+ @
+@@@
+.CHAR 50
+.NOTE '2'
+@@@
+  @
+@@@
+@
+@@@
+.CHAR 51
+.NOTE '3'
+@@@
+  @
+ @@
+  @
+@@@
+.CHAR 52
+.NOTE '4'
+@ @
+@ @
+@@@
+  @
+  @
+.CHAR 53
+.NOTE '5'
+@@@
+@
+@@@
+  @ 
+@@@
+.CHAR 54
+.NOTE '6'
+@@@
+@
+@@@
+@ @ 
+@@@
+.CHAR 55
+.NOTE '7'
+@@@
+  @
+  @
+  @ 
+  @
+.CHAR 56
+.NOTE '8'
+@@@
+@ @
+@@@
+@ @ 
+@@@
+.CHAR 57
+.NOTE '9'
+@@@
+@ @
+@@@
+  @ 
+@@@
+.CHAR 57
+.NOTE ':'
+@@
+@@
+ 
+@@
+@@
+.END

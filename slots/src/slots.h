@@ -26,6 +26,7 @@
 
 #define STARTCOINS		100		// Player coins when game starts
 #define MAXCOINS		9999	// Up to 16384
+#define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
 #define PAYMULTIPLIER	1		// Default payoff multiplier
@@ -45,6 +46,8 @@
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
 #define MX_BRIGHTNESS   0		// LED matrix brightness
+#define MX_TEXTPOS		9		// Offset for displaying text
+#define MX_NUMPOS		12		// Offset for displaying numbers
 // #define CHEERNORMALMS	550
 // #define CHEERALOTMS		120
 

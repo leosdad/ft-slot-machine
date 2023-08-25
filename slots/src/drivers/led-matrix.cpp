@@ -19,10 +19,9 @@ void LedMatrix::start()
 }
 
 // TODO: Must use a delay-less loop
-
 void LedMatrix::clearColumns(uint8_t start, uint8_t end)
 {
-	for(uint8_t i = columnZero - start; i <= columnZero - end; i++) {
+	for(uint8_t i = columnZero - end; i <= columnZero - start; i++) {
 		mx.setColumn(i, 0x00);
 	}
 }
@@ -54,12 +53,12 @@ void LedMatrix::printText(const char *str, uint8_t offset = 0)
 	// TODO: actually strlen() should not be necessary
 	uint8_t len = strlen(str);
 
-	Serial.print("String: ");
-	Serial.println(str);
-	Serial.print("Strlen: ");
-	Serial.println(len);
-	Serial.print("Pos before: ");
-	Serial.println(pos);
+	// Serial.print("String: ");
+	// Serial.println(str);
+	// Serial.print("Strlen: ");
+	// Serial.println(len);
+	// Serial.print("Pos before: ");
+	// Serial.println(pos);
 
 	for(uint8_t i = 0; str[i] != '\0', pos, i < len; i++) {
 		charWidth = mx.setChar(pos, str[i]);
@@ -67,9 +66,9 @@ void LedMatrix::printText(const char *str, uint8_t offset = 0)
 		mx.setColumn(pos + 1, 0x00);
 	}
 
-	Serial.print("Pos before: ");
-	Serial.println(pos);
-	Serial.println();
+	// Serial.print("Pos before: ");
+	// Serial.println(pos);
+	// Serial.println();
 
 	mx.setColumn(pos + 1, 0x00);
 }

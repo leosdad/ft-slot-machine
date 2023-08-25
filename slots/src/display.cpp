@@ -9,10 +9,6 @@
 
 // ----------------------------------------------------- Public member functions
 
-// Remove from here
-#define DIGITS 		4	// Max = 9999
-#define TEXTPOS		12	// Was ((4 * 8) - (4 * (DIGITS + 1)) + 1)
-
 void Display::start()
 {
 	mx.control(MD_MAX72XX::INTENSITY, MX_BRIGHTNESS);
@@ -28,7 +24,7 @@ void Display::displayBet(uint8_t value)
 void Display::show(const char* msg)
 {
 	mx.clear(0, 2);
-	ledMatrix.scrollText(msg, TEXTPOS);
+	ledMatrix.scrollText(msg, MX_TEXTPOS);
 }
 
 /**
@@ -36,8 +32,9 @@ void Display::show(const char* msg)
  */
 void Display::show(uint8_t value)
 {
-	ledMatrix.clearColumns(8, 11);
-	ledMatrix.printUnsignedInteger(value, DIGITS, TEXTPOS, NumberPadding::SPACES);
+	ledMatrix.clearColumns(MX_TEXTPOS, MX_NUMPOS);
+	ledMatrix.printUnsignedInteger(value, MAXCOINDIGITS,
+		MX_NUMPOS, NumberPadding::SPACES);
 }
 
 void Display::clear()

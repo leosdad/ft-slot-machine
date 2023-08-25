@@ -25,8 +25,6 @@
 // Define the number of devices we have in the chain and the hardware interface
 // NOTE: These pin numbers will probably not work with your hardware and may
 // need to be adapted
-// #define HARDWARE_TYPE MD_MAX72XX::ICSTATION_HW
-// #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 #define MAX_DEVICES	  4
 

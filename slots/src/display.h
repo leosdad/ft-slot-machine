@@ -19,6 +19,7 @@ class Display
 	public:
 		void start();
 		void show(const char *msg);
+		void show(uint8_t value);
 		void clear();
 		void displayBet(uint8_t value);
 };

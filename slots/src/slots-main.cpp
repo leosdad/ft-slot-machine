@@ -22,7 +22,6 @@ Display display;
 uint8_t lastBet = 255;
 auto updateTimer = timer_create_default();
 auto lockLedsTimer = timer_create_default();
-char *nextMessage = "";
 bool frozen = false;
 
 // ------------------------------------------------------------ Global functions
@@ -48,7 +47,7 @@ bool blinkLockLEDs(void *)
 void endSpin()
 {
 	frozen = false;
-	display.show(nextMessage);
+	display.show(game.nCoins);
 }
 
 // ---------------------------------------------------- Private member functions
@@ -92,7 +91,6 @@ void SlotsMain::inputLoop()
 	if(!spinning) {
 		if(startLever.isPressed()) {
 			display.show("Spin ");
-			nextMessage = "Done ";
 			#if !SPEEDUP
 			delay(500);	// TODO: Replace with non-blocking timer
 			#endif
@@ -123,7 +121,7 @@ void SlotsMain::Setup()
 
 	ledMatrix.start();
 	display.start();
-	display.show("Hello");
+	display.show(" Hi...");
 	updateTimer.every(UPDATEBET, updateBet);
 	lockLedsTimer.every(LOCKBLINK, blinkLockLEDs);
 

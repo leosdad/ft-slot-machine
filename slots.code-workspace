@@ -21,6 +21,14 @@
 			"!text"
 		],
 
+		// Looks awful, but the proportion is similar to the LED matrix
+		// when editing MD_MAX72XX font text files
+		// "[txt]": {
+		// 	"editor.fontFamily": "Moby Monospace",
+		// 	"editor.letterSpacing": 3,
+		// 	"editor.lineHeight": 14
+		// },
+
 		// "workbench.colorTheme": "Visual Studio Light",		
 	}
 }

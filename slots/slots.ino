@@ -7,6 +7,7 @@
 // -------------------------------------------------------------------- Includes
 
 #include "src/slots-main.h"
+// #include "src/tests/led-matrix-tests.h"
 
 // ----------------------------------------------------------------------- Setup
 
@@ -14,6 +15,7 @@ SlotsMain slotsMain;
 
 void setup()
 {
+	// ledMatrixTestsSetup();
 	slotsMain.Setup();
 }
 
@@ -21,6 +23,7 @@ void setup()
 
 void loop()
 {
+	// ledMatrixTestsLoop();
 	slotsMain.Loop();
 }
 

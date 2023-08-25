@@ -16,8 +16,8 @@
 
 // Debug flags
 
-#define DEBUGINFO		true	// Send debug data to the serial port
-#define LOCKDEBUGINFO	true	// Shows debug information about the lock state
+#define DEBUGINFO		false	// Send spin debug info to the serial port
+#define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define SPEEDUP			true	// Remove extra reel spins and slow speed
 #define SIMULATE		false	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
@@ -28,11 +28,11 @@
 #define MAXCOINS		9999	// Up to 16384
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
-#define BALLVALUE		101		// How much is needed to retrieve a ball
-#define MAXBALLS		6		// Up to 7
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	22		// Number of payoff combinations
+#define BALLVALUE		101		// How much is needed to retrieve a ball
+#define MAXBALLS		6		// Up to 7
 
 // Time and hardware constants
 
@@ -44,6 +44,7 @@
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
+#define MX_BRIGHTNESS   0		// LED matrix brightness
 // #define CHEERNORMALMS	550
 // #define CHEERALOTMS		120
 

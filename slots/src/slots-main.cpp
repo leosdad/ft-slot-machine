@@ -7,11 +7,12 @@
 #include <arduino-timer.h>
 #include "drivers/led-matrix.h"
 #include "drivers/pwm-micros.h"
-#include "slots-main.h"
-#include "game.h"
-#include "reel.h"
+#include "cheering.h"
 #include "display.h"
+#include "game.h"
 #include "locks.h"
+#include "reel.h"
+#include "slots-main.h"
 
 // ------------------------------------------------------------ Global variables
 
@@ -19,9 +20,12 @@ Game game;
 Locks locks;
 LedMatrix ledMatrix;
 Display display;
-uint8_t lastBet = 255;
+Cheering cheers;
+
 auto updateTimer = timer_create_default();
 auto lockLedsTimer = timer_create_default();
+
+uint8_t lastBet = 255;
 bool frozen = false;
 
 // ------------------------------------------------------------ Global functions
@@ -50,6 +54,20 @@ void endSpin()
 	display.show(game.nCoins);
 }
 
+/**
+ * Called when a new spin is about to start.
+ */
+void startSpin()
+{
+	cheers.Stop();
+	frozen = true;
+	display.show("Spin ");
+	#if !SPEEDUP
+	delay(500);	// TODO: Replace with non-blocking timer
+	#endif
+	game.StartSpin(false);
+}
+
 // ---------------------------------------------------- Private member functions
 
 void SlotsMain::ioSetup()
@@ -59,8 +77,6 @@ void SlotsMain::ioSetup()
 	pinMode(servoPin, OUTPUT);
 	pinMode(signalLED1Gnd, OUTPUT);
 	pinMode(signalLED2Gnd, OUTPUT);
-	pinMode(signalLED1Pin, OUTPUT);
-	pinMode(signalLED2Pin, OUTPUT);
 
 	// Set fixed levels
 
@@ -90,13 +106,7 @@ void SlotsMain::inputLoop()
 
 	if(!spinning) {
 		if(startLever.isPressed()) {
-			display.show("Spin ");
-			#if !SPEEDUP
-			delay(500);	// TODO: Replace with non-blocking timer
-			#endif
-			frozen = true;
-			// locks.Freeze();
-			game.StartSpin(false);
+			startSpin();
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
 		} else if(decreaseBet.isPressed()) {
@@ -122,6 +132,7 @@ void SlotsMain::Setup()
 	ledMatrix.start();
 	display.start();
 	display.show(" Hi...");
+	cheers.Start();
 	updateTimer.every(UPDATEBET, updateBet);
 	lockLedsTimer.every(LOCKBLINK, blinkLockLEDs);
 
@@ -139,6 +150,7 @@ void SlotsMain::Loop()
 	updateTimer.tick();
 	lockLedsTimer.tick();
 	locks.Loop(spinning);
+	cheers.Loop(!spinning && game.spinPayoff, false);	// TODO: cheer a lot
 	if(spinning != lastSpinning) {
 		if(!spinning) {
 			endSpin();

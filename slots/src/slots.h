@@ -48,8 +48,10 @@
 #define MX_BRIGHTNESS   0		// LED matrix brightness
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
-// #define CHEERNORMALMS	550
-// #define CHEERALOTMS		120
+#define CHEER_MIN		10		// Minimum brightness for cheering
+#define CHEER_MAX		255		// Maximum brightness for cheering
+#define CHEERMS			500		// Fading frequency when cheering
+#define CHEERALOTMS		120		// Blinking frequency when cheering a lot
 
 // Model-dependent constants, cannot be changed
 

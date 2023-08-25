@@ -1,4 +1,4 @@
-.NAME font3x5_fixed
+.NAME font3x5_fixed_num
 .FONT_HEIGHT 5
 .HEIGHT 1
 .WIDTH 3
@@ -100,7 +100,7 @@
 @@@
   @ 
 @@@
-.CHAR 57
+.CHAR 58
 .NOTE ':'
 @@
 @@

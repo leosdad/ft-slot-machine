@@ -5,7 +5,6 @@
 // -------------------------------------------------------------------- Includes
 
 #include <ezButton.h>
-#include <ezLED.h>
 #include <TrueRandom.h>
 
 #include "slots.h"
@@ -36,6 +35,10 @@ bool Reel::sensing()
 		} else {
 			nSteps = finalSteps;
 			currentSignal = digitalRead(encoderPin);
+			#if !SPEEDUP
+				// HACK
+				motor.RotateCW(slowSpeed[index]);
+			#endif
 			reelState = ReelState::COUNTING;
 		}
 	}
@@ -61,6 +64,7 @@ bool Reel::counting()
 // ----------------------------------------------------- Public member functions
 
 void Reel::Setup(
+	const uint8_t reelIndex,
 	const uint8_t motorOutPinNumbers[2],
 	const uint8_t encoderPinNumber,
 	const uint8_t homeSensorPinNumber,
@@ -69,6 +73,7 @@ void Reel::Setup(
 {
 	// Setup variables
 
+	index = reelIndex;
 	encoderPin = encoderPinNumber;
 	homePin = homeSensorPinNumber;
 	motorSpeed = motorSpeedValue;

@@ -18,9 +18,8 @@
 			"**/*.rpp": true
 		},
 		"cSpell.enableFiletypes": [
-			"!text",
-			"!markdown"
-		]
+			"!text"
+		],
 
 		// "workbench.colorTheme": "Visual Studio Light",		
 	}

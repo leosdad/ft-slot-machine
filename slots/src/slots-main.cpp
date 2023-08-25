@@ -5,8 +5,9 @@
 // -------------------------------------------------------------------- Includes
 
 #include <arduino-timer.h>
-#include "slots-main.h"
 #include "drivers/led-matrix.h"
+#include "drivers/pwm-micros.h"
+#include "slots-main.h"
 #include "game.h"
 #include "reel.h"
 #include "display.h"
@@ -21,6 +22,8 @@ Display display;
 uint8_t lastBet = 255;
 auto updateTimer = timer_create_default();
 auto lockLedsTimer = timer_create_default();
+char *nextMessage = "";
+bool frozen = false;
 
 // ------------------------------------------------------------ Global functions
 
@@ -33,10 +36,19 @@ bool updateBet(void *)
 	return true;
 }
 
-bool lockLedsFlash(void *)
+bool blinkLockLEDs(void *)
 {
-	locks.ledState = !locks.ledState;
+	locks.ledState = frozen ? LOW : !locks.ledState;
 	return true;
+}
+
+/**
+ * Called once when the spin ends.
+ */
+void endSpin()
+{
+	frozen = false;
+	display.show(nextMessage);
 }
 
 // ---------------------------------------------------- Private member functions
@@ -79,6 +91,13 @@ void SlotsMain::inputLoop()
 
 	if(!spinning) {
 		if(startLever.isPressed()) {
+			display.show("Spin ");
+			nextMessage = "Done ";
+			#if !SPEEDUP
+			delay(500);	// TODO: Replace with non-blocking timer
+			#endif
+			frozen = true;
+			// locks.Freeze();
 			game.StartSpin(false);
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
@@ -104,12 +123,12 @@ void SlotsMain::Setup()
 
 	ledMatrix.start();
 	display.start();
-	updateTimer.every(UPDATEBET, updateBet);	// TODO: remove constants
-	lockLedsTimer.every(LOCKBLINK, lockLedsFlash);
+	display.show("Hello");
+	updateTimer.every(UPDATEBET, updateBet);
+	lockLedsTimer.every(LOCKBLINK, blinkLockLEDs);
 
 	// Perform a first (home) spin
 
-	display.welcome();
 	locks.Setup();
 	game.Setup();
 	game.StartSpin(true);
@@ -118,10 +137,16 @@ void SlotsMain::Setup()
 void SlotsMain::Loop()
 {
 	spinning = game.Loop();
+	inputLoop();
 	updateTimer.tick();
 	lockLedsTimer.tick();
-	inputLoop();
 	locks.Loop(spinning);
+	if(spinning != lastSpinning) {
+		if(!spinning) {
+			endSpin();
+		}
+		lastSpinning = spinning;
+	}
 }
 
 #pragma endregion

@@ -28,6 +28,7 @@ class Reel
 		ReelState reelState = ReelState::IDLE;	// Machine state
 		byte currentSignal;			// Used for debouncing
 		unsigned long lastChange; 	// Used for debouncing
+		uint8_t index;				// Reel index
 		uint16_t nSteps;			// Steps counter
 		uint16_t finalSteps;		// Steps after sensor is triggered
 		uint8_t rotations;			// Rotation counter
@@ -54,6 +55,7 @@ class Reel
 		// Public member functions
 
 		void Setup(
+			const uint8_t index,
 			const uint8_t motorPins[2],
 			const uint8_t encoderPin,
 			const uint8_t homeSensorPin,

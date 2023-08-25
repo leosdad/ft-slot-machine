@@ -16,8 +16,9 @@
 
 // Debug flags
 
-#define DEBUGINFO		false	// Show debug data on the OLED display
-#define SPEEDUP			true	// Remove extra reel spins
+#define DEBUGINFO		true	// Send debug data to the serial port
+#define LOCKDEBUGINFO	true	// Shows debug information about the lock state
+#define SPEEDUP			true	// Remove extra reel spins and slow speed
 #define SIMULATE		false	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
 
@@ -35,15 +36,16 @@
 
 // Time and hardware constants
 
-#define BAUDRATE		57600
-#define UPDATEBET		80
-#define LOCKBLINK		200
-#define CHEERNORMALMS	550
-#define CHEERALOTMS		120
-#define SIMULATEDELAY	50
-#define EZBTNDEBOUNCE	10
+#define BAUDRATE		57600	// For serial communication
+#define UPDATEBET		80		// Rate of display update timer
+#define LOCKBLINK		300		// Blink frequency of LEDs with allowed lock
+#define LOCKPWM			30		// PWM value of LEDs with allowed lock
+#define SIMULATEDELAY	50		// Delay used in simulation mode
+#define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
+// #define CHEERNORMALMS	550
+// #define CHEERALOTMS		120
 
 // Model-dependent constants, cannot be changed
 
@@ -73,6 +75,7 @@ struct payoffItem {
 
 // Speed for each motor. Similar motors may behave differently at slow speeds.
 static const uint8_t motorSpeed[NREELS] = {70, 90, 83};
+static const uint8_t slowSpeed[NREELS] = {40, 60, 60};
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

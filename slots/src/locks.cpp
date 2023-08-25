@@ -98,6 +98,9 @@ Lock lock[NREELS];
 	// 	}
 	// }
 
+/**
+ * Shows debug information about the lock state.
+ */
 void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
 {
 	// Debug
@@ -107,7 +110,7 @@ void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
 		(game.currentBet != lastBetValue)) {
 		uint8_t allowed = 0;
 		for(int i = 0; i < NREELS; i++) {
-			if(lock[i].Allowed()) {
+			if(lock[i].IsAllowed()) {
 				allowed++;
 			}
 		}
@@ -135,15 +138,18 @@ void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
 void Locks::Setup()
 {
 	for(int i = 0; i < NREELS; i++) {
-		lock[i].Setup(lockButtonPins[i], lockLEDPins[i]);
+		lock[i].Setup(i, lockButtonPins[i], lockLEDPins[i]);
 	}
 }
 
 void Locks::Loop(bool isSpinning)
 {
-	// Works only if reels are stopped
+	// Used only if reels are stopped
 
 	if(isSpinning) {
+		for(int i = 0; i < NREELS; i++) {
+			lock[i].FrozenLoop();
+		}
 		return;
 	}
 
@@ -169,7 +175,7 @@ void Locks::Loop(bool isSpinning)
 	} else if(currentlyLocked == maxLockable) {
 
 		for(int i = 0; i < NREELS; i++) {
-			if(!lock[i].Locked()) {
+			if(!lock[i].IsLocked()) {
 				lock[i].Allow(false);
 			}
 		}
@@ -177,7 +183,7 @@ void Locks::Loop(bool isSpinning)
 	} else {	// (currentlyLocked > maxLockable)
 
 		for(int i = NREELS - 1; i >= 0;  i--) {
-			if(lock[i].Locked()) {
+			if(lock[i].IsLocked()) {
 				lock[i].Unlock();
 				currentlyLocked--;
 				if(currentlyLocked <= maxLockable) {
@@ -188,7 +194,9 @@ void Locks::Loop(bool isSpinning)
 
 	}
 
-	// debug(currentlyLocked, maxLockable);
+	#if LOCKDEBUGINFO
+	debug(currentlyLocked, maxLockable);
+	#endif
 }
 
 // ------------------------------------------------------------------------- End

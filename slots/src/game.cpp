@@ -14,23 +14,6 @@ Reel reels[NREELS];
 
 // ---------------------------------------------------- Private member functions
 
-// void Game::loopWhenStopped()
-// {
-// 	// locks.LoopWhenStopped(this);
-
-// 	bool changed = false;
-
-// 	for(int i = 0; i < NREELS; i++) {
-// 		if(reels[i].LoopWhenStopped()) {
-// 			changed = true;
-// 		}
-// 	}
-
-// 	if(changed) {
-// 		locks.CalcLocked(this);
-// 	}
-// }
-
 /**
  * Set up the hardware pins and some variables.
  */
@@ -44,6 +27,7 @@ void Game::setupReels(
 ) {
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].Setup(
+			i,
 			motorPins[i],
 			encoderPins[i],
 			homeSensorPins[i],
@@ -67,9 +51,6 @@ uint8_t Game::setBet(int8_t bet)
  */
 void Game::stopSpin()
 {
-	// spinning = false;
-	// locks.LockUnlock(this);
-
 	if(playing) {
 		nCoins = constrain(nCoins + spinPayoff, 0, MAXCOINS);
 
@@ -101,47 +82,6 @@ void Game::init()
 	setBet(INITIALBET);
 }
 
-// ----------------------------------------------------- Public member functions
-
-/**
- * Starts a new spin.
- */
-void Game::StartSpin(bool home)
-{
-	newBall = false;
-	// locks.AllowNext(home);
-
-	uint8_t xtraTurns = 0;
-
-	// Starts each reel
-
-	for(int i = 0; i < NREELS; i++) {
-		xtraTurns = reels[i].Start(home, xtraTurns);
-	}
-	
-	if(!home) {
-		payoffs.CalculateTotalPayoff(this);
-		playing = true;
-		totalSpins++;
-	}
-
-	if(playing) {
-		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
-	}
-
-	printDebugData(home);
-}
-
-/**
- * Increments the bet by the amount given.
- */
-uint8_t Game::ChangeBet(int8_t bet)
-{
-	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
-	// locks.CalcLocked(this);
-	return currentBet;
-}
-
 /**
  * Print debug data on the serial port for each spin.
  */
@@ -165,6 +105,7 @@ void Game::printDebugData(bool home)
 		"Grapes"
 	};
 
+	Serial.println();
 	Serial.print("---- Spin #");
 	Serial.print(totalSpins);
 	Serial.print(" ----");
@@ -204,8 +145,48 @@ void Game::printDebugData(bool home)
 
 	Serial.print("Total wins: ");
 	Serial.println(totalWins);
+}
 
-	Serial.println();
+// ----------------------------------------------------- Public member functions
+
+/**
+ * Starts a new spin.
+ */
+void Game::StartSpin(bool home)
+{
+	newBall = false;
+	// locks.AllowNext(home);
+
+	uint8_t xtraTurns = 0;
+
+	// Starts each reel
+
+	for(int i = 0; i < NREELS; i++) {
+		xtraTurns = reels[i].Start(home, xtraTurns);
+	}
+	
+	if(!home) {
+		payoffs.CalculateTotalPayoff(this);
+		playing = true;
+		totalSpins++;
+	}
+
+	if(playing) {
+		nCoins = constrain(nCoins - currentBet, 0, MAXCOINS);
+	}
+
+	#if DEBUGINFO
+		printDebugData(home);
+	#endif
+}
+
+/**
+ * Increments the bet by the amount given.
+ */
+uint8_t Game::ChangeBet(int8_t bet)
+{
+	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
+	return currentBet;
 }
 
 /**

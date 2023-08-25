@@ -27,6 +27,7 @@ class Locks
 
 		bool ledState = false;
 		void Setup();
+		// void Freeze();
 		void Loop(bool isSpinning);
 };
 

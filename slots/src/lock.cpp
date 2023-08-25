@@ -15,22 +15,33 @@ extern Game game;
 /**
  * Setup a single lock.
  */
-void Lock::Setup(uint8_t lockButtonPinNumber, uint8_t lockLEDPinNumber)
+void Lock::Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLEDPinNumber)
 {
+	index = lockIndex;
+	ledPin = lockLEDPinNumber;
 	ezLockButton = ezButton(lockButtonPinNumber, INPUT_PULLUP);
 	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
-	ezLockLED = ezLED(lockLEDPinNumber);
+	pwm.Setup(ledPin, LOCKPWM);
+}
+
+/**
+ * Maybe too expensive justo to keep a LED on or off, but other options are
+ * surprisingly hard to make right and debug.
+ */
+void Lock::FrozenLoop()
+{
+	digitalWrite(ledPin, locked);
 }
 
 /**
  * Monitors the lock button, changes lock state and LED accordingly.
- * Returns `true` if the lock is locked.
  * Should be called only while reels are stopped.
+ * @returns `true` if the lock is locked.
  */
 bool Lock::Loop(bool ledOn)
 {
 	ezLockButton.loop();
-	ezLockLED.loop();
+	pwm.Loop();
 
 	if(ezLockButton.isPressed()) {
 		if(lockAllowed) {
@@ -39,16 +50,12 @@ bool Lock::Loop(bool ledOn)
 	}
 
 	if(locked) {
-		ezLockLED.turnON();
+		pwm.TurnOn();
 	} else {
 		if(lockAllowed) {
-			if(ledOn) {
-				ezLockLED.blink(1, 5);	// PWM of sorts
-			} else {
-				ezLockLED.turnOFF();
-			}
+			pwm.SetValue(ledOn ? LOCKPWM : 0);
 		} else {
-			ezLockLED.turnOFF();
+			pwm.TurnOff();
 		}
 	}
 
@@ -57,7 +64,7 @@ bool Lock::Loop(bool ledOn)
 
 /**
  * Sets the lock allowed flag value.
- * Returns `true` if the lock is locked.
+ * @returns `true` if the lock is locked.
  */
 bool Lock::Allow(bool allow)
 {
@@ -69,17 +76,17 @@ bool Lock::Allow(bool allow)
 }
 
 /**
- * Returns the locked state.
+ * @returns The locked state.
  */
-bool Lock::Locked()
+bool Lock::IsLocked()
 {
 	return locked;
 }
 
 /**
- * Returns the allowed state.
+ * @returns The allowed state.
  */
-bool Lock::Allowed()
+bool Lock::IsAllowed()
 {
 	return lockAllowed;
 }

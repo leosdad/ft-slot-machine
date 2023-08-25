@@ -14,16 +14,22 @@ void Display::start()
 	mx.clear();
 }
 
-void Display::welcome()
+void Display::show(const char* msg)
 {
 	mx.setFont(_sysfont);
-	ledMatrix.printText("Hello", 13);
+	ledMatrix.printText(msg, 8);
+}
+
+void Display::clear()
+{
+	mx.setFont(_sysfont);
+	ledMatrix.printText("        ", 8);
 }
 
 // TODO: show icons instead
 void Display::displayBet(uint8_t value)
 {
-	mx.setFont(_LCD4x8_fixed_num);
+	mx.setFont(_font4x8_fixed_num);
 	ledMatrix.printUnsignedInteger(value, 1);
 }
 

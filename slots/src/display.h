@@ -18,7 +18,8 @@ class Display
 {
 	public:
 		void start();
-		void welcome();
+		void show(const char *msg);
+		void clear();
 		void displayBet(uint8_t value);
 };
 

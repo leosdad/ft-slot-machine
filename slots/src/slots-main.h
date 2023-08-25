@@ -17,6 +17,7 @@ class SlotsMain
 	private:
 
 		bool spinning = false;
+		bool lastSpinning = -1;
 		ezButton startLever{0};
 		ezButton increaseBet{0};
 		ezButton decreaseBet{0};

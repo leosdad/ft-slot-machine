@@ -5,7 +5,7 @@
 
 #include "motor-driver.h"
 
-// ---------------------------------------------------------------- Constructors
+// ----------------------------------------------------- Public member functions
 
 /**
  * Initialize the motor.
@@ -34,8 +34,6 @@ void MotorDriver::Init(const uint8_t motorPort1, const uint8_t motorPort2,
 	pinMode(motorOutB, OUTPUT);
 	reversed = reversePolarity;	
 }
-
-// ----------------------------------------------------- Public member functions
 
 /**
  * Rotate motor counterclockwise at full speed.

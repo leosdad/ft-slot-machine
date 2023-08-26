@@ -2,8 +2,7 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
@@ -46,5 +45,3 @@ class Game
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // GAME_H

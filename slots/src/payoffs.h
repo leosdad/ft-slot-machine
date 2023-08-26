@@ -2,8 +2,7 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef PAYOFFS_H
-#define PAYOFFS_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
@@ -29,5 +28,3 @@ class Payoffs
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // PAYOFFS_H

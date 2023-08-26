@@ -2,7 +2,11 @@
 // Time division PWM driver with micros()
 // With the help of ChatGPT
 
+// -------------------------------------------------------------------- Includes
+
 #include "pwm-micros.h"
+
+// ----------------------------------------------------- Public member functions
 
 /**
  * Constructor.
@@ -57,3 +61,5 @@ void PwmMicros::TurnOff()
 {
 	SetValue(0);
 }
+
+// ------------------------------------------------------------------------- End

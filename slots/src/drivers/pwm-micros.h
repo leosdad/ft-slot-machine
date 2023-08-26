@@ -2,12 +2,17 @@
 // Time division PWM driver with micros()
 // With the help of ChatGPT
 
-#ifndef PWM_MICROS_H
-#define PWM_MICROS_H
+#pragma once
+
+// -------------------------------------------------------------------- Includes
 
 #include <Arduino.h>
 
+// --------------------------------------------------------------------- Defines
+
 #define DEFAULTCYCLEDURATION 10000  // 10 ms in μs
+
+// ----------------------------------------------------------- Class declaration
 
 /**
  * Time division PWM driver with micros().
@@ -31,4 +36,4 @@ class PwmMicros
 		void Loop();
 };
 
-#endif // PWM_MICROS_H
+// ------------------------------------------------------------------------- End

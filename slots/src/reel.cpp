@@ -35,9 +35,7 @@ bool Reel::sensing()
 		} else {
 			nSteps = finalSteps;
 			currentSignal = digitalRead(encoderPin);
-			#if !SPEEDUP
-				motor.RotateCW(slowSpeed);
-			#endif
+			motor.RotateCW(slowSpeed);
 			reelState = ReelState::COUNTING;
 		}
 	}

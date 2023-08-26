@@ -1,26 +1,22 @@
-// -----------------------------------------------------------------------------
 
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-// -----------------------------------------------------------------------------
-
-#ifndef SLOTS_CONSTANTS_H
-#define SLOTS_CONSTANTS_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
 #include <Arduino.h>
 
-// --------------------------------------------------------------------- Defines
-
-// Debug flags
+// ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		false	// Send spin debug info to the serial port
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define SPEEDUP			true	// Remove extra reel spins and slow speed
 #define SIMULATE		false	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
+
+// --------------------------------------------------------------------- Defines
 
 // Game constants
 
@@ -80,8 +76,14 @@ struct payoffItem {
 // ------------------------------------------------------------------- Constants
 
 // Speed for each motor. Similar motors may behave differently, mainly at slow speeds.
+
+#if !SPEEDUP
 static const uint8_t normalSpeeds[NREELS] = {70, 90, 83};
-static const uint8_t slowSpeeds[NREELS] = {35, 45, 42};
+static const uint8_t slowSpeeds[NREELS] = {45, 55, 52};
+#else
+static const uint8_t normalSpeeds[NREELS] = {90, 110, 100};
+static const uint8_t slowSpeeds[NREELS] = {90, 110, 100};
+#endif
 
 /**
  * Encoder steps needed for each reel position. Each number of steps
@@ -154,5 +156,3 @@ static const uint8_t leftLedPin = signalLED1Pin;
 static const uint8_t rightLedPin = signalLED2Pin;
 
 // ------------------------------------------------------------------------- End
-
-#endif	// SLOTS_CONSTANTS_H

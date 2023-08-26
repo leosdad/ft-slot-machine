@@ -2,8 +2,7 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef CHEERING_H
-#define CHEERING_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
@@ -32,5 +31,3 @@ class Cheering
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // CHEERING_H

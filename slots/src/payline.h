@@ -2,8 +2,7 @@
 // fischertechnik / Arduino Slots
 // Rubem Pechansky 2023
 
-#ifndef PAYLINE_H
-#define PAYLINE_H
+#pragma once
 
 // -------------------------------------------------------------------- Includes
 
@@ -21,5 +20,3 @@ class Payline
 };
 
 // ------------------------------------------------------------------------- End
-
-#endif // PAYLINE_H

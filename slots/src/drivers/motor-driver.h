@@ -23,13 +23,9 @@ class MotorDriver
 
 	public:
 
-		// MotorDriver(const uint8_t motorPorts[2], bool reversePolarity = false);
-		// MotorDriver(const uint8_t motorPort1, const uint8_t motorPort2,
-		// 	bool reversePolarity = false);
 		void Init(const uint8_t motorPorts[2], bool reversePolarity = false);
 		void Init(const uint8_t motorPort1, const uint8_t motorPort2,
 			bool reversePolarity = false);
-
 		void FullRotateCCW();
 		void FullRotateCW();
 		void RotateCCW(const uint8_t speed);

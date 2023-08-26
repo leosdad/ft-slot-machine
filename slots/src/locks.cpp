@@ -20,8 +20,6 @@ Lock lock[NREELS];
  */
 void Locks::AllowOrBlock(bool allow)
 {
-	Serial.print(allow);
-
 	allowNext = allow;
 	if(allow) {
 		allowNext = true;

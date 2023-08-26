@@ -5,12 +5,14 @@
 // -------------------------------------------------------------------- Includes
 
 #include "game.h"
+#include "lock.h"
 #include "payoffs.h"
 
 // ------------------------------------------------------------ Global variables
 
 Payoffs payoffs;
 Reel reels[NREELS];
+extern Lock lock[NREELS];
 
 // ---------------------------------------------------- Private member functions
 
@@ -132,14 +134,14 @@ void Game::printDebugData(bool home)
 void Game::StartSpin(bool home)
 {
 	newBall = false;
-	// locks.AllowNext(home);
-
 	uint8_t xtraTurns = 0;
 
 	// Starts each reel
 
 	for(int i = 0; i < NREELS; i++) {
-		xtraTurns = reels[i].Start(home, xtraTurns);
+		if(!lock[i].IsLocked()) {
+			xtraTurns = reels[i].Start(home, xtraTurns);
+		}
 	}
 	
 	if(!home) {

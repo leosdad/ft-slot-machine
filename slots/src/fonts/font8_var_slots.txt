@@ -42,6 +42,7 @@
    @@
  
    @@
+   @@
 .CHAR 20
 .NOTE  '4 coins'
 

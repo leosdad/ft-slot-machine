@@ -5,99 +5,104 @@
 
 #include "motor-driver.h"
 
-// ---------------------------------------------------- Private member functions
-
-void MotorDriver::initMotor(const uint8_t motorPorts[2])
-{
-	motorOutA = motorPorts[0];
-	motorOutB = motorPorts[1];
-	pinMode(motorOutA, OUTPUT);		// Possibly not necessary for analogWrite()
-	pinMode(motorOutB, OUTPUT);		// Possibly not necessary for analogWrite()
-}
-
-// void MotorDriver::initEncoder(const uint8_t _encoder)
-// {
-// 	encoder = _encoder;
-// 	pinMode(encoder, INPUT_PULLUP);
-// }
-
 // ---------------------------------------------------------------- Constructors
 
-// MotorDriver::MotorDriver(const uint8_t motorPorts[2], const uint8_t encoder)
-// {
-// 	initMotor(motorPorts);
-// 	initEncoder(encoder);
-// }
-
-MotorDriver::MotorDriver(const uint8_t motorPorts[2])
+/**
+ * Initialize the motor.
+ * 
+ * @param motorPorts An array with the two motor pin numbers.
+ * @param reversePolarity Reverse the motor polarity.
+ */
+void MotorDriver::Init(const uint8_t motorPorts[2], bool reversePolarity = false)
 {
-	initMotor(motorPorts);
+	Init(motorPorts[0], motorPorts[1], reversePolarity);
+}
+
+/**
+ * Initialize the motor.
+ * 
+ * @param motorPort1 First motor pin number.
+ * @param motorPort2 Second motor pin number.
+ * @param reversePolarity Reverse the motor polarity.
+ */
+void MotorDriver::Init(const uint8_t motorPort1, const uint8_t motorPort2,
+	bool reversePolarity = false)
+{
+	motorOutA = motorPort1;
+	motorOutB = motorPort2;
+	pinMode(motorOutA, OUTPUT);
+	pinMode(motorOutB, OUTPUT);
+	reversed = reversePolarity;	
 }
 
 // ----------------------------------------------------- Public member functions
 
-void MotorDriver::Init(const uint8_t motorPorts[2])
-{
-	initMotor(motorPorts);
-}
-
-// void MotorDriver::Init(const uint8_t motorPorts[2], const uint8_t encoder)
-// {
-// 	initMotor(motorPorts);
-// 	initEncoder(encoder);
-// }
-
-// Rotate at full speed
-
+/**
+ * Rotate motor counterclockwise at full speed.
+ */
 void MotorDriver::FullRotateCCW()
 {
 	digitalWrite(motorOutA, HIGH);
 	digitalWrite(motorOutB, LOW);
 }
 
+/**
+ * Rotate motor clockwise at full speed.
+ */
 void MotorDriver::FullRotateCW()
 {
 	digitalWrite(motorOutA, LOW);
 	digitalWrite(motorOutB, HIGH);
 }
 
-// Rotate with PWM
-
+/**
+ * Rotate motor counterclockwise with PWM.
+ * 
+ * @param speed Motor speed (0 to 255).
+ */
 void MotorDriver::RotateCCW(const uint8_t speed)
 {
-	if(reversePolarity) {
-		digitalWrite(motorOutA, HIGH);
-		analogWrite(motorOutB, 255 - max(0, min(255, speed)));
+	if(!reversed) {
+		analogWrite(motorOutA, 255 - speed);
+		digitalWrite(motorOutB, HIGH);
 	} else {
 		digitalWrite(motorOutA, LOW);
-		analogWrite(motorOutB, max(0, min(255, speed)));
+		analogWrite(motorOutB, speed);
 	}
 }
 
+/**
+ * Rotate motor clockwise with PWM.
+ * 
+ * @param speed Motor speed (0 to 255).
+ */
 void MotorDriver::RotateCW(const uint8_t speed)
 {
-	if(reversePolarity) {
-		analogWrite(motorOutA, 255 - max(0, min(255, speed)));
-		digitalWrite(motorOutB, HIGH);
+	if(!reversed) {
+		digitalWrite(motorOutA, HIGH);
+		analogWrite(motorOutB, 255 - speed);
 	} else {
-		analogWrite(motorOutA, max(0, min(255, speed)));
+		analogWrite(motorOutA, speed);
 		digitalWrite(motorOutB, LOW);
 	}
 }
 
+/**
+ * Let motor deacelerate naturally until it stops.
+ */
 void MotorDriver::Coast()
 {
 	digitalWrite(motorOutA, LOW);
 	digitalWrite(motorOutB, LOW);
 }
 
+/**
+ * Forces motor to stop quickly.
+ */
 void MotorDriver::Brake()
 {
 	digitalWrite(motorOutA, HIGH);
 	digitalWrite(motorOutB, HIGH);
 }
 
-void MotorDriver::SetPolarity(bool negative = false)
-{
-	reversePolarity = negative;
-}
+// ------------------------------------------------------------------------- End

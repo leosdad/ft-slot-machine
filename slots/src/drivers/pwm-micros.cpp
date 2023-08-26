@@ -9,7 +9,7 @@
  * 
  * @param pin PWM pin number.
  * @param pwmValue PWM value from 0 to 255. 0 means fully off, 255 is fully on.
- * @param cycleDuration Total duration of a complete PWM cycle in microseconds.
+ * @param cycleDuration Total duration of a complete PWM cycle in μs.
  */
 void PwmMicros::Setup(const uint8_t pin, const uint8_t pwmValue, const uint32_t cycleDuration = DEFAULTCYCLEDURATION)
 {

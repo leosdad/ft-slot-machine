@@ -3,9 +3,9 @@
 		{
 			"path": "."
 		},
-		{
-			"path": "../doc"
-		},
+		// {
+		// 	"path": "../doc"
+		// },
 		// {
 		// 	"path": "C:/Users/Rubem Pechansky/Documents/Arduino/libraries"
 		// },

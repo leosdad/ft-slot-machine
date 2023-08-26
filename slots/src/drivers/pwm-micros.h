@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#define DEFAULTCYCLEDURATION 10000  // 10 ms in microseconds
+#define DEFAULTCYCLEDURATION 10000  // 10 ms in μs
 
 /**
  * Time division PWM driver with micros().

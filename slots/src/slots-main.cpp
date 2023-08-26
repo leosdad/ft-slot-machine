@@ -74,12 +74,18 @@ void endSpin()
 void startSpin()
 {
 	cheers.Stop();
-	frozen = true;
-	display.show("Spin ");
-	#if !SPEEDUP
-	delay(500);	// TODO: Replace with non-blocking timer
-	#endif
-	game.StartSpin(false);
+
+	if(game.nCoins > 0) {
+		frozen = true;
+		display.show("Spin ");
+		#if !SPEEDUP
+		delay(500);	// TODO: Replace with non-blocking timer
+		#endif
+		game.StartSpin(false);
+	} else {
+		// TODO: occupy the whole display, do not scroll, center, flash, beep & restart
+		display.show("Empty");
+	}
 }
 
 // ---------------------------------------------------- Private member functions

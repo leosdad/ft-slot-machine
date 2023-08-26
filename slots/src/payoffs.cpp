@@ -11,7 +11,6 @@
 /**
  * Looks for a payoff combination from the reel positions. If found, returns the
  * respective payoff times the multiplier. If not, returns zero.
- * 
  * @param paylineIndex Index of the desired payline.
  * @param symbolPositions Array of symbol positions to be displayed (0-11).
  */

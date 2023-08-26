@@ -9,7 +9,6 @@
 
 /**
  * Initialize the motor.
- * 
  * @param motorPorts An array with the two motor pin numbers.
  * @param reversePolarity Reverse the motor polarity.
  */
@@ -20,7 +19,6 @@ void MotorDriver::Init(const uint8_t motorPorts[2], bool reversePolarity = false
 
 /**
  * Initialize the motor.
- * 
  * @param motorPort1 First motor pin number.
  * @param motorPort2 Second motor pin number.
  * @param reversePolarity Reverse the motor polarity.
@@ -55,7 +53,6 @@ void MotorDriver::FullRotateCW()
 
 /**
  * Rotate motor counterclockwise with PWM.
- * 
  * @param speed Motor speed (0 to 255).
  */
 void MotorDriver::RotateCCW(const uint8_t speed)
@@ -71,7 +68,6 @@ void MotorDriver::RotateCCW(const uint8_t speed)
 
 /**
  * Rotate motor clockwise with PWM.
- * 
  * @param speed Motor speed (0 to 255).
  */
 void MotorDriver::RotateCW(const uint8_t speed)

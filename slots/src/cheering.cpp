@@ -27,7 +27,7 @@ void Cheering::Loop(bool enable, bool cheerALot)
 		if(cheerALot) {
 			if(leftSignal.getState() == LED_IDLE) {
 				leftSignal.blinkInPeriod(CHEERALOTMS, CHEERALOTMS, 3000);
-				rightSignal.blink(CHEERALOTMS, CHEERALOTMS, 3000);
+				rightSignal.blinkInPeriod(CHEERALOTMS, CHEERALOTMS, 3000);
 			}
 		} else {
 			if(fadeEnabled && leftSignal.getState() == LED_IDLE) {
@@ -42,6 +42,7 @@ void Cheering::Loop(bool enable, bool cheerALot)
 						isFadedIn = false;
 					}
 				} else {
+					rightSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
 					leftSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
 					fadeEnabled = false;
 				}

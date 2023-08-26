@@ -10,7 +10,6 @@
 
 /**
  * Constructor.
- * 
  * @param pin PWM pin number.
  * @param pwmValue PWM value from 0 to 255. 0 means fully off, 255 is fully on.
  * @param cycleDuration Total duration of a complete PWM cycle in μs.

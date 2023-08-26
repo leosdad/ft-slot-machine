@@ -79,9 +79,9 @@ struct payoffItem {
 
 // ------------------------------------------------------------------- Constants
 
-// Speed for each motor. Similar motors may behave differently at slow speeds.
-static const uint8_t motorSpeed[NREELS] = {70, 90, 83};
-static const uint8_t slowSpeed[NREELS] = {40, 60, 60};
+// Speed for each motor. Similar motors may behave differently, mainly at slow speeds.
+static const uint8_t normalSpeeds[NREELS] = {70, 90, 83};
+static const uint8_t slowSpeeds[NREELS] = {35, 45, 42};
 
 /**
  * Encoder steps needed for each reel position. Each number of steps

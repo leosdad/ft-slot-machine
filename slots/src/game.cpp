@@ -19,22 +19,10 @@ extern Lock lock[NREELS];
 /**
  * Set up the hardware pins and some variables.
  */
-void Game::setupReels(
-	const uint8_t motorPins[NREELS][2],
-	const uint8_t encoderPins[NREELS],
-	const uint8_t homeSensorPins[NREELS],
-	const uint8_t lockButtonPins[NREELS],
-	const uint8_t lockLEDPins[NREELS],
-	const uint8_t motorSpeed[NREELS]
-) {
+void Game::setupReels()
+{
 	for(int i = 0; i < NREELS; i++) {
-		reels[i].Setup(
-			i,
-			motorPins[i],
-			encoderPins[i],
-			homeSensorPins[i],
-			motorSpeed[i]
-		);
+		reels[i].Setup(i);
 	}
 }
 
@@ -44,7 +32,6 @@ void Game::setupReels(
 uint8_t Game::setBet(int8_t bet)
 {
 	currentBet = constrain(min(nCoins, bet), 0, MAXBET);
-	// locks.CalcLocked(this);
 	return currentBet;
 }
 
@@ -173,8 +160,7 @@ uint8_t Game::ChangeBet(int8_t bet)
  */
 void Game::Setup()
 {
-	setupReels(motorOutPins, encoderPins, homeSensorPins,
-	 	lockButtonPins, lockLEDPins, motorSpeed);
+	setupReels();
 	init();
 }
 

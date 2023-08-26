@@ -20,7 +20,7 @@ bool Reel::idle()
 bool Reel::start()
 {
 	rotations = extraTurns;
-	motor.RotateCW(motorSpeed);
+	motor.RotateCW(normalSpeed);
 	reelState = ReelState::SENSING;
 }
 
@@ -36,8 +36,7 @@ bool Reel::sensing()
 			nSteps = finalSteps;
 			currentSignal = digitalRead(encoderPin);
 			#if !SPEEDUP
-				// HACK
-				motor.RotateCW(slowSpeed[index]);
+				motor.RotateCW(slowSpeed);
 			#endif
 			reelState = ReelState::COUNTING;
 		}
@@ -63,34 +62,24 @@ bool Reel::counting()
 
 // ----------------------------------------------------- Public member functions
 
-void Reel::Setup(
-	const uint8_t reelIndex,
-	const uint8_t motorOutPinNumbers[2],
-	const uint8_t encoderPinNumber,
-	const uint8_t homeSensorPinNumber,
-	const uint8_t motorSpeedValue
-)
+void Reel::Setup(const uint8_t reelIndex)
 {
 	// Setup variables
 
 	index = reelIndex;
-	encoderPin = encoderPinNumber;
-	homePin = homeSensorPinNumber;
-	motorSpeed = motorSpeedValue;
+	encoderPin = encoderPins[index];
+	homePin = homeSensorPins[index];
+	normalSpeed = normalSpeeds[index];
+	slowSpeed = slowSpeeds[index];
 
 	// Set pin modes
 
 	pinMode(encoderPin, INPUT_PULLUP);
 	pinMode(homePin, INPUT);
-	pinMode(motorOutPinNumbers[0], OUTPUT);
-	pinMode(motorOutPinNumbers[1], OUTPUT);
 
 	// Setup objects
 
-	encoderPin = encoderPinNumber;
-	homePin = homeSensorPinNumber;
-	motorSpeed = motorSpeedValue;
-	motor = MotorDriver(motorOutPinNumbers);
+	motor.Init(motorOutPins[index]);
 }
 
 /**

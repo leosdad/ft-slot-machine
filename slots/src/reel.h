@@ -37,8 +37,9 @@ class Reel
 
 		uint8_t encoderPin;			// Encoder motor pin
 		uint8_t homePin;			// Home sensor pin
-		uint8_t motorSpeed;			// Motor speed. Motors may behave differently at slow speeds.
-		MotorDriver motor{0};		// Motor that spins this reel
+		uint8_t normalSpeed;		// Normal motor speed
+		uint8_t slowSpeed;			// Slow motor speed
+		MotorDriver motor;			// Motor that spins this reel
 
 		bool idle();
 		bool start();
@@ -54,13 +55,7 @@ class Reel
 
 		// Public member functions
 
-		void Setup(
-			const uint8_t index,
-			const uint8_t motorPins[2],
-			const uint8_t encoderPin,
-			const uint8_t homeSensorPin,
-			const uint8_t motorSpeedValue
-		);
+		void Setup(const uint8_t index);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
 		bool Loop();
 };

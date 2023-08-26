@@ -18,10 +18,11 @@ class Display
 {
 	public:
 		void setup();
-		void show(const char *msg);
-		void show(uint8_t value);
 		void clear();
-		void displayBet(uint8_t value);
+		void show(const char *msg);
+		void showFull(const char *msg);
+		void show(uint8_t value);
+		void showBet(uint8_t value);
 };
 
 // ------------------------------------------------------------------------- End

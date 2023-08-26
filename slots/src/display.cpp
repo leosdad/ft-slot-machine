@@ -16,7 +16,7 @@ void Display::setup()
 	mx.setFont(_font8_var_slots);
 }
 
-void Display::displayBet(uint8_t value)
+void Display::showBet(uint8_t value)
 {
 	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, 16);
 }
@@ -25,6 +25,12 @@ void Display::show(const char* msg)
 {
 	mx.clear(0, 2);
 	ledMatrix.scrollText(msg, MX_TEXTPOS);
+}
+
+void Display::showFull(const char* msg)
+{
+	mx.clear();
+	ledMatrix.scrollText(msg);
 }
 
 /**

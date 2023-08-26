@@ -117,9 +117,14 @@ void Game::printDebugData(bool home)
 
 /**
  * Starts a new spin.
+ * @returns `true` if any of the reels will spin.
  */
-void Game::StartSpin(bool home)
+bool Game::StartSpin(bool home)
 {
+	if(currentBet == 0) {
+		return false;
+	}
+
 	newBall = false;
 	uint8_t xtraTurns = 0;
 
@@ -130,6 +135,8 @@ void Game::StartSpin(bool home)
 			xtraTurns = reels[i].Start(home, xtraTurns);
 		}
 	}
+
+	// At this point the game already knows the results of this spin
 	
 	if(!home) {
 		payoffs.CalculateTotalPayoff(this);
@@ -144,6 +151,8 @@ void Game::StartSpin(bool home)
 	#if DEBUGINFO
 		printDebugData(home);
 	#endif
+
+	return true;
 }
 
 /**

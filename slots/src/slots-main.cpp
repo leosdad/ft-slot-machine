@@ -38,9 +38,16 @@ bool firstSpin = true;
 bool updateBet(void *)
 {
 	if(game.currentBet != lastBet) {
-		display.displayBet(game.currentBet);
+		locks.CalcLocked();
+		if(game.currentBet == 0) {
+			display.showFull("No bet");
+		} else {
+			display.showBet(game.currentBet);
+			display.show(game.nCoins);
+		}
 		lastBet = game.currentBet;
 	}
+	
 	return true;
 }
 
@@ -58,19 +65,15 @@ void endSpin()
 	frozen = false;
 
 	if(firstSpin) {
-
 		locks.AllowOrBlock(false);
 		locks.CalcLocked();
 		display.show("Start");
 		firstSpin = false;
-
 	} else {
-
 		locks.AllowOrBlock(game.spinPayoff == 0);
 		locks.CalcLocked();
 		display.show(game.nCoins);
 		cheers.Start();
-
 	}
 }
 
@@ -81,17 +84,21 @@ void startSpin()
 {
 	cheers.Stop();
 
-	if(game.nCoins > 0) {
-		frozen = true;
-		display.show("Spin ");
-		#if !SPEEDUP
-		delay(500);
-		#endif
-		game.StartSpin(false);
-	} else {
-		
-		display.show("Empty");
+	if(game.currentBet == 0) {
+		return;
 	}
+
+	if(game.nCoins == 0) {
+		display.showFull("Empty");
+		return;
+	}
+
+	frozen = true;
+	display.show("Spin ");
+	#if !SPEEDUP
+	delay(500);
+	#endif
+	game.StartSpin(false);
 }
 
 // ---------------------------------------------------- Private member functions
@@ -131,14 +138,12 @@ void SlotsMain::inputLoop()
 	// Read ezButtons values
 
 	if(!spinning) {
-		if(startLever.isPressed()) {
+		if(startLever.isReleased()) {
 			startSpin();
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
-			locks.CalcLocked();
 		} else if(decreaseBet.isPressed()) {
 			game.ChangeBet(-1);
-			locks.CalcLocked();
 		}
 	}
 }

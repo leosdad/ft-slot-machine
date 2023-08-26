@@ -38,7 +38,7 @@ void LedMatrix::scrollText(const char *str, uint8_t offset = 0)
 		charWidth = mx.getChar(str[pos++], sizeof(charBuffer) / sizeof(charBuffer[0]), charBuffer);
 
 		for(uint8_t i = 0; i < charWidth + charSpacing; i++) {
-			mx.transform(0, 2, MD_MAX72XX::TSL);
+			mx.transform(0, offset < 8 ? 3 : 2, MD_MAX72XX::TSL);
 			mx.setColumn(0, i < charWidth ? charBuffer[i] : 0);
 		}
 	}

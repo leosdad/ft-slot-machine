@@ -40,7 +40,7 @@ class Game
 
 		void Setup();
 		bool Loop();
-		void StartSpin(bool home);
+		bool StartSpin(bool home);
 		uint8_t ChangeBet(int8_t bet);
 };
 

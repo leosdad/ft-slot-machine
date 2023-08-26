@@ -18,7 +18,7 @@ void Display::start()
 
 void Display::displayBet(uint8_t value)
 {
-	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, '!');
+	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, 16);
 }
 
 void Display::show(const char* msg)

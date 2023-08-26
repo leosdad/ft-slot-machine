@@ -35,9 +35,6 @@ void Locks::AllowOrBlock(bool allow)
 		allowNext = false;
 	}
 
-	Serial.print(" ");
-	Serial.println(allowNext);
-
 	if(allowNext) {
 		for(int i = 0; i < NREELS; i++) {
 			lock[i].SetAllowed(true);
@@ -111,63 +108,53 @@ void Locks::Loop()
  */
 void Locks::CalcLocked()
 {
-	Serial.println("Calc");
-	// if(isSpinning) {
+	if(!allowNext) {
 
-	// 	for(int i = 0; i < NREELS; i++) {
-	// 		lock[i].FrozenLoop();
-	// 	}
+		for(int i = 0; i < NREELS; i++) {
+			lock[i].SetAllowed(false);
+			lock[i].SetLocked(false);
+		}
 
-	// } else {
+	} else {
 
-		if(!allowNext) {
+		uint8_t currentlyLocked = 0;
+		uint8_t maxLockable = min(2, game.currentBet / 3);
+
+		for(int i = 0; i < NREELS; i++) {
+			if(lock[i].IsLocked()) {
+				currentlyLocked++;
+			}
+		}
+
+		// Lock logic
+
+		if(currentlyLocked < maxLockable) {
 
 			for(int i = 0; i < NREELS; i++) {
-				lock[i].SetAllowed(false);
-				lock[i].SetLocked(false);
+				lock[i].SetAllowed(true);
 			}
 
-		} else {
-
-			uint8_t currentlyLocked = 0;
-			uint8_t maxLockable = min(2, game.currentBet / 3);
+		} else if(currentlyLocked == maxLockable) {
 
 			for(int i = 0; i < NREELS; i++) {
+				if(!lock[i].IsLocked()) {
+					lock[i].SetAllowed(false);
+				}
+			}
+
+		} else {	// (currentlyLocked > maxLockable)
+
+			for(int i = NREELS - 1; i >= 0;  i--) {
 				if(lock[i].IsLocked()) {
-					currentlyLocked++;
+					lock[i].SetLocked(false);
+					currentlyLocked--;
+					if(currentlyLocked <= maxLockable) {
+						break;
+					}
 				}
 			}
 
-			// Lock logic
-
-			if(currentlyLocked < maxLockable) {
-
-				for(int i = 0; i < NREELS; i++) {
-					lock[i].SetAllowed(true);
-				}
-
-			} else if(currentlyLocked == maxLockable) {
-
-				for(int i = 0; i < NREELS; i++) {
-					if(!lock[i].IsLocked()) {
-						lock[i].SetAllowed(false);
-					}
-				}
-
-			} else {	// (currentlyLocked > maxLockable)
-
-				for(int i = NREELS - 1; i >= 0;  i--) {
-					if(lock[i].IsLocked()) {
-						lock[i].SetLocked(false);
-						currentlyLocked--;
-						if(currentlyLocked <= maxLockable) {
-							break;
-						}
-					}
-				}
-
-			}
-		// }
+		}
 
 		#if LOCKDEBUGINFO
 		debug(currentlyLocked, maxLockable);

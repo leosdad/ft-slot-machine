@@ -17,7 +17,7 @@ extern LedMatrix ledMatrix;
 class Display
 {
 	public:
-		void start();
+		void setup();
 		void show(const char *msg);
 		void show(uint8_t value);
 		void clear();

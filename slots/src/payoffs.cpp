@@ -33,7 +33,6 @@ uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 
 		// Found a winning combination: get payoff value and exits
 		if(isValidCombination) {
-			// TODO: flag special features
 			return payoffTable[c].payoff * payoffMultiplier;
 		}
 	}

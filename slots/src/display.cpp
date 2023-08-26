@@ -9,7 +9,7 @@
 
 // ----------------------------------------------------- Public member functions
 
-void Display::start()
+void Display::setup()
 {
 	mx.control(MD_MAX72XX::INTENSITY, MX_BRIGHTNESS);
 	mx.clear();

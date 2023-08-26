@@ -9,16 +9,15 @@ MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::DR1CR0RR0_HW, MOSI, SCK, SS, 4);
 
 // ----------------------------------------------------- Public member functions
 
-void LedMatrix::start()
+void LedMatrix::setup()
 {
 	if(!mx.begin()) {
 		// Error
 	}
-	// Module #0 the rightmost one.
+	// Module #0 is the rightmost one.
 	columnZero = mx.getColumnCount() - 1;
 }
 
-// TODO: Must use a delay-less loop
 void LedMatrix::clearColumns(uint8_t start, uint8_t end)
 {
 	for(uint8_t i = columnZero - end; i <= columnZero - start; i++) {
@@ -50,7 +49,6 @@ void LedMatrix::printText(const char *str, uint8_t offset = 0)
 	uint8_t charWidth;
 	uint8_t pos = columnZero - offset;
 
-	// TODO: actually strlen() should not be necessary
 	uint8_t len = strlen(str);
 
 	// Serial.print("String: ");

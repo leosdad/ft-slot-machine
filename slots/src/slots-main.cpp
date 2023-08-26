@@ -79,11 +79,11 @@ void startSpin()
 		frozen = true;
 		display.show("Spin ");
 		#if !SPEEDUP
-		delay(500);	// TODO: Replace with non-blocking timer
+		delay(500);
 		#endif
 		game.StartSpin(false);
 	} else {
-		// TODO: occupy the whole display, do not scroll, center, flash, beep & restart
+		
 		display.show("Empty");
 	}
 }
@@ -151,9 +151,8 @@ void SlotsMain::Setup()
 
 	// Setup objects
 
-	// TODO: rename several start() to setup() below
-	ledMatrix.start();
-	display.start();
+	ledMatrix.setup();
+	display.setup();
 	display.show(" Wait");
 	cheers.Setup();
 	updateTimer.every(UPDATEBET, updateBet);
@@ -173,7 +172,7 @@ void SlotsMain::Loop()
 	updateTimer.tick();
 	lockLedsTimer.tick();
 	locks.Loop();
-	cheers.Loop(!spinning && game.spinPayoff, false);	// TODO: cheer a lot
+	cheers.Loop(!spinning && game.spinPayoff, false);
 	if(spinning != lastSpinning) {
 		if(!spinning) {
 			endSpin();

@@ -24,20 +24,6 @@ void Lock::Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLED
 	pwm.Setup(ledPin, LOCKPWM);
 }
 
-// /**
-//  * Maybe too expensive justo to keep a LED on or off, but other options are
-//  * surprisingly hard to make right and debug.
-//  */
-// void Lock::FrozenLoop()
-// {
-// 	ezLockButton.loop();
-// 	pwm.TurnOff();
-// 	// digitalWrite(ledPin, locked);
-// }
-
-// TODO: Maybe too expensive justo to keep a LED on or off, but other options are
-// surprisingly hard to make right and debug.
-
 /**
  * Monitors the lock button, changes lock state and LED accordingly.
  * Should be called only while reels are stopped.

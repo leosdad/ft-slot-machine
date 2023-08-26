@@ -33,7 +33,7 @@ class LedMatrix
 
 	public:
 
-		void start();
+		void setup();
 		void clearColumns(uint8_t start, uint8_t end);
 		void scrollText(const char *str, uint8_t offset = 0);
 		void printText(const char *str, uint8_t offset = 0);

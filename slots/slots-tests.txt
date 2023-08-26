@@ -6,22 +6,26 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "src/slots-main.h"
+#include "src/tests/led-matrix-tests.h"
+// #include "src/tests/motor-driver-tests.h"
+// #include "src/tests/output-tests.h"
 
 // ----------------------------------------------------------------------- Setup
 
-SlotsMain slotsMain;
-
 void setup()
 {
-	slotsMain.Setup();
+	ledMatrixTestsSetup();
+	// motorDriverTestsSetup();
+	// outputTestsSetup();
 }
 
 // ------------------------------------------------------------------- Main loop
 
 void loop()
 {
-	slotsMain.Loop();
+	ledMatrixTestsLoop();
+	// motorDriverTestsLoop();
+	// outputTestsLoop();
 }
 
 // ------------------------------------------------------------------------- End

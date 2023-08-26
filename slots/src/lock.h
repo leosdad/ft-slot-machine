@@ -29,7 +29,6 @@ class Lock
 
 		void Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLEDPinNumber);
 		bool Loop(bool ledOn);
-		// void FrozenLoop();
 		void SetLocked(bool lock);
 		void SetAllowed(bool allow);
 		bool IsLocked();

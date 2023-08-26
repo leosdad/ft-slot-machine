@@ -16,6 +16,8 @@
 
 // ------------------------------------------------------------ Global variables
 
+// Global objects
+
 Game game;
 Locks locks;
 LedMatrix ledMatrix;
@@ -24,6 +26,8 @@ Cheering cheers;
 
 auto updateTimer = timer_create_default();
 auto lockLedsTimer = timer_create_default();
+
+// Global variables
 
 uint8_t lastBet = 255;
 bool frozen = false;
@@ -52,19 +56,21 @@ bool blinkLockLEDs(void *)
 void endSpin()
 {
 	frozen = false;
+
 	if(firstSpin) {
+
 		locks.AllowOrBlock(false);
 		locks.CalcLocked();
 		display.show("Start");
 		firstSpin = false;
+
 	} else {
+
 		locks.AllowOrBlock(game.spinPayoff == 0);
 		locks.CalcLocked();
-		if(game.spinPayoff) {
-			ledMatrix.printText("G", 8);
-		}
 		display.show(game.nCoins);
 		cheers.Start();
+
 	}
 }
 

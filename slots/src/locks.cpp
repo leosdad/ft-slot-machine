@@ -16,37 +16,6 @@ Lock lock[NREELS];
 // ---------------------------------------------------- Private member functions
 
 /**
- * Lock / unlock logic called once after each spin is completed.
- */
-void Locks::AllowOrBlock(bool allow)
-{
-	allowNext = allow;
-	if(allow) {
-		allowNext = true;
-		for(int i = 0; i < NREELS; i++) {
-			if(lock[i].IsLocked()) {
-				allowNext = false;
-				break;
-			}
-		}
-	} else {
-		allowNext = false;
-	}
-
-	if(allowNext) {
-		for(int i = 0; i < NREELS; i++) {
-			lock[i].SetAllowed(true);
-			lock[i].SetLocked(false);
-		}
-	} else {
-		for(int i = 0; i < NREELS; i++) {
-			lock[i].SetAllowed(false);
-			lock[i].SetLocked(false);
-		}
-	}
-}
-
-/**
  * Shows debug information about the lock state.
  */
 void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
@@ -97,6 +66,35 @@ void Locks::Loop()
 	for(int i = 0; i < NREELS; i++) {
 		if(lock[i].Loop(ledState)) {
 			CalcLocked();
+		}
+	}
+}
+
+/**
+ * Lock / unlock logic called once after each spin is completed.
+ */
+void Locks::AllowOrBlock(bool allow)
+{
+	allowNext = allow;
+
+	if(allow) {
+		for(int i = 0; i < NREELS; i++) {
+			if(lock[i].IsLocked()) {
+				allowNext = false;
+				break;
+			}
+		}
+	}
+
+	if(allowNext) {
+		for(int i = 0; i < NREELS; i++) {
+			lock[i].SetAllowed(true);
+			lock[i].SetLocked(false);
+		}
+	} else {
+		for(int i = 0; i < NREELS; i++) {
+			lock[i].SetAllowed(false);
+			lock[i].SetLocked(false);
 		}
 	}
 }

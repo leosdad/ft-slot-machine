@@ -18,6 +18,8 @@ extern Game game;
 void Lock::Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLEDPinNumber)
 {
 	index = lockIndex;
+	locked = false;
+	lockAllowed = false;
 	ledPin = lockLEDPinNumber;
 	ezLockButton = ezButton(lockButtonPinNumber, INPUT_PULLUP);
 	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);

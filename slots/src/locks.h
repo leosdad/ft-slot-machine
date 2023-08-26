@@ -25,9 +25,9 @@ class Locks
 
 		bool ledState = false;
 		void AllowOrBlock(bool allow);
+		void CalcLocked();
 		void Loop();
 		void Setup();
-		void CalcLocked();
 };
 
 // ------------------------------------------------------------------------- End

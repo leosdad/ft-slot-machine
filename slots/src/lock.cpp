@@ -24,28 +24,36 @@ void Lock::Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLED
 	pwm.Setup(ledPin, LOCKPWM);
 }
 
-/**
- * Maybe too expensive justo to keep a LED on or off, but other options are
- * surprisingly hard to make right and debug.
- */
-void Lock::FrozenLoop()
-{
-	digitalWrite(ledPin, locked);
-}
+// /**
+//  * Maybe too expensive justo to keep a LED on or off, but other options are
+//  * surprisingly hard to make right and debug.
+//  */
+// void Lock::FrozenLoop()
+// {
+// 	ezLockButton.loop();
+// 	pwm.TurnOff();
+// 	// digitalWrite(ledPin, locked);
+// }
+
+// TODO: Maybe too expensive justo to keep a LED on or off, but other options are
+// surprisingly hard to make right and debug.
 
 /**
  * Monitors the lock button, changes lock state and LED accordingly.
  * Should be called only while reels are stopped.
- * @returns `true` if the lock is locked.
+ * @returns `true` if the lock state has changed.
  */
 bool Lock::Loop(bool ledOn)
 {
 	ezLockButton.loop();
 	pwm.Loop();
 
+	bool changed = false;
+
 	if(ezLockButton.isPressed()) {
 		if(lockAllowed) {
 			locked = !locked;
+			changed = true;
 		}
 	}
 
@@ -59,20 +67,24 @@ bool Lock::Loop(bool ledOn)
 		}
 	}
 
-	return locked;
+	return changed;
+}
+
+/**
+ * Locks or unlocks the lock.
+ */
+void Lock::SetLocked(bool lock)
+{
+	locked = lock;
 }
 
 /**
  * Sets the lock allowed flag value.
  * @returns `true` if the lock is locked.
  */
-bool Lock::Allow(bool allow)
+void Lock::SetAllowed(bool allow)
 {
 	lockAllowed = allow;
-	if(!lockAllowed) {
-		locked = false;
-	}
-	return locked;
 }
 
 /**
@@ -89,14 +101,6 @@ bool Lock::IsLocked()
 bool Lock::IsAllowed()
 {
 	return lockAllowed;
-}
-
-/**
- * Unlocks the lock.
- */
-void Lock::Unlock()
-{
-	locked = false;
 }
 
 // ------------------------------------------------------------------------- End

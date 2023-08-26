@@ -17,13 +17,17 @@ class Cheering
 	private:
 
 		bool isFadedIn = false;
+		bool fadeEnabled = true;
+		uint8_t fadeCycles;
+
 		ezLED leftSignal{0};
 		ezLED rightSignal{0};
 
 	public:
 
-		void Start();
+		void Setup();
 		void Loop(bool enable, bool cheerALot);
+		void Start();
 		void Stop();
 };
 

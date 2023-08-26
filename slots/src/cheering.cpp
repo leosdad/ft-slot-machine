@@ -8,10 +8,11 @@
 
 // ----------------------------------------------------- Public member functions
 
-void Cheering::Start()
+void Cheering::Setup()
 {
 	leftSignal = ezLED(signalLED1Pin);
 	rightSignal = ezLED(signalLED2Pin);
+	Start();
 }
 
 /**
@@ -19,26 +20,30 @@ void Cheering::Start()
  */
 void Cheering::Loop(bool enable, bool cheerALot)
 {
+	leftSignal.loop();
+	rightSignal.loop();
+
 	if(enable) {
-
-		leftSignal.loop();
-		rightSignal.loop();
-
 		if(cheerALot) {
 			if(leftSignal.getState() == LED_IDLE) {
-				leftSignal.blink(CHEERALOTMS, CHEERALOTMS);
-				rightSignal.blink(CHEERALOTMS, CHEERALOTMS);
+				leftSignal.blinkInPeriod(CHEERALOTMS, CHEERALOTMS, 3000);
+				rightSignal.blink(CHEERALOTMS, CHEERALOTMS, 3000);
 			}
 		} else {
-			if(leftSignal.getState() == LED_IDLE) {
-				if(isFadedIn == false) {
-					leftSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
-					rightSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-					isFadedIn = true;
+			if(fadeEnabled && leftSignal.getState() == LED_IDLE) {
+				if(fadeCycles-- > 0) {
+					if(isFadedIn == false) {
+						leftSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
+						rightSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
+						isFadedIn = true;
+					} else {
+						leftSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
+						rightSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
+						isFadedIn = false;
+					}
 				} else {
 					leftSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-					rightSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
-					isFadedIn = false;
+					fadeEnabled = false;
 				}
 			}
 		}
@@ -48,10 +53,17 @@ void Cheering::Loop(bool enable, bool cheerALot)
 	}
 }
 
+void Cheering::Start()
+{
+	fadeCycles = 10;
+	fadeEnabled = true;
+}
+
 void Cheering::Stop()
 {
 	leftSignal.cancel();
 	rightSignal.cancel();
+	fadeEnabled = false;
 }
 
 // ------------------------------------------------------------------------- End

@@ -47,29 +47,6 @@ uint8_t Game::setBet(int8_t bet)
 }
 
 /**
- * Actions after a spin is completed.
- */
-void Game::stopSpin()
-{
-	if(playing) {
-		nCoins = constrain(nCoins + spinPayoff, 0, MAXCOINS);
-
-		if(nCoins - nBalls * BALLVALUE > BALLVALUE) {
-
-			nBalls++;
-			newBall = true;
-
-			// Feed a new ball
-			
-			// ballFeeder.Feed();
-			// delay(1000);	// TODO
-			// ballFeeder.Return();
-			// delay(1000);
-		}
-	}
-}
-
-/**
  * Initializes a new game.
  */
 void Game::init()

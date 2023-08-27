@@ -117,7 +117,7 @@ void Game::printDebugData(bool home)
 
 /**
  * Starts a new spin.
- * @returns `true` if any of the reels will spin.
+ * @returns `false` if no reels are allowed to spin.
  */
 bool Game::StartSpin(bool home)
 {

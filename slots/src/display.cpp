@@ -21,13 +21,13 @@ void Display::showBet(uint8_t value)
 	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, 16);
 }
 
-void Display::show(const char* msg)
+void Display::scroll(const char* msg)
 {
 	mx.clear(0, 2);
 	ledMatrix.scrollText(msg, MX_TEXTPOS);
 }
 
-void Display::showFull(const char* msg)
+void Display::scrollAll(const char* msg)
 {
 	mx.clear();
 	ledMatrix.scrollText(msg);
@@ -36,16 +36,18 @@ void Display::showFull(const char* msg)
 /**
  * Display a number starting at column TEXTPOS.
  */
-void Display::show(uint8_t value)
+void Display::show(uint8_t value, bool clear)
 {
-	ledMatrix.clearColumns(MX_TEXTPOS, MX_NUMPOS);
+	if(clear) {
+		ledMatrix.clearColumns(MX_TEXTPOS, MX_NUMPOS);
+	}
 	ledMatrix.printUnsignedInteger(value, MAXCOINDIGITS,
 		MX_NUMPOS, NumberPadding::SPACES);
 }
 
 void Display::clear()
 {
-	show("     ");
+	scroll("     ");
 }
 
 // ------------------------------------------------------------------------- End

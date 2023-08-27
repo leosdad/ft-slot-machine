@@ -62,7 +62,7 @@ bool Reel::counting()
 
 void Reel::Setup(const uint8_t reelIndex)
 {
-	// Setup variables
+	// Sets up variables
 
 	index = reelIndex;
 	encoderPin = encoderPins[index];
@@ -75,7 +75,7 @@ void Reel::Setup(const uint8_t reelIndex)
 	pinMode(encoderPin, INPUT_PULLUP);
 	pinMode(homePin, INPUT);
 
-	// Setup objects
+	// Sets up objects
 
 	motor.Init(motorOutPins[index]);
 }
@@ -112,7 +112,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * State machine. Returns `true` if the reel is spinning.
+ * Reel state machine. Returns `true` if the reel is spinning.
  */
 bool Reel::Loop()
 {

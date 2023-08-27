@@ -62,6 +62,8 @@ bool blinkLockLEDs(void *)
  */
 void endSpin()
 {
+	Serial.println("End spin");
+
 	frozen = false;
 
 	if(firstSpin) {
@@ -89,12 +91,12 @@ void startSpin()
 	}
 
 	if(game.nCoins == 0) {
-		display.showFull("Empty");
+		display.scrollAll("Empty");
 		return;
 	}
 
 	frozen = true;
-	display.show("Spin ");
+	display.scroll("Spin ");
 	#if !SPEEDUP
 	delay(500);
 	#endif
@@ -160,11 +162,11 @@ void SlotsMain::Setup()
 
 	ioSetup();
 
-	// Setup objects
+	// Sets up objects
 
 	ledMatrix.setup();
 	display.setup();
-	display.show(" Wait");
+	display.scroll(" Wait");
 	cheers.Setup();
 	updateTimer.every(UPDATEBET, updateBet);
 	lockLedsTimer.every(LOCKBLINK, blinkLockLEDs);

@@ -13,14 +13,17 @@ extern Game game;
 // ----------------------------------------------------- Public member functions
 
 /**
- * Setup a single lock.
+ * Sets up a single lock.
  */
 void Lock::Setup(uint8_t lockIndex, uint8_t lockButtonPinNumber, uint8_t lockLEDPinNumber)
 {
+	// Initialize variables
+
 	index = lockIndex;
-	locked = false;
-	lockAllowed = false;
 	ledPin = lockLEDPinNumber;
+
+	// Initialize objects
+
 	ezLockButton = ezButton(lockButtonPinNumber, INPUT_PULLUP);
 	ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
 	pwm.Setup(ledPin, LOCKPWM);

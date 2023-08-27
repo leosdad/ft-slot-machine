@@ -50,7 +50,7 @@ void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
 // ----------------------------------------------------- Public member functions
 
 /**
- * Setup lock buttons and LEDs.
+ * Sets up lock buttons and LEDs.
  */
 void Locks::Setup()
 {

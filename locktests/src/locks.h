@@ -22,10 +22,10 @@ class Locks
 		uint8_t getLockedLocks();
 		void calcLocksAllowed();
 		void debug(uint8_t index);
-		void enableDisableAsNeeded();
 		void initLock(uint8_t i);
 		void setBlocked(uint8_t index);
 		void setLocked(uint8_t index);
+		void setStateAsNeeded();
 		void setUnlocked(uint8_t index);
 		void toggleLock(uint8_t index);
 

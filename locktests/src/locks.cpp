@@ -20,10 +20,6 @@ enum class LockState {
 	ACTIVE,		  // Locked; may be unlocked by pressing the respective button.
 };
 
-#if LOCKDEBUGINFO
-const char *StateNames[NREELS] = { "Blocked", "Lockable", "Active" };
-#endif
-
 /**
  * Declares a single lock object.
  */
@@ -39,6 +35,10 @@ struct Lock
 Lock lock[NREELS];
 auto lockBlink = timer_create_default();
 bool lockBlinkState = false;
+
+#if LOCKDEBUGINFO
+const static char *StateNames[NREELS] = { "Blocked", "Lockable", "Active" };
+#endif
 
 // ------------------------------------------------------------ Global functions
 
@@ -170,7 +170,7 @@ void Locks::toggleLock(uint8_t index)
 }
 
 /**
- * Stores the number of lock currently allowed  in the `locksAllowed` variable.
+ * Stores the number of lock currently allowed in the `locksAllowed` variable.
  */
 void Locks::calcLocksAllowed()
 {
@@ -193,7 +193,11 @@ void Locks::calcLocksAllowed()
 
 }
 
-void Locks::enableDisableAsNeeded()
+/**
+ * Enable, disable or block locks according to the number of locks allowed and
+ * the number of locked locks.
+ */
+void Locks::setStateAsNeeded()
 {
 	uint8_t lockedLocks = getLockedLocks();
 
@@ -208,6 +212,8 @@ void Locks::enableDisableAsNeeded()
 		}
 	}
 
+	// Switch according to the number of locks allowed and locked locks
+
 	if(locksAllowed > lockedLocks) {
 
 		// Enable all non-active locks
@@ -220,7 +226,7 @@ void Locks::enableDisableAsNeeded()
 
 	} else if(locksAllowed == lockedLocks) {
 
-		// Maximum reached, so block all non-active
+		// Maximum reached, so block all non-active locks
 
 		for(int i = 0; i < NREELS; i++) {
 			if(lock[i].state != LockState::ACTIVE) {
@@ -230,18 +236,12 @@ void Locks::enableDisableAsNeeded()
 
 	} else {	// locksAllowed < lockedLocks
 
-		// Unlock last locked lock
+		// Unlock the last locked lock
 
 		if(lastLockedIndex >= 0 && lastLockedIndex <= NREELS) {
 			lock[lastLockedIndex].state = LockState::LOCKABLE;
 			lastLockedIndex = -1;
 		}
-
-		calcLocksAllowed();
-
-		// Recursive call. reduce number of enabled locks if still needed.
-
-		// enableDisableAsNeeded();
 	}
 }
 
@@ -259,11 +259,12 @@ void Locks::Setup()
 }
 
 /**
- * This loop must me called from the main loop.
+ * Must be called from the main loop.
  */
 void Locks::Loop(uint8_t gameBet)
 {
 	currentBet = gameBet;
+
 	#if LOCKDEBUGINFO
 	if(gameBet != lastBet) {
 		lastBet = gameBet;
@@ -285,7 +286,7 @@ void Locks::Loop(uint8_t gameBet)
 	}
 
 	calcLocksAllowed();
-	enableDisableAsNeeded();
+	setStateAsNeeded();
 
 	lockBlink.tick();
 }

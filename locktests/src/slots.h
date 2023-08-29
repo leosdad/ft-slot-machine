@@ -10,6 +10,10 @@
 
 #include <Arduino.h>
 
+// ----------------------------------------------------------------- Debug flags
+
+#define LOCKDEBUGINFO	false	// Send debug information about the lock state
+
 // ------------------------------------------------------------------- Constants
 
 #define NREELS		    3
@@ -18,7 +22,7 @@
 #define MAXBET			9		// 6 to 12
 #define BAUDRATE		57600	// For serial communication
 #define UPDATEBET		80		// Rate of display update timer
-#define LOCKBLINK		400		// Blink frequency for lock LEDs
+#define LOCKBLINK		300		// Blink frequency for lock LEDs
 #define LOCKBLINKON		2		// Time on for lock LEDs
 #define INITIALBET		3		// Initial bet
 

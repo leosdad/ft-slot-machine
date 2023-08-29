@@ -6,24 +6,32 @@
 
 // ----------------------------------------------------------- Class declaration
 
+/**
+ * Implements the lock logic.
+ */
 class Locks
 {
 	private:
 
-		bool allowNext;
+		uint8_t currentBet;
+		uint8_t lastBet = -1;
 		uint8_t lastLockedIndex = -1;
+		uint8_t lastLocksAllowed = -1;
+		uint8_t locksAllowed;
 
+		uint8_t getLockedLocks();
+		void calcLocksAllowed();
+		void debug(uint8_t index);
+		void enableDisableAsNeeded();
 		void initLock(uint8_t i);
+		void setBlocked(uint8_t index);
 		void setLocked(uint8_t index);
 		void setUnlocked(uint8_t index);
 		void toggleLock(uint8_t index);
 
-		uint8_t getLockedLocks();
-
 	public:
 
-		// void ForceCalc();
-		void Loop();
+		void Loop(uint8_t gameBet);
 		void Setup();
 };
 

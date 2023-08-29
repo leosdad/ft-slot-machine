@@ -16,21 +16,19 @@
 Locks locks;
 
 auto updateTimer = timer_create_default();
-auto lockBlink = timer_create_default();
-auto lockTurnOff = timer_create_default();
 
 // Global variables
 
 uint8_t lastBet = 255;
 bool frozen = false;
 bool firstSpin = true;
-bool lockBlinkState = false;
 uint8_t currentBet;
 
 // ------------------------------------------------------------ Global functions
 
 bool updateDisplay()
 {
+	// Replace with display call
 	if(currentBet == 0) {
 		Serial.println("No bet");
 	} else {
@@ -45,21 +43,6 @@ bool updateBet(void *)
 		lastBet = currentBet;
 	}
 	
-	return true;
-}
-
-bool LockLEDsOff(void *)
-{
-	lockBlinkState = false;
-	return true;
-}
-
-bool blinkLockLEDs(void *)
-{
-	if(!lockBlinkState) {
-		lockBlinkState = true;
-		lockTurnOff.in(LOCKBLINKON, LockLEDsOff);
-	}
 	return true;
 }
 
@@ -134,7 +117,6 @@ void SlotsMain::Setup()
 	// Sets up objects
 
 	updateTimer.every(UPDATEBET, updateBet);
-	lockBlink.every(LOCKBLINK, blinkLockLEDs);
 
 	// Perform a first (home) spin
 
@@ -144,11 +126,8 @@ void SlotsMain::Setup()
 void SlotsMain::Loop()
 {
 	updateTimer.tick();
-	lockBlink.tick();
-	lockTurnOff.tick();
-
 	inputLoop();
-	locks.Loop();
+	locks.Loop(currentBet);
 }
 
 #pragma endregion

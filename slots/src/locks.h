@@ -18,21 +18,24 @@ class Locks
 		uint8_t lastLockedIndex = -1;
 		uint8_t lastLocksAllowed = -1;
 		uint8_t locksAllowed;
+		bool lastAllowLocks = -1;
 
 		uint8_t getLockedLocks();
 		void calcLocksAllowed();
-		void debug(uint8_t index);
 		void initLock(uint8_t i);
 		void setBlocked(uint8_t index);
 		void setLocked(uint8_t index);
 		void setStateAsNeeded();
 		void setUnlocked(uint8_t index);
 		void toggleLock(uint8_t index);
+		#if LOCKDEBUGINFO
+		void debug(uint8_t index);
+		#endif
 
 	public:
 
 		bool IsLocked(uint8_t index);
-		void Loop(uint8_t gameBet);
+		void Loop(bool enable, bool allowNext, uint8_t gameBet);
 		void Setup();
 };
 

@@ -29,8 +29,8 @@ auto updateTimer = timer_create_default();
 // Global variables
 
 uint8_t lastBet = 255;
-bool frozen = false;
 bool firstSpin = true;
+bool reelsLocked = false;
 
 // ------------------------------------------------------------ Global functions
 
@@ -64,11 +64,8 @@ void endSpin()
 {
 	// Serial.println("End spin");
 
-	frozen = false;
-
 	if(firstSpin) {
 		display.scroll("Start");
-		firstSpin = false;
 	} else {
 		updateDisplay();
 		cheers.Start();
@@ -91,7 +88,13 @@ void spin()
 		return;
 	}
 
-	frozen = true;
+	reelsLocked = false;
+	for(int i = 0; i < NREELS; i++) {
+		if(locks.IsLocked(i)) {
+			reelsLocked = true;
+		}
+	}
+
 	display.scroll("Spin ");
 	#if !SPEEDUP
 	delay(500);
@@ -137,6 +140,7 @@ void SlotsMain::inputLoop()
 
 	if(!game.spinning) {
 		if(startLever.isReleased()) {
+			firstSpin = false;
 			spin();
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
@@ -180,7 +184,8 @@ void SlotsMain::Loop()
 	if(game.Loop()) {
 		endSpin();
 	}
-	locks.Loop(game.currentBet);
+	locks.Loop(!game.spinning, !(firstSpin || game.spinPayoff || reelsLocked),
+		game.currentBet);
 	cheers.Loop(!game.spinning && game.spinPayoff, false);
 }
 

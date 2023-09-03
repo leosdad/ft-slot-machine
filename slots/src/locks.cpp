@@ -153,7 +153,7 @@ void Locks::toggleLock(uint8_t index)
 }
 
 /**
- * Stores the number of lock currently allowed in the `locksAllowed` variable.
+ * Stores in the `locksAllowed` variable the number of locks currently allowed.
  */
 void Locks::calcLocksAllowed()
 {
@@ -230,6 +230,9 @@ void Locks::setStateAsNeeded()
 
 // ----------------------------------------------------- Public member functions
 
+/**
+ * Returns the state of the requested lock.
+ */
 bool Locks::IsLocked(uint8_t index)
 {
 	return lock[index].state == LockState::ACTIVE;
@@ -250,32 +253,51 @@ void Locks::Setup()
 /**
  * Must be called from the main loop.
  */
-void Locks::Loop(uint8_t gameBet)
+void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 {
-	currentBet = gameBet;
+	if(enable) {
 
-	#if LOCKDEBUGINFO
-	if(gameBet != lastBet) {
-		lastBet = gameBet;
-	}
-	#endif
+		if(allowLocks) {
 
-	for(int i = 0; i < NREELS; i++) {
-		lock[i].ezLockButton.loop();
-		if(lock[i].ezLockButton.isPressed()) {
-			toggleLock(i);
+			currentBet = gameBet;
+
+			#if LOCKDEBUGINFO
+			if(gameBet != lastBet) {
+				lastBet = gameBet;
+			}
+			#endif
+
+			for(int i = 0; i < NREELS; i++) {
+				lock[i].ezLockButton.loop();
+				if(lock[i].ezLockButton.isPressed()) {
+					toggleLock(i);
+				}
+				if(lock[i].state == LockState::LOCKABLE) {
+					digitalWrite(lockLEDPins[i], lockBlinkState ?
+						!(lockPwmState % LOCKLEDMOD) : LOW);
+				}
+			}
+
+			calcLocksAllowed();
+			setStateAsNeeded();
+
+		} else {
+
+			for(int i = 0; i < NREELS; i++) {
+				setBlocked(i);
+			}
+
+			locksAllowed = 0;
 		}
-		if(lock[i].state == LockState::LOCKABLE) {
-			digitalWrite(lockLEDPins[i], lockBlinkState ?
-				!(lockPwmState % LOCKLEDMOD) : LOW);
+
+		lockBlink.tick();
+		lockPwm.tick();
+
+	} else {
+		for(int i = 0; i < NREELS; i++) {
+			digitalWrite(lockLEDPins[i], lock[i].state == LockState::ACTIVE);
 		}
 	}
-
-	calcLocksAllowed();
-	setStateAsNeeded();
-
-	lockBlink.tick();
-	lockPwm.tick();
 }
 
 // ------------------------------------------------------------------------- End

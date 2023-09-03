@@ -35,8 +35,10 @@
 
 #define BAUDRATE		57600	// For serial communication
 #define UPDATEBET		80		// Rate of display update timer
-#define LOCKBLINK		300		// Blink frequency of LEDs with allowed lock
-#define LOCKPWM			30		// PWM value of LEDs with allowed lock
+#define LOCKBLINK		300		// Blink frequency for lock LEDs
+#define LOCKBLINKON		2		// Time on for lock LEDs
+#define LOCKLEDFREQ		2		// lock LEDS PWM frequency
+#define LOCKLEDMOD		8		// Time divider for lock LEDs
 #define SIMULATEDELAY	50		// Delay used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position

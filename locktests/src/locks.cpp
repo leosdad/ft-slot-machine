@@ -73,7 +73,7 @@ void ledOn(uint8_t index)
  * Lights up the requested lock LED faintly using a little trick with the
  * internall pull-up.
  */
-void ledFaint(uint8_t index)
+void ledDim(uint8_t index)
 {
 	digitalWrite(lockLEDPins[index], LOW);
 	pinMode(lockLEDPins[index], INPUT_PULLUP);
@@ -278,7 +278,7 @@ void Locks::Loop(uint8_t gameBet)
 		}
 		if(lock[i].state == LockState::LOCKABLE) {
 			if(lockBlinkState) {
-				ledFaint(i);
+				ledDim(i);
 			} else {
 				ledOff(i);
 			}

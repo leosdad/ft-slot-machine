@@ -5,14 +5,14 @@
 // -------------------------------------------------------------------- Includes
 
 #include "game.h"
-#include "lock.h"
 #include "payoffs.h"
+#include "locks.h"
 
 // ------------------------------------------------------------ Global variables
 
 Payoffs payoffs;
 Reel reels[NREELS];
-extern Lock lock[NREELS];
+extern Locks locks;
 
 // ---------------------------------------------------- Private member functions
 
@@ -117,6 +117,7 @@ void Game::printDebugData(bool home)
 
 /**
  * Starts a new spin.
+ * @param home Spin to the home position.
  * @returns `false` if no reels are allowed to spin.
  */
 bool Game::StartSpin(bool home)
@@ -131,7 +132,7 @@ bool Game::StartSpin(bool home)
 	// Starts each reel
 
 	for(int i = 0; i < NREELS; i++) {
-		if(!lock[i].IsLocked()) {
+		if(!locks.IsLocked(i)) {
 			xtraTurns = reels[i].Start(home, xtraTurns);
 		}
 	}
@@ -174,18 +175,28 @@ void Game::Setup()
 }
 
 /**
- * Returns `true` if the reels are still spinning.
+ * Returns `true` once when spinning has ended.
  */
 bool Game::Loop()
 {
-	bool isSpinning = false;
+	bool endSpin = false;
+
+	spinning = false;
 
 	for(int i = 0; i < NREELS; i++) {
 		if(reels[i].Loop()) {
-			isSpinning = true;
+			spinning = true;
 		}
 	}
-	return isSpinning;
+
+	if(spinning != lastSpinning) {
+		if(!spinning) {
+			endSpin = true;
+		}
+		lastSpinning = spinning;
+	}
+
+	return endSpin;
 }
 
 // ------------------------------------------------------------------------- End

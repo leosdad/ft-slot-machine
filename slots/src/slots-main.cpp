@@ -25,7 +25,6 @@ Display display;
 Cheering cheers;
 
 auto updateTimer = timer_create_default();
-auto lockLedsTimer = timer_create_default();
 
 // Global variables
 
@@ -35,25 +34,26 @@ bool firstSpin = true;
 
 // ------------------------------------------------------------ Global functions
 
+bool updateDisplay()
+{
+	if(game.currentBet == 0) {
+		display.scrollAll("No bet");
+	} else {
+		display.showBet(game.currentBet);
+		if(game.spinPayoff) {
+			ledMatrix.printText("\x1d", 9);	// Right pointer
+		}
+		display.show(game.nCoins, !game.spinPayoff);
+	}
+}
+
 bool updateBet(void *)
 {
 	if(game.currentBet != lastBet) {
-		locks.CalcLocked();
-		if(game.currentBet == 0) {
-			display.showFull("No bet");
-		} else {
-			display.showBet(game.currentBet);
-			display.show(game.nCoins);
-		}
+		updateDisplay();
 		lastBet = game.currentBet;
 	}
 	
-	return true;
-}
-
-bool blinkLockLEDs(void *)
-{
-	locks.ledState = frozen ? LOW : !locks.ledState;
 	return true;
 }
 
@@ -62,19 +62,15 @@ bool blinkLockLEDs(void *)
  */
 void endSpin()
 {
-	Serial.println("End spin");
+	// Serial.println("End spin");
 
 	frozen = false;
 
 	if(firstSpin) {
-		locks.AllowOrBlock(false);
-		locks.CalcLocked();
-		display.show("Start");
+		display.scroll("Start");
 		firstSpin = false;
 	} else {
-		locks.AllowOrBlock(game.spinPayoff == 0);
-		locks.CalcLocked();
-		display.show(game.nCoins);
+		updateDisplay();
 		cheers.Start();
 	}
 }
@@ -82,7 +78,7 @@ void endSpin()
 /**
  * Called when a new spin is about to start.
  */
-void startSpin()
+void spin()
 {
 	cheers.Stop();
 
@@ -139,9 +135,9 @@ void SlotsMain::inputLoop()
 
 	// Read ezButtons values
 
-	if(!spinning) {
+	if(!game.spinning) {
 		if(startLever.isReleased()) {
-			startSpin();
+			spin();
 		} else if(increaseBet.isPressed()) {
 			game.ChangeBet(1);
 		} else if(decreaseBet.isPressed()) {
@@ -169,29 +165,23 @@ void SlotsMain::Setup()
 	display.scroll(" Wait");
 	cheers.Setup();
 	updateTimer.every(UPDATEBET, updateBet);
-	lockLedsTimer.every(LOCKBLINK, blinkLockLEDs);
+	locks.Setup();
+	game.Setup();
 
 	// Perform a first (home) spin
 
-	locks.Setup();
-	game.Setup();
 	game.StartSpin(true);
 }
 
 void SlotsMain::Loop()
 {
-	spinning = game.Loop();
-	inputLoop();
 	updateTimer.tick();
-	lockLedsTimer.tick();
-	locks.Loop();
-	cheers.Loop(!spinning && game.spinPayoff, false);
-	if(spinning != lastSpinning) {
-		if(!spinning) {
-			endSpin();
-		}
-		lastSpinning = spinning;
+	inputLoop();
+	if(game.Loop()) {
+		endSpin();
 	}
+	locks.Loop(game.currentBet);
+	cheers.Loop(!game.spinning && game.spinPayoff, false);
 }
 
 #pragma endregion

@@ -4,50 +4,236 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "slots.h"
+#include <arduino-timer.h>
+#include <ezButton.h>
 #include "locks.h"
-#include "game.h"
+#include "slots.h"
 
-// ------------------------------------------------------------------- Variables
+// ----------------------------------------------------------------------- Types
 
-extern Game game;
+/**
+ * Lock states enumeration.
+ */
+enum class LockState {
+	BLOCKED = 0,  // Not locked; Pressing the respective button does nothing.
+	LOCKABLE,	  // Not locked, but may be locked by pressing the respective button.
+	ACTIVE,		  // Locked; may be unlocked by pressing the respective button.
+};
+
+/**
+ * Declares a single lock object.
+ */
+struct Lock
+{
+	uint8_t index;
+	LockState state = LockState::BLOCKED;
+	ezButton ezLockButton{0};		// ezButton lock button object
+};
+
+// ------------------------------------------------------------ Global variables
+
 Lock lock[NREELS];
+auto lockBlink = timer_create_default();
+bool lockBlinkState = false;
+auto lockPwm = timer_create_default();
+uint8_t lockPwmState = 0;
+
+#if LOCKDEBUGINFO
+const static char *StateNames[NREELS] = { "Blocked", "Lockable", "Active" };
+#endif
+
+// ------------------------------------------------------------ Global functions
+
+/**
+ * Called by the lock blink timer.
+ */
+bool lockBlinkCallback(void *)
+{
+	lockBlinkState = !lockBlinkState;
+	return true;
+}
+
+/**
+ * Called by the lock PWM timer.
+ */
+bool lockPwmCallback(void *)
+{
+	lockPwmState++;
+	return true;
+}
 
 // ---------------------------------------------------- Private member functions
 
+#if LOCKDEBUGINFO
 /**
- * Shows debug information about the lock state.
+ * Outputs debug information to the serial port.
  */
-void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
+void Locks::debug(uint8_t index)
 {
-	// Debug
+	Serial.println("---------------------------------");
+	if(index < NREELS ) {
+		Serial.print("Lock #" + String(index) + " set to ");
+		Serial.println(StateNames[(int)lock[index].state]);
+	}
+	Serial.println("Current bet: " + String(currentBet));
+	Serial.println("Locks allowed: " + String(locksAllowed));
+	Serial.println("Total locks: " + String(getLockedLocks()));
+	Serial.println("Last locked: " + String(lastLockedIndex));
+}
+#endif
 
-	if((currentlyLocked != lastLocked) ||
-		(maxLockable != lastMaxLockable) || 
-		(game.currentBet != lastBetValue)) {
-		uint8_t allowed = 0;
+/**
+ * Initializes a single lock.
+ */
+void Locks::initLock(uint8_t i)
+{
+	lock[i].index = i;
+	lock[i].ezLockButton = ezButton(lockButtonPins[i], INPUT_PULLUP);
+	lock[i].ezLockButton.setDebounceTime(EZBTNDEBOUNCE);
+	pinMode(lockLEDPins[i], OUTPUT);
+	setUnlocked(i);
+}
+
+/**
+ * @returns The number of locked locks.
+ */
+uint8_t Locks::getLockedLocks()
+{
+	uint8_t count = 0;
+	for(int i = 0; i < NREELS; i++) {
+		if(lock[i].state == LockState::ACTIVE) {
+			count++;
+		}
+	}
+	return count;
+}
+
+/**
+ * Sets the required lock to active state.
+ */
+void Locks::setLocked(uint8_t index)
+{
+	lock[index].state = LockState::ACTIVE;
+	digitalWrite(lockLEDPins[index], HIGH);
+	lastLockedIndex = index;
+}
+
+/**
+ * Sets the required lock to lockable state.
+ */
+void Locks::setUnlocked(uint8_t index)
+{
+	lock[index].state = LockState::LOCKABLE;
+}
+
+void Locks::setBlocked(uint8_t index)
+{
+	lock[index].state = LockState::BLOCKED;
+	digitalWrite(lockLEDPins[index], LOW);
+}
+
+/**
+ * Called whenever a lock button is pressed.
+ */
+void Locks::toggleLock(uint8_t index)
+{
+	LockState prevLockState = lock[index].state;
+
+	if(lock[index].state == LockState::ACTIVE) {
+		setUnlocked(index);
+	} else if(lock[index].state == LockState::LOCKABLE) {
+		setLocked(index);
+	}
+
+	#if LOCKDEBUGINFO
+	if(lock[index].state != prevLockState) {
+		debug(index);
+	}
+	#endif
+}
+
+/**
+ * Stores the number of lock currently allowed in the `locksAllowed` variable.
+ */
+void Locks::calcLocksAllowed()
+{
+	if(currentBet == 0) {
+		#if LOCKDEBUGINFO
+		lastBet = 0;
+		#endif
+		locksAllowed = 0;
+		lastLockedIndex = -1;
+	} else {
+		locksAllowed = min((NREELS - 1), currentBet / NREELS);
+	}
+
+	#if LOCKDEBUGINFO
+		if((locksAllowed != lastLocksAllowed) || (lastBet != currentBet)) {
+		debug(-1);
+		}
+		lastLocksAllowed = locksAllowed;
+	#endif
+
+}
+
+/**
+ * Enable, disable or block locks according to the number of locks allowed and
+ * the number of locked locks.
+ */
+void Locks::setStateAsNeeded()
+{
+	uint8_t lockedLocks = getLockedLocks();
+
+	// Sets lastLockedIndex if needed. This works because NREELS is only 3
+
+	if(lockedLocks == 1) {
 		for(int i = 0; i < NREELS; i++) {
-			if(lock[i].IsAllowed()) {
-				allowed++;
+			if(lock[i].state == LockState::ACTIVE) {
+				lastLockedIndex = i;
+				break;
 			}
 		}
-		
-		Serial.print("Locked: ");
-		Serial.print(currentlyLocked);
-		Serial.print("  Max: ");
-		Serial.print(maxLockable);
-		Serial.print("  Bet: ");
-		Serial.print(game.currentBet);
-		Serial.print("  Allowed: ");
-		Serial.println(allowed);
+	}
 
-		lastLocked = currentlyLocked;
-		lastMaxLockable = maxLockable;
-		lastBetValue = game.currentBet;
-	};
+	// Switch according to the number of locks allowed and locked locks
+
+	if(locksAllowed > lockedLocks) {
+
+		// Enable all non-active locks
+
+		for(int i = 0; i < NREELS; i++) {
+			if(lock[i].state != LockState::ACTIVE) {
+				setUnlocked(i);
+			}
+		}
+
+	} else if(locksAllowed == lockedLocks) {
+
+		// Maximum reached, so block all non-active locks
+
+		for(int i = 0; i < NREELS; i++) {
+			if(lock[i].state != LockState::ACTIVE) {
+				setBlocked(i);
+			}
+		}
+
+	} else {	// locksAllowed < lockedLocks
+
+		// Unlock the last locked lock
+
+		if(lastLockedIndex >= 0 && lastLockedIndex <= NREELS) {
+			lock[lastLockedIndex].state = LockState::LOCKABLE;
+			lastLockedIndex = -1;
+		}
+	}
 }
 
 // ----------------------------------------------------- Public member functions
+
+bool Locks::IsLocked(uint8_t index)
+{
+	return lock[index].state == LockState::ACTIVE;
+}
 
 /**
  * Sets up lock buttons and LEDs.
@@ -55,107 +241,41 @@ void Locks::debug(uint8_t currentlyLocked, uint8_t maxLockable)
 void Locks::Setup()
 {
 	for(int i = 0; i < NREELS; i++) {
-		lock[i].Setup(i, lockButtonPins[i], lockLEDPins[i]);
+		initLock(i);
 	}
-
-	allowNext = true;
+	lockBlink.every(LOCKBLINK, lockBlinkCallback);
+	lockPwm.every(LOCKLEDFREQ, lockPwmCallback);
 }
 
-void Locks::Loop()
+/**
+ * Must be called from the main loop.
+ */
+void Locks::Loop(uint8_t gameBet)
 {
+	currentBet = gameBet;
+
+	#if LOCKDEBUGINFO
+	if(gameBet != lastBet) {
+		lastBet = gameBet;
+	}
+	#endif
+
 	for(int i = 0; i < NREELS; i++) {
-		if(lock[i].Loop(ledState)) {
-			CalcLocked();
+		lock[i].ezLockButton.loop();
+		if(lock[i].ezLockButton.isPressed()) {
+			toggleLock(i);
 		}
-	}
-}
-
-/**
- * Lock / unlock logic called once after each spin is completed.
- */
-void Locks::AllowOrBlock(bool allow)
-{
-	allowNext = allow;
-
-	if(allow) {
-		for(int i = 0; i < NREELS; i++) {
-			if(lock[i].IsLocked()) {
-				allowNext = false;
-				break;
-			}
+		if(lock[i].state == LockState::LOCKABLE) {
+			digitalWrite(lockLEDPins[i], lockBlinkState ?
+				!(lockPwmState % LOCKLEDMOD) : LOW);
 		}
 	}
 
-	if(allowNext) {
-		for(int i = 0; i < NREELS; i++) {
-			lock[i].SetAllowed(true);
-			lock[i].SetLocked(false);
-		}
-	} else {
-		for(int i = 0; i < NREELS; i++) {
-			lock[i].SetAllowed(false);
-			lock[i].SetLocked(false);
-		}
-	}
-}
+	calcLocksAllowed();
+	setStateAsNeeded();
 
-/**
- * Activates and deactivates the reel lock state according to the current bet.
- */
-void Locks::CalcLocked()
-{
-	if(!allowNext) {
-
-		for(int i = 0; i < NREELS; i++) {
-			lock[i].SetAllowed(false);
-			lock[i].SetLocked(false);
-		}
-
-	} else {
-
-		uint8_t currentlyLocked = 0;
-		uint8_t maxLockable = min(2, game.currentBet / 3);
-
-		for(int i = 0; i < NREELS; i++) {
-			if(lock[i].IsLocked()) {
-				currentlyLocked++;
-			}
-		}
-
-		// Lock logic
-
-		if(currentlyLocked < maxLockable) {
-
-			for(int i = 0; i < NREELS; i++) {
-				lock[i].SetAllowed(true);
-			}
-
-		} else if(currentlyLocked == maxLockable) {
-
-			for(int i = 0; i < NREELS; i++) {
-				if(!lock[i].IsLocked()) {
-					lock[i].SetAllowed(false);
-				}
-			}
-
-		} else {	// (currentlyLocked > maxLockable)
-
-			for(int i = NREELS - 1; i >= 0;  i--) {
-				if(lock[i].IsLocked()) {
-					lock[i].SetLocked(false);
-					currentlyLocked--;
-					if(currentlyLocked <= maxLockable) {
-						break;
-					}
-				}
-			}
-
-		}
-
-		#if LOCKDEBUGINFO
-		debug(currentlyLocked, maxLockable);
-		#endif
-	}
+	lockBlink.tick();
+	lockPwm.tick();
 }
 
 // ------------------------------------------------------------------------- End

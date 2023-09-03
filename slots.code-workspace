@@ -20,6 +20,9 @@
 		"cSpell.enableFiletypes": [
 			"!text"
 		],
+		"search.exclude": {
+			"locktests": true
+		}
 
 		// Looks awful, but the proportion is similar to the LED matrix
 		// when editing MD_MAX72XX font text files

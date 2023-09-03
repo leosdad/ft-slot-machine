@@ -116,32 +116,47 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
  */
 bool Reel::Loop()
 {
-	if(SIMULATE) {
-		delay(SIMULATEDELAY);
-		reelState = ReelState::IDLE;
-		return;
-	}
-
 	// State machine for this reel
 
-	switch(reelState) {
+	#if SIMULATE
 
-		case ReelState::IDLE:
-			idle();
-			break;
+		switch(reelState) {
 
-		case ReelState::START:
-			start();
-			break;
+			case ReelState::IDLE:
+				nSimTicks = SIMULATETICKS;
+				break;
 
-		case ReelState::SENSING:
-			sensing();
-			break;
+			case ReelState::START:
+				if(nSimTicks--) {
 
-		case ReelState::COUNTING:
-			counting();
-			break;
-	}
+				} else {
+					reelState = ReelState::IDLE;
+				}
+				break;
+		}
+
+	#else
+
+		switch(reelState) {
+
+			case ReelState::IDLE:
+				idle();
+				break;
+
+			case ReelState::START:
+				start();
+				break;
+
+			case ReelState::SENSING:
+				sensing();
+				break;
+
+			case ReelState::COUNTING:
+				counting();
+				break;
+		}
+
+	#endif
 
 	return reelState != ReelState::IDLE;
 }

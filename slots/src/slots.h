@@ -10,10 +10,10 @@
 
 // ----------------------------------------------------------------- Debug flags
 
-#define DEBUGINFO		false	// Send spin debug info to the serial port
+#define DEBUGINFO		true	// Send spin debug info to the serial port
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define SPEEDUP			true	// Remove extra reel spins and slow speed
-#define SIMULATE		false	// Simulate gameplay without actually moving anything
+#define SIMULATE		true	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
 
 // --------------------------------------------------------------------- Defines
@@ -39,7 +39,7 @@
 #define LOCKBLINKON		2		// Time on for lock LEDs
 #define LOCKLEDFREQ		2		// lock LEDS PWM frequency
 #define LOCKLEDMOD		8		// Time divider for lock LEDs
-#define SIMULATEDELAY	50		// Delay used in simulation mode
+#define SIMULATETICKS	50		// Counter used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)

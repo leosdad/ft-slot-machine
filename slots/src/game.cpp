@@ -82,12 +82,12 @@ void Game::printDebugData(bool home)
 	Serial.print(" / Coins: ");
 	Serial.println(nCoins);
 
-	Serial.print("Extra turns: ");
-	for(int i = 0; i < NREELS; i++) {
-		Serial.print(reels[i].extraTurns);
-		Serial.print(" ");
-	}
-	Serial.println();
+	// Serial.print("Extra turns: ");
+	// for(int i = 0; i < NREELS; i++) {
+	// 	Serial.print(reels[i].extraTurns);
+	// 	Serial.print(" ");
+	// }
+	// Serial.println();
 
 	// Serial.print("Balls: ");
 	// Serial.println(nBalls);
@@ -96,18 +96,26 @@ void Game::printDebugData(bool home)
 
 	Serial.println("Lines and payoffs:");
 	for(int l = 0; l < NPAYLINES; l++) {
-		Serial.print("** ");
+		Serial.print("[ ");
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 0, reels[0])]);
 		Serial.print(" ");
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 1, reels[1])]);
 		Serial.print(" ");
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 2, reels[2])]);
-		Serial.print(" ** ");
-		Serial.println(paylines[l].Payoff);
+		Serial.print(" ] ");
+		if(paylines[l].Payoff) {
+			Serial.println("* " + String(paylines[l].Payoff) + " *");
+		} else {
+			Serial.println();
+		}
 	}
 
-	Serial.print("Total payoff: ");
-	Serial.println(spinPayoff);
+	if(spinPayoff > 0) {
+		Serial.println("**** Total payoff: " + String(spinPayoff) + " ****");
+		Serial.println("Next coins: " + String(nCoins + spinPayoff));
+	} else {
+		Serial.println("No payoff");
+	}
 
 	Serial.print("Total wins: ");
 	Serial.println(totalWins);

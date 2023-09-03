@@ -32,6 +32,7 @@ class Reel
 		uint16_t nSteps;			// Steps counter
 		uint16_t finalSteps;		// Steps after sensor is triggered
 		uint8_t rotations;			// Rotation counter
+		uint8_t nSimTicks;			// Used for spin simulation
 
 		// Must be initialized and won't ever change
 

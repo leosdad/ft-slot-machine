@@ -43,7 +43,7 @@
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
-#define MX_BRIGHTNESS   0		// LED matrix brightness
+#define MX_BRIGHTNESS   0		// LED matrix brightness (0-15, zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
 #define CHEER_MIN		10		// Minimum brightness for cheering

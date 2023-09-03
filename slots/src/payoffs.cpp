@@ -42,7 +42,7 @@ uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 // ----------------------------------------------------- Public member functions
 
 /**
- * Calculates the payoff for all paylines
+ * Calculates the payoff for all paylines.
  */
 uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 {

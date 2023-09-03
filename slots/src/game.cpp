@@ -192,6 +192,7 @@ bool Game::Loop()
 	if(spinning != lastSpinning) {
 		if(!spinning) {
 			endSpin = true;
+			nCoins += spinPayoff;
 		}
 		lastSpinning = spinning;
 	}

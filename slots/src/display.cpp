@@ -16,7 +16,7 @@ void Display::setup()
 	mx.setFont(_font8_var_slots);
 }
 
-void Display::showBet(uint8_t value)
+void Display::showBet(uint16_t value)
 {
 	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, 16);
 }
@@ -36,7 +36,7 @@ void Display::scrollAll(const char* msg)
 /**
  * Display a number starting at column TEXTPOS.
  */
-void Display::show(uint8_t value, bool clear)
+void Display::show(uint16_t value, bool clear)
 {
 	if(clear) {
 		ledMatrix.clearColumns(MX_TEXTPOS, MX_NUMPOS);

@@ -19,8 +19,8 @@ class Display
 	public:
 		void setup();
 		void clear();
-		void show(uint8_t value, bool clear);
-		void showBet(uint8_t value);
+		void show(uint16_t value, bool clear);
+		void showBet(uint16_t value);
 		void scroll(const char *msg);
 		void scrollAll(const char *msg);
 };

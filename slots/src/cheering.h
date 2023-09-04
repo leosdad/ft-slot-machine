@@ -9,14 +9,22 @@
 #include <ezLED.h>
 #include "slots.h"
 
+enum class CheerLevel {
+	NONE = 0,
+	DRAW,
+	WIN,
+	BIG_WIN
+};
+
 // ----------------------------------------------------------- Class declaration
 
 class Cheering
 {
 	private:
 
-		bool isFadedIn = false;
-		bool fadeEnabled = true;
+		CheerLevel cheerLevel;
+		bool firstCycle = true;
+		bool active = false;
 		uint8_t fadeCycles;
 
 		ezLED leftSignal{0};
@@ -25,8 +33,8 @@ class Cheering
 	public:
 
 		void Setup();
-		void Loop(bool enable, bool cheerALot);
-		void Start();
+		void Loop(bool enable);
+		void Start(CheerLevel cheerLevel);
 		void Stop();
 };
 

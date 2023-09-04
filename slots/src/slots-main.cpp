@@ -29,6 +29,7 @@ auto updateTimer = timer_create_default();
 // Global variables
 
 uint8_t lastBet = 255;
+uint8_t lastCoins = STARTCOINS;
 bool firstSpin = true;
 bool reelsLocked = false;
 
@@ -68,7 +69,18 @@ void endSpin()
 		display.scroll("Start");
 	} else {
 		updateDisplay();
-		cheers.Start();
+
+		CheerLevel cheerLevel;
+
+		if(game.nCoins > lastCoins) {
+			cheerLevel = CheerLevel::WIN;
+		} else if(game.nCoins == lastCoins) {
+			cheerLevel = CheerLevel::DRAW;
+		} else {	// game.nCoins < lastCoins
+			cheerLevel = CheerLevel::NONE;
+		}
+
+		cheers.Start(cheerLevel);
 	}
 }
 
@@ -88,6 +100,7 @@ void spin()
 		return;
 	}
 
+	lastCoins = game.nCoins;
 	reelsLocked = false;
 	for(int i = 0; i < NREELS; i++) {
 		if(locks.IsLocked(i)) {
@@ -184,9 +197,12 @@ void SlotsMain::Loop()
 	if(game.Loop()) {
 		endSpin();
 	}
-	locks.Loop(!game.spinning, !(firstSpin || game.spinPayoff || reelsLocked),
-		game.currentBet);
-	cheers.Loop(!game.spinning && game.spinPayoff, false);
+	locks.Loop(
+		!game.spinning,
+		!(firstSpin || game.spinPayoff || reelsLocked),
+		game.currentBet
+	);
+	cheers.Loop(!game.spinning && game.spinPayoff);
 }
 
 #pragma endregion

@@ -28,7 +28,7 @@
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	22		// Number of payoff combinations
-#define BALLVALUE		101		// How much is needed to retrieve a ball
+#define BALLVALUE		200		// How much is needed to retrieve a ball
 #define MAXBALLS		6		// Up to 7
 
 // Time and hardware constants
@@ -46,10 +46,17 @@
 #define MX_BRIGHTNESS   0		// LED matrix brightness (0-15, zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
-#define CHEER_MIN		10		// Minimum brightness for cheering
-#define CHEER_MAX		255		// Maximum brightness for cheering
-#define CHEERMS			500		// Fading frequency when cheering
-#define CHEERALOTMS		120		// Blinking frequency when cheering a lot
+
+#define CHEER_MIN_BRT	10		// Minimum brightness
+#define CHEER_WIN_BRT	255		// Maximum brightness for a win
+#define CHEER_DRAW_BRT	50		// Medium brightness for a draw
+#define CHEER_WIN_MS	500		// Fading time when cheering a win
+#define CHEER_DRAW_MS	800		// Fading time when cheering a draw
+#define CHEER_OUT_MS	500		// Fading out time
+#define CHEER_LOT_MS	120		// Blinking frequency when cheering a lot
+#define CHEER_LOT_ON	3000	// Period to keep LEDs on when cheering a lot
+#define CHEER_WIN_RPT	10		// Win repetitions
+#define CHEER_DRAW_RPT	5		// Draw repetitions
 
 // Model-dependent constants, cannot be changed
 

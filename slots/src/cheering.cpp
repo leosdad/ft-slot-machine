@@ -12,40 +12,70 @@ void Cheering::Setup()
 {
 	leftSignal = ezLED(signalLED1Pin);
 	rightSignal = ezLED(signalLED2Pin);
-	Start();
+	Start(CheerLevel::NONE);
 }
 
 /**
  * Called while reels are stopped
  */
-void Cheering::Loop(bool enable, bool cheerALot)
+void Cheering::Loop(bool enable)
 {
 	leftSignal.loop();
 	rightSignal.loop();
 
 	if(enable) {
-		if(cheerALot) {
-			if(leftSignal.getState() == LED_IDLE) {
-				leftSignal.blinkInPeriod(CHEERALOTMS, CHEERALOTMS, 3000);
-				rightSignal.blinkInPeriod(CHEERALOTMS, CHEERALOTMS, 3000);
-			}
-		} else {
-			if(fadeEnabled && leftSignal.getState() == LED_IDLE) {
-				if(fadeCycles-- > 0) {
-					if(isFadedIn == false) {
-						leftSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
-						rightSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-						isFadedIn = true;
-					} else {
-						leftSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-						rightSignal.fade(CHEER_MIN, CHEER_MAX, CHEERMS);
-						isFadedIn = false;
+		if(leftSignal.getState() == LED_IDLE && cheerLevel > CheerLevel::NONE) {
+			switch(cheerLevel) {
+				case CheerLevel::NONE:
+					break;
+
+				case CheerLevel::DRAW:
+					if(active) {
+						if(fadeCycles++ < CHEER_DRAW_RPT) {
+							if(firstCycle) {
+								leftSignal.fade(CHEER_MIN_BRT, CHEER_DRAW_BRT, CHEER_DRAW_MS);
+								rightSignal.fade(CHEER_MIN_BRT, CHEER_DRAW_BRT, CHEER_DRAW_MS);
+								firstCycle = false;
+							} else {
+								leftSignal.fade(CHEER_DRAW_BRT, CHEER_MIN_BRT, CHEER_DRAW_MS);
+								rightSignal.fade(CHEER_DRAW_BRT, CHEER_MIN_BRT, CHEER_DRAW_MS);
+								firstCycle = true;
+							}
+						} else {
+							leftSignal.fade(CHEER_DRAW_BRT, 0, CHEER_OUT_MS);
+							rightSignal.fade(CHEER_DRAW_BRT, 0, CHEER_OUT_MS);
+							active = false;
+						}
 					}
-				} else {
-					rightSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-					leftSignal.fade(CHEER_MAX, CHEER_MIN, CHEERMS);
-					fadeEnabled = false;
-				}
+					break;
+
+				case CheerLevel::WIN:
+					if(active) {
+						if(fadeCycles++ < CHEER_WIN_RPT) {
+							if(firstCycle) {
+								leftSignal.fade(CHEER_MIN_BRT, CHEER_WIN_BRT, CHEER_WIN_MS);
+								rightSignal.fade(CHEER_WIN_BRT, CHEER_MIN_BRT, CHEER_WIN_MS);
+								firstCycle = false;
+							} else {
+								leftSignal.fade(CHEER_WIN_BRT, CHEER_MIN_BRT, CHEER_WIN_MS);
+								rightSignal.fade(CHEER_MIN_BRT, CHEER_WIN_BRT, CHEER_WIN_MS);
+								firstCycle = true;
+							}
+						} else {
+							leftSignal.fade(CHEER_WIN_BRT, 0, CHEER_OUT_MS);
+							rightSignal.fade(CHEER_WIN_BRT, 0, CHEER_OUT_MS);
+							active = false;
+						}
+					}
+					break;
+
+				case CheerLevel::BIG_WIN:
+					if(leftSignal.getState() == LED_IDLE) {
+						leftSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
+						rightSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
+						active = false;
+					}
+					break;
 			}
 		}
 	} else {
@@ -54,17 +84,19 @@ void Cheering::Loop(bool enable, bool cheerALot)
 	}
 }
 
-void Cheering::Start()
+void Cheering::Start(CheerLevel level)
 {
-	fadeCycles = 10;
-	fadeEnabled = true;
+	cheerLevel = level;
+	fadeCycles = 0;
+	active = true;
 }
 
 void Cheering::Stop()
 {
 	leftSignal.cancel();
 	rightSignal.cancel();
-	fadeEnabled = false;
+	active = false;
+	firstCycle = true;
 }
 
 // ------------------------------------------------------------------------- End

@@ -63,7 +63,7 @@ bool updateBet(void *)
  */
 void endSpin()
 {
-	// Serial.println("End spin");
+	static const char* feats[] = {"", "Sweep", "Bonus ", "Jckpot!"};
 
 	if(firstSpin) {
 		display.scroll("Start");
@@ -72,7 +72,10 @@ void endSpin()
 
 		CheerLevel cheerLevel;
 
-		if(game.nCoins > lastCoins) {
+		if(game.lastFeature > SpecialFeatures::NONE) {
+			cheerLevel = CheerLevel::BIG_WIN;
+			display.scrollAll(feats[(uint16_t)game.lastFeature]);
+		} else if(game.nCoins > lastCoins) {
 			cheerLevel = CheerLevel::WIN;
 		} else if(game.nCoins == lastCoins) {
 			cheerLevel = CheerLevel::DRAW;

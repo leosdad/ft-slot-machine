@@ -70,10 +70,15 @@ void Cheering::Loop(bool enable)
 					break;
 
 				case CheerLevel::BIG_WIN:
-					if(leftSignal.getState() == LED_IDLE) {
-						leftSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
-						rightSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
-						active = false;
+					if(active) {
+						if(fadeCycles++ < CHEER_LOT_RPT) {
+							leftSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
+							rightSignal.blinkInPeriod(CHEER_LOT_MS, CHEER_LOT_MS, CHEER_LOT_ON);
+						} else {
+							leftSignal.fade(CHEER_WIN_BRT, 0, CHEER_OUT_MS);
+							rightSignal.fade(CHEER_WIN_BRT, 0, CHEER_OUT_MS);
+							active = false;
+						}
 					}
 					break;
 			}

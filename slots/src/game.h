@@ -36,6 +36,7 @@ class Game
 		uint16_t spinPayoff = 0;		// Payoff amount for last spin
 		Reel reels[NREELS];				// Game reels
 		Payline paylines[NPAYLINES];	// Game paylines
+		SpecialFeatures lastFeature;
 
 		void Setup();
 		bool Loop();

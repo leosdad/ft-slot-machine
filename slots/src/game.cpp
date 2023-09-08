@@ -71,6 +71,8 @@ void Game::printDebugData(bool home)
 		"Grapes"
 	};
 
+	// Print spin data, current bet and coins
+
 	Serial.println();
 	Serial.print("---- Spin #");
 	Serial.print(totalSpins);
@@ -94,7 +96,8 @@ void Game::printDebugData(bool home)
 	// Serial.print(" ");
 	// Serial.println(newBall);
 
-	Serial.println("Lines and payoffs:");
+	// Print lines and payoffs
+
 	for(int l = 0; l < NPAYLINES; l++) {
 		Serial.print("[ ");
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 0, reels[0])]);
@@ -110,15 +113,25 @@ void Game::printDebugData(bool home)
 		}
 	}
 
+	// Print payoff data
+
 	if(spinPayoff > 0) {
 		Serial.println("**** Total payoff: " + String(spinPayoff) + " ****");
+
+		if(lastFeature == SpecialFeatures::JACKPOT) {
+			Serial.println("#### JACKPOT! ####");
+		} else if(lastFeature == SpecialFeatures::BONUS) {
+			Serial.println("#### Bonus ####");
+		}
+
 		Serial.println("Next coins: " + String(nCoins + spinPayoff));
 	} else {
-		Serial.println("No payoff");
+		Serial.println("(No payoff)");
 	}
 
-	Serial.print("Total wins: ");
-	Serial.println(totalWins);
+	// Print total wins
+
+	Serial.println("Total wins: " + String(totalWins));
 }
 
 // ----------------------------------------------------- Public member functions
@@ -149,6 +162,7 @@ bool Game::StartSpin(bool home)
 	
 	if(!home) {
 		payoffs.CalculateTotalPayoff(this);
+		lastFeature = payoffs.GetHighestFeature();
 		playing = true;
 		totalSpins++;
 	}

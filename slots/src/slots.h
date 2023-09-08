@@ -52,9 +52,10 @@
 #define CHEER_DRAW_BRT	50		// Medium brightness for a draw
 #define CHEER_WIN_MS	500		// Fading time when cheering a win
 #define CHEER_DRAW_MS	800		// Fading time when cheering a draw
-#define CHEER_OUT_MS	500		// Fading out time
+#define CHEER_OUT_MS	500		// Fade out time
 #define CHEER_LOT_MS	120		// Blinking frequency when cheering a lot
 #define CHEER_LOT_ON	3000	// Period to keep LEDs on when cheering a lot
+#define CHEER_LOT_RPT	1		// Cheer-a-lot repetitions
 #define CHEER_WIN_RPT	10		// Win repetitions
 #define CHEER_DRAW_RPT	5		// Draw repetitions
 
@@ -68,9 +69,10 @@
 // ----------------------------------------------------------- Structs and enums
 
 enum class SpecialFeatures {
-	NONE = 0x00,
-	JACKPOT = 0x01,
-	// BONUS = 0x02,
+	NONE = 0,
+	SWEEPSTAKE,
+	BONUS,
+	JACKPOT,
 };
 
 /**
@@ -79,7 +81,7 @@ enum class SpecialFeatures {
 struct payoffItem {
 	uint8_t symbol[NREELS];
 	uint16_t payoff;
-	SpecialFeatures features;
+	SpecialFeatures feature;
 };
 
 // ------------------------------------------------------------------- Constants
@@ -115,28 +117,29 @@ static const uint8_t payoffMultiplier = PAYMULTIPLIER;
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	{{1, 1, 1}, 172, SpecialFeatures::NONE},
+	{{1, 1, 1}, 172, SpecialFeatures::JACKPOT},
 	{{3, 3, 3}, 86, SpecialFeatures::NONE},
 	{{4, 4, 4}, 86, SpecialFeatures::NONE},
-	{{5, 5, 3}, 58, SpecialFeatures::NONE},
-	{{8, 8, 3}, 43, SpecialFeatures::NONE},
-	{{2, 2, 3}, 29, SpecialFeatures::NONE},
+	{{5, 5, 3}, 58, SpecialFeatures::BONUS},
+	{{8, 8, 3}, 43, SpecialFeatures::SWEEPSTAKE},
+	{{2, 2, 3}, 29, SpecialFeatures::SWEEPSTAKE},
 	{{8, 8, 8}, 22, SpecialFeatures::NONE},
-	{{5, 5, 5}, 20, SpecialFeatures::NONE},
+	{{5, 5, 5}, 20, SpecialFeatures::BONUS},
 	{{2, 2, 2}, 14, SpecialFeatures::NONE},
 	{{1, 1, 0}, 14, SpecialFeatures::NONE},
 	{{0, 1, 1}, 14, SpecialFeatures::NONE},
 	{{1, 0, 1}, 14, SpecialFeatures::NONE},
 	{{0, 3, 3}, 14, SpecialFeatures::NONE},
 	{{0, 3, 1}, 14, SpecialFeatures::NONE},
-	{{0, 4, 4}, 14, SpecialFeatures::NONE},
-	{{5, 3, 0}, 14, SpecialFeatures::NONE},
-	{{6, 6, 0}, 7, SpecialFeatures::NONE},
-	{{3, 3, 0}, 7, SpecialFeatures::NONE},
-	{{3, 1, 0}, 7, SpecialFeatures::NONE},
-	{{8, 8, 0}, 4, SpecialFeatures::NONE},
-	{{0, 8, 8}, 4, SpecialFeatures::NONE},
-	{{0, 0, 3}, 1, SpecialFeatures::NONE},
+
+	{{0, 4, 4}, 14, SpecialFeatures::BONUS},
+	{{5, 3, 0}, 14, SpecialFeatures::JACKPOT},
+	{{6, 6, 0},  7, SpecialFeatures::BONUS},
+	{{3, 3, 0},  7, SpecialFeatures::SWEEPSTAKE},
+	{{3, 1, 0},  7, SpecialFeatures::SWEEPSTAKE},
+	{{8, 8, 0},  4, SpecialFeatures::JACKPOT},
+	{{0, 8, 8},  4, SpecialFeatures::BONUS},
+	{{0, 0, 3},  1, SpecialFeatures::SWEEPSTAKE},
 };
 
 // ---------------------------------------------------------------- Arduino pins

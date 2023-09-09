@@ -104,64 +104,65 @@
 @@ @@ @@
 @@ @@ @@
 .CHAR 26
-.WIDTH 0
-.NOTE  'Deg C'
-@@
-@@
- 
-  @@@
+.WIDTH 7
+.NOTE  'Lever 0'
+@@@
+@@@
  @
  @
-  @@@
+ @
+ @
+ @
  
 .CHAR 27
-.NOTE  'Deg F'
-@@
-@@
- 
- @@@@
- @
+.NOTE  'Lever 1'
  @@@
+ @@@
+  @
+  @
+ @
+ @
  @
  
 .CHAR 28
-.NOTE  'Down arrow'
- 
- 
-@@@@@
- @@@
+.NOTE  'Lever 2' 
+
+  @@@
+  @@@
+   @
   @
- 
- 
+  @
+ @
  
 .CHAR 29
-.NOTE  'Right arrow'
- 
-@
-@@
-@@@
-@@
-@
- 
- 
-.CHAR 30
-.NOTE  'Left arrow'
- 
-  @
- @@
-@@@
- @@
-  @
- 
- 
-.CHAR 31
-.NOTE  'Up arrow'
- 
- 
-  @
- @@@
-@@@@@
+.NOTE  'Lever 3'
 
+   @@@
+   @@@
+   @
+  @
+ @
+@
+
+.CHAR 30
+.NOTE  'Lever 4'
+
+
+    @@@
+    @@@
+   @
+ @
+@
+
+.CHAR 31
+.WIDTH 0
+.NOTE  'Diamond'
+    
+  @@
+ @  @
+@    @
+ @  @
+  @@
 
 
 .CHAR 32

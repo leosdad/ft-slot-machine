@@ -26,6 +26,7 @@ Cheering cheers;
 
 auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
+auto pullTimer = timer_create_default();
 
 // Global variables
 
@@ -33,6 +34,7 @@ uint8_t lastBet = 255;
 uint8_t lastCoins = STARTCOINS;
 bool firstSpin = true;
 bool reelsLocked = false;
+uint8_t leverFrame = 0;
 
 // ------------------------------------------------------------ Global functions
 
@@ -43,20 +45,48 @@ bool updateDisplay(void *)
 		display.scrollAll("No bet");
 	} else {
 		display.showBet(game.currentBet);
+		display.show(game.nCoins, true);
 		if(game.spinPayoff) {
-			ledMatrix.printText("\x1d", 9);	// Right arrow
+			ledMatrix.printChar('\x1f', MX_TEXTPOS);	// Diamond
 		}
-		display.show(game.nCoins, !game.spinPayoff);
 	}
+	return true;
+}
+
+/**
+ * Displays a small animated lever.
+ */
+bool showPull(void *)
+{
+	char ch;
+
+	if(leverFrame < 10) {
+		ch = '\x1a' + (leverFrame < 5 ? leverFrame : 9 - leverFrame);
+		pullTimer.in(LEVERANIMRATE, showPull);
+		leverFrame++;
+	} else if(leverFrame == 11) {
+		ch = ' ';
+		pullTimer.in(500, showPull);
+		leverFrame++;
+	} else {
+		pullTimer.in(LEVERANIMDELAY, showPull);
+		updateDisplay(NULL);
+		leverFrame = 0;
+	}
+	ledMatrix.printChar(ch, MX_TEXTPOS - 1);
 }
 
 bool updateBet(void *)
 {
 	if(game.currentBet != lastBet) {
+		if(leverFrame != 0) {
+			ledMatrix.printText(" ", MX_TEXTPOS);
+		}
+		pullTimer.cancel();
 		updateDisplay(NULL);
 		lastBet = game.currentBet;
+		pullTimer.in(LEVERANIMDELAY, showPull);
 	}
-	
 	return true;
 }
 
@@ -79,7 +109,7 @@ void endSpin()
 			display.showCentered(feats[(uint16_t)game.lastFeature]);
 			displayTimer.in(DISPLAYTIME, updateDisplay);
 			if(game.lastFeature == SpecialFeatures::JACKPOT) {
-				display.blink(true, 300);
+				display.blink(true, JACKPOTBLINK);
 			}
 		} else if(game.nCoins > lastCoins) {
 			cheerLevel = CheerLevel::WIN;
@@ -91,6 +121,8 @@ void endSpin()
 
 		cheers.Start(cheerLevel);
 	}
+
+	pullTimer.in(LEVERANIMDELAY, showPull);
 }
 
 /**
@@ -99,6 +131,7 @@ void endSpin()
 void spin()
 {
 	cheers.Stop();
+	pullTimer.cancel();
 
 	if(game.currentBet == 0) {
 		return;
@@ -205,6 +238,7 @@ void SlotsMain::Loop()
 {
 	updateTimer.tick();
 	displayTimer.tick();
+	pullTimer.tick();
 
 	inputLoop();
 	display.loop();

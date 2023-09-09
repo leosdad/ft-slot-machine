@@ -59,6 +59,11 @@ void LedMatrix::printText(const char *str, uint8_t offset = 0)
 	mx.setColumn(pos + 1, 0x00);
 }
 
+void LedMatrix::printChar(const char ch, uint8_t offset = 0)
+{
+	mx.setChar(columnZero - offset, ch);
+}
+
 void LedMatrix::printUnsignedInteger(
 	uint16_t value,
 	uint8_t bufferSize,

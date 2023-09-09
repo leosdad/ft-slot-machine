@@ -41,6 +41,7 @@ class LedMatrix
 		void clearColumns(uint8_t start, uint8_t end);
 		void scrollText(const char *str, uint8_t offset = 0);
 		void printText(const char *str, uint8_t offset = 0);
+		void printChar(const char ch, uint8_t offset = 0);
 		void printUnsignedInteger(
 			uint16_t value,
 			uint8_t bufferSize,

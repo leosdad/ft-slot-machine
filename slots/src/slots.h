@@ -49,6 +49,9 @@
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
 #define DISPLAYTIME		2000	// Time for showing display messages
+#define JACKPOTBLINK	300		// Blink frequency for jackpot LEDs
+#define LEVERANIMDELAY	8000	// Time before lever animation
+#define LEVERANIMRATE	50		// Lever animation timer frame rate
 
 // Cheering constants
 

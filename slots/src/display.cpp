@@ -8,6 +8,10 @@
 #include "display.h"
 #include "slots.h"
 
+// --------------------------------------------------------------------- Defines
+
+#define CLEAR_COL		2		// Last column to be cleared
+
 // ------------------------------------------------------------ Global variables
 
 auto displayBlinkTimer = timer_create_default();
@@ -43,7 +47,7 @@ void Display::showBet(uint16_t value)
 
 void Display::scroll(const char* msg)
 {
-	mx.clear(0, 2);
+	mx.clear(0, CLEAR_COL);
 	ledMatrix.scrollText(msg, MX_TEXTPOS);
 }
 
@@ -55,7 +59,7 @@ void Display::scrollAll(const char* msg)
 
 void Display::show(const char* msg)
 {
-	mx.clear(0, 2);
+	mx.clear(0, CLEAR_COL);
 	ledMatrix.printText(msg, MX_TEXTPOS);
 }
 

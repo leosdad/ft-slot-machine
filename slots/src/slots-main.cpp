@@ -25,6 +25,7 @@ Display display;
 Cheering cheers;
 
 auto updateTimer = timer_create_default();
+auto displayTimer = timer_create_default();
 
 // Global variables
 
@@ -35,14 +36,15 @@ bool reelsLocked = false;
 
 // ------------------------------------------------------------ Global functions
 
-bool updateDisplay()
+bool updateDisplay(void *)
 {
+	display.blink(false);
 	if(game.currentBet == 0) {
 		display.scrollAll("No bet");
 	} else {
 		display.showBet(game.currentBet);
 		if(game.spinPayoff) {
-			ledMatrix.printText("\x1d", 9);	// Right pointer
+			ledMatrix.printText("\x1d", 9);	// Right arrow
 		}
 		display.show(game.nCoins, !game.spinPayoff);
 	}
@@ -51,7 +53,7 @@ bool updateDisplay()
 bool updateBet(void *)
 {
 	if(game.currentBet != lastBet) {
-		updateDisplay();
+		updateDisplay(NULL);
 		lastBet = game.currentBet;
 	}
 	
@@ -63,18 +65,22 @@ bool updateBet(void *)
  */
 void endSpin()
 {
-	static const char* feats[] = {"", "Sweep", "Bonus ", "Jckpot!"};
+	static const char* feats[] = {"", "^^Sweep", "^^Bonus", "Jckpot!"};
 
 	if(firstSpin) {
 		display.scroll("Start");
 	} else {
-		updateDisplay();
+		updateDisplay(NULL);
 
 		CheerLevel cheerLevel;
 
 		if(game.lastFeature > SpecialFeatures::NONE) {
 			cheerLevel = CheerLevel::BIG_WIN;
-			display.scrollAll(feats[(uint16_t)game.lastFeature]);
+			display.showAll(feats[(uint16_t)game.lastFeature]);
+			displayTimer.in(DISPLAYTIME, updateDisplay);
+			if(game.lastFeature == SpecialFeatures::JACKPOT) {
+				display.blink(true, 300);
+			}
 		} else if(game.nCoins > lastCoins) {
 			cheerLevel = CheerLevel::WIN;
 		} else if(game.nCoins == lastCoins) {
@@ -112,6 +118,8 @@ void spin()
 	}
 
 	display.scroll("Spin ");
+	// displayTimer.in(DISPLAYTIME, updateDisplay);
+
 	#if !SPEEDUP
 	delay(500);
 	#endif
@@ -196,7 +204,10 @@ void SlotsMain::Setup()
 void SlotsMain::Loop()
 {
 	updateTimer.tick();
+	displayTimer.tick();
+
 	inputLoop();
+	display.loop();
 	if(game.Loop()) {
 		endSpin();
 	}

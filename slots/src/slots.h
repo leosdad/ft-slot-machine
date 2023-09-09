@@ -43,9 +43,10 @@
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
-#define MX_BRIGHTNESS   0		// LED matrix brightness (0-15, zero emits light)
+#define MX_BRIGHTNESS	0		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
+#define DISPLAYTIME		2000	// Time for showing display messages
 
 #define CHEER_MIN_BRT	10		// Minimum brightness
 #define CHEER_WIN_BRT	255		// Maximum brightness for a win
@@ -132,14 +133,14 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{0, 3, 3}, 14, SpecialFeatures::NONE},
 	{{0, 3, 1}, 14, SpecialFeatures::NONE},
 
-	{{0, 4, 4}, 14, SpecialFeatures::BONUS},
-	{{5, 3, 0}, 14, SpecialFeatures::JACKPOT},
-	{{6, 6, 0},  7, SpecialFeatures::BONUS},
-	{{3, 3, 0},  7, SpecialFeatures::SWEEPSTAKE},
-	{{3, 1, 0},  7, SpecialFeatures::SWEEPSTAKE},
-	{{8, 8, 0},  4, SpecialFeatures::JACKPOT},
-	{{0, 8, 8},  4, SpecialFeatures::BONUS},
-	{{0, 0, 3},  1, SpecialFeatures::SWEEPSTAKE},
+	{{0, 4, 4}, 14, SpecialFeatures::NONE},
+	{{5, 3, 0}, 14, SpecialFeatures::NONE},
+	{{6, 6, 0},  7, SpecialFeatures::NONE},
+	{{3, 3, 0},  7, SpecialFeatures::NONE},
+	{{3, 1, 0},  7, SpecialFeatures::NONE},
+	{{8, 8, 0},  4, SpecialFeatures::NONE},
+	{{0, 8, 8},  4, SpecialFeatures::NONE},
+	{{0, 0, 3},  1, SpecialFeatures::NONE},
 };
 
 // ---------------------------------------------------------------- Arduino pins

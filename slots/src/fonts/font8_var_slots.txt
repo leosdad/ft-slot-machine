@@ -125,7 +125,7 @@
  @
  
 .CHAR 28
-.NOTE  'Down Pointer'
+.NOTE  'Down arrow'
  
  
 @@@@@
@@ -135,7 +135,7 @@
  
  
 .CHAR 29
-.NOTE  'Right Pointer'
+.NOTE  'Right arrow'
  
 @
 @@
@@ -145,7 +145,7 @@
  
  
 .CHAR 30
-.NOTE  'Left Pointer'
+.NOTE  'Left arrow'
  
   @
  @@
@@ -155,7 +155,7 @@
  
  
 .CHAR 31
-.NOTE  'Up Pointer'
+.NOTE  'Up arrow'
  
  
   @
@@ -787,16 +787,18 @@
  @@
 
 .CHAR 94
-.NOTE  '^'
+.WIDTH 1
+.NOTE  '^ (1-pix space)'
 
- 
- @
-@ @
+
+
+
 
 
 
 
 .CHAR 95
+.WIDTH 0
 .NOTE  '_'
  
 

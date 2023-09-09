@@ -18,7 +18,11 @@ class Display
 {
 	public:
 		void setup();
+		void loop();
 		void clear();
+		void show(const char *msg);
+		void showAll(const char *msg);
+		void blink(bool blink, uint32_t interval = 300);
 		void show(uint16_t value, bool clear);
 		void showBet(uint16_t value);
 		void scroll(const char *msg);

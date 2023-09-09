@@ -65,7 +65,7 @@ bool updateBet(void *)
  */
 void endSpin()
 {
-	static const char* feats[] = {"", "^^Sweep", "^^Bonus", "Jckpot!"};
+	static const char* feats[] = {"", "Sweep", "Bonus", "Jckpot!"};
 
 	if(firstSpin) {
 		display.scroll("Start");
@@ -76,7 +76,7 @@ void endSpin()
 
 		if(game.lastFeature > SpecialFeatures::NONE) {
 			cheerLevel = CheerLevel::BIG_WIN;
-			display.showAll(feats[(uint16_t)game.lastFeature]);
+			display.showCentered(feats[(uint16_t)game.lastFeature]);
 			displayTimer.in(DISPLAYTIME, updateDisplay);
 			if(game.lastFeature == SpecialFeatures::JACKPOT) {
 				display.blink(true, 300);

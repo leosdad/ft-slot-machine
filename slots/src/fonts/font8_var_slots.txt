@@ -787,18 +787,16 @@
  @@
 
 .CHAR 94
-.WIDTH 1
-.NOTE  '^ (1-pix space)'
-
-
-
-
+.NOTE  '^'
+ 
+ 
+ @
+@ @
 
 
 
 
 .CHAR 95
-.WIDTH 0
 .NOTE  '_'
  
 

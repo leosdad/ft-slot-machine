@@ -18,6 +18,10 @@ enum class NumberPadding {
 	ZEROS,
 };
 
+// ------------------------------------------------------------------- Constants
+
+#define CHARSPACING		1		// Space between font characters
+
 // ------------------------------------------------------------------- Variables
 
 extern MD_MAX72XX mx;
@@ -28,7 +32,7 @@ class LedMatrix
 {
 	private:
 
-		const uint8_t charSpacing = 1;
+		const uint8_t charSpacing = CHARSPACING;
 		uint8_t columnZero;
 
 	public:

@@ -48,25 +48,13 @@ void LedMatrix::printText(const char *str, uint8_t offset = 0)
 {
 	uint8_t charWidth;
 	uint8_t pos = columnZero - offset;
-
 	uint8_t len = strlen(str);
-
-	// Serial.print("String: ");
-	// Serial.println(str);
-	// Serial.print("Strlen: ");
-	// Serial.println(len);
-	// Serial.print("Pos before: ");
-	// Serial.println(pos);
 
 	for(uint8_t i = 0; str[i] != '\0', pos, i < len; i++) {
 		charWidth = mx.setChar(pos, str[i]);
 		pos -= (charWidth + charSpacing);
 		mx.setColumn(pos + 1, 0x00);
 	}
-
-	// Serial.print("Pos before: ");
-	// Serial.println(pos);
-	// Serial.println();
 
 	mx.setColumn(pos + 1, 0x00);
 }

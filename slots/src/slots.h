@@ -18,7 +18,7 @@
 
 // --------------------------------------------------------------------- Defines
 
-// Game constants
+// Gameplay constants
 
 #define STARTCOINS		100		// Player coins when game starts
 #define MAXCOINS		9999	// Up to 16384
@@ -31,7 +31,13 @@
 #define BALLVALUE		200		// How much is needed to retrieve a ball
 #define MAXBALLS		6		// Up to 7
 
-// Time and hardware constants
+// Software constants
+
+#define MX_BRIGHTNESS	0		// LED matrix brightness (0-15; zero emits light)
+#define MX_TEXTPOS		9		// Offset for displaying text
+#define MX_NUMPOS		12		// Offset for displaying numbers
+
+// Time and timer constants
 
 #define BAUDRATE		57600	// For serial communication
 #define UPDATEBET		80		// Rate of display update timer
@@ -41,12 +47,10 @@
 #define LOCKLEDMOD		8		// Time divider for lock LEDs
 #define SIMULATETICKS	50		// Counter used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
-#define HOMEOFFSET		34		// Common position offset for home position
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
-#define MX_BRIGHTNESS	0		// LED matrix brightness (0-15; zero emits light)
-#define MX_TEXTPOS		9		// Offset for displaying text
-#define MX_NUMPOS		12		// Offset for displaying numbers
 #define DISPLAYTIME		2000	// Time for showing display messages
+
+// Cheering constants
 
 #define CHEER_MIN_BRT	10		// Minimum brightness
 #define CHEER_WIN_BRT	255		// Maximum brightness for a win
@@ -62,10 +66,11 @@
 
 // Model-dependent constants, cannot be changed
 
-#define NREELS		    3
-#define NSYMBOLS	    8
-#define NREELSYMBOLS    12
-#define MATRIXMODULELEN	4
+#define NREELS		    3		// Number of reels
+#define NSYMBOLS	    8		// Number of different symbols
+#define NREELSYMBOLS    12		// Number of symbols per reel
+#define MATRIXMODULELEN	4		// Number of modules in LED matrix
+#define HOMEOFFSET		34		// Common position offset for home position
 
 // ----------------------------------------------------------- Structs and enums
 
@@ -132,7 +137,6 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{1, 0, 1}, 14, SpecialFeatures::NONE},
 	{{0, 3, 3}, 14, SpecialFeatures::NONE},
 	{{0, 3, 1}, 14, SpecialFeatures::NONE},
-
 	{{0, 4, 4}, 14, SpecialFeatures::NONE},
 	{{5, 3, 0}, 14, SpecialFeatures::NONE},
 	{{6, 6, 0},  7, SpecialFeatures::NONE},

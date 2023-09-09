@@ -59,10 +59,26 @@ void Display::show(const char* msg)
 	ledMatrix.printText(msg, MX_TEXTPOS);
 }
 
-void Display::showAll(const char* msg)
+void Display::showAll(const char* msg, uint8_t pos = 0)
 {
 	mx.clear();
-	ledMatrix.printText(msg, 0);
+	ledMatrix.printText(msg, pos);
+}
+
+void Display::showCentered(const char* msg)
+{
+	uint8_t charSpacing = CHARSPACING;
+	uint8_t charWidth;
+	uint8_t length = 0;
+	uint8_t strLen = strlen(msg);
+
+	for(uint8_t i = 0; msg[i] != '\0', i < strLen; i++) {
+		charWidth = mx.setChar(length, msg[i]);
+		length += (charWidth + charSpacing);
+	}
+
+	mx.clear();
+	ledMatrix.printText(msg, (8 * MATRIXMODULELEN - length) / 2 + charSpacing);
 }
 
 void Display::blink(bool blink, uint32_t interval = 300)

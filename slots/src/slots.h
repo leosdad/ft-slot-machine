@@ -76,7 +76,7 @@
 
 enum class SpecialFeatures {
 	NONE = 0,
-	SWEEPSTAKE,
+	SWEEPSTAKES,
 	BONUS,
 	JACKPOT,
 };
@@ -123,28 +123,24 @@ static const uint8_t payoffMultiplier = PAYMULTIPLIER;
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	{{1, 1, 1}, 172, SpecialFeatures::JACKPOT},
-	{{3, 3, 3}, 86, SpecialFeatures::NONE},
-	{{4, 4, 4}, 86, SpecialFeatures::NONE},
-	{{5, 5, 3}, 58, SpecialFeatures::BONUS},
-	{{8, 8, 3}, 43, SpecialFeatures::SWEEPSTAKE},
-	{{2, 2, 3}, 29, SpecialFeatures::SWEEPSTAKE},
-	{{8, 8, 8}, 22, SpecialFeatures::NONE},
-	{{5, 5, 5}, 20, SpecialFeatures::BONUS},
-	{{2, 2, 2}, 14, SpecialFeatures::NONE},
-	{{1, 1, 0}, 14, SpecialFeatures::NONE},
-	{{0, 1, 1}, 14, SpecialFeatures::NONE},
-	{{1, 0, 1}, 14, SpecialFeatures::NONE},
-	{{0, 3, 3}, 14, SpecialFeatures::NONE},
-	{{0, 3, 1}, 14, SpecialFeatures::NONE},
-	{{0, 4, 4}, 14, SpecialFeatures::NONE},
-	{{5, 3, 0}, 14, SpecialFeatures::NONE},
-	{{6, 6, 0},  7, SpecialFeatures::NONE},
-	{{3, 3, 0},  7, SpecialFeatures::NONE},
-	{{3, 1, 0},  7, SpecialFeatures::NONE},
-	{{8, 8, 0},  4, SpecialFeatures::NONE},
-	{{0, 8, 8},  4, SpecialFeatures::NONE},
-	{{0, 0, 3},  1, SpecialFeatures::NONE},
+	{{1, 1, 1}, 180, SpecialFeatures::JACKPOT},
+	{{3, 3, 3},  85, SpecialFeatures::NONE},
+	{{4, 4, 4},  85, SpecialFeatures::NONE},
+	{{5, 5, 3},  60, SpecialFeatures::BONUS},
+	{{8, 8, 3},  45, SpecialFeatures::SWEEPSTAKES},
+	{{2, 2, 3},  30, SpecialFeatures::SWEEPSTAKES},
+	{{8, 8, 8},  25, SpecialFeatures::NONE},
+	{{5, 5, 5},  20, SpecialFeatures::BONUS},
+	{{2, 2, 2},  15, SpecialFeatures::NONE},
+	{{1, 1, 0},  15, SpecialFeatures::NONE},
+	{{0, 1, 1},  15, SpecialFeatures::NONE},
+	{{1, 0, 1},  15, SpecialFeatures::NONE},
+	{{0, 3, 3},  15, SpecialFeatures::NONE},
+	{{0, 3, 1},  15, SpecialFeatures::NONE},
+	{{0, 4, 4},  15, SpecialFeatures::NONE},
+	{{6, 6, 0},   8, SpecialFeatures::NONE},
+	{{3, 3, 0},   8, SpecialFeatures::NONE},
+	{{0, 0, 3},   1, SpecialFeatures::NONE},
 };
 
 // ---------------------------------------------------------------- Arduino pins

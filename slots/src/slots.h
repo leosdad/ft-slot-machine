@@ -21,8 +21,8 @@
 // Gameplay constants
 
 #define STARTCOINS		100		// Player coins when game starts
-#define MAXCOINS		9999	// Up to 16384
-#define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
+#define MAXCOINS		999		// Up to 16384
+#define MAXCOINDIGITS	3		// Because MAXCOINS is 999
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
 #define PAYMULTIPLIER	1		// Default payoff multiplier
@@ -35,7 +35,7 @@
 
 #define MX_BRIGHTNESS	0		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
-#define MX_NUMPOS		12		// Offset for displaying numbers
+#define MX_NUMPOS		17		// Offset for displaying numbers
 
 // Time and timer constants
 
@@ -126,23 +126,23 @@ static const uint8_t payoffMultiplier = PAYMULTIPLIER;
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	{{1, 1, 1}, 180, SpecialFeatures::JACKPOT},
-	{{3, 3, 3},  85, SpecialFeatures::NONE},
-	{{4, 4, 4},  85, SpecialFeatures::NONE},
+	{{1, 1, 1}, 180, SpecialFeatures::NONE},
+	{{3, 3, 3},  85, SpecialFeatures::JACKPOT},
+	{{4, 4, 4},  85, SpecialFeatures::JACKPOT},
 	{{5, 5, 3},  60, SpecialFeatures::BONUS},
-	{{8, 8, 3},  45, SpecialFeatures::SWEEPSTAKES},
-	{{2, 2, 3},  30, SpecialFeatures::SWEEPSTAKES},
-	{{8, 8, 8},  25, SpecialFeatures::NONE},
+	{{8, 8, 3},  45, SpecialFeatures::NONE},
+	{{2, 2, 3},  30, SpecialFeatures::NONE},
+	{{1, 1, 0},  25, SpecialFeatures::SWEEPSTAKES},
+	{{8, 8, 8},  22, SpecialFeatures::NONE},
 	{{5, 5, 5},  20, SpecialFeatures::BONUS},
 	{{2, 2, 2},  15, SpecialFeatures::NONE},
-	{{1, 1, 0},  15, SpecialFeatures::NONE},
-	{{0, 1, 1},  15, SpecialFeatures::NONE},
-	{{1, 0, 1},  15, SpecialFeatures::NONE},
+	{{0, 1, 1},  15, SpecialFeatures::SWEEPSTAKES},
+	{{1, 0, 1},  15, SpecialFeatures::SWEEPSTAKES},
 	{{0, 3, 3},  15, SpecialFeatures::NONE},
 	{{0, 3, 1},  15, SpecialFeatures::NONE},
 	{{0, 4, 4},  15, SpecialFeatures::NONE},
-	{{6, 6, 0},   8, SpecialFeatures::NONE},
-	{{3, 3, 0},   8, SpecialFeatures::NONE},
+	{{6, 6, 0},  12, SpecialFeatures::NONE},
+	{{3, 3, 0},  12, SpecialFeatures::NONE},
 	{{0, 0, 3},   1, SpecialFeatures::NONE},
 };
 

@@ -20,22 +20,22 @@
 
 // Gameplay constants
 
-#define STARTCOINS		100		// Player coins when game starts
-#define MAXCOINS		999		// Up to 16384
-#define MAXCOINDIGITS	3		// Because MAXCOINS is 999
+#define STARTCOINS		100		// Number of coins upon when game start
+#define MAXCOINS		9999	// Up to 16384
+#define MAXCOINDIGITS	4		// Because MAXCOINS is 999
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
-#define NCOMBINATIONS	22		// Number of payoff combinations
-#define BALLVALUE		200		// How much is needed to retrieve a ball
-#define MAXBALLS		6		// Up to 7
+#define NCOMBINATIONS	18		// Number of payoff combinations
+// #define MAXBALLS		6		// Up to 7
+// #define BALLVALUE	200		// How much is needed to retrieve a ball
 
 // Software constants
 
-#define MX_BRIGHTNESS	0		// LED matrix brightness (0-15; zero emits light)
+#define MX_BRIGHTNESS	1		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
-#define MX_NUMPOS		17		// Offset for displaying numbers
+#define MX_NUMPOS		12		// Offset for displaying numbers
 
 // Time and timer constants
 
@@ -52,6 +52,7 @@
 #define JACKPOTBLINK	300		// Blink frequency for jackpot LEDs
 #define LEVERANIMDELAY	8000	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
+#define WINTOGGLE		600		// Period to toggle win symbol state
 
 // Cheering constants
 

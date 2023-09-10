@@ -27,6 +27,7 @@ Cheering cheers;
 auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
 auto pullTimer = timer_create_default();
+auto winTimer = timer_create_default();
 
 // Global variables
 
@@ -35,20 +36,37 @@ uint8_t lastCoins = STARTCOINS;
 bool firstSpin = true;
 bool reelsLocked = false;
 uint8_t leverFrame = 0;
+bool showWinSymbol = true;
+bool displayUpdated = false;
 
 // ------------------------------------------------------------ Global functions
+
+bool toggleWinSymbol(void *)
+{
+	if(displayUpdated && game.currentBet > 0) {
+		if(!game.spinning && game.spinPayoff) {
+			if(showWinSymbol) {
+				ledMatrix.printChar('\x1f', 8);	// Win symbol
+			} else {
+				ledMatrix.clearColumns(8, 10);
+			}
+		} else {
+			ledMatrix.clearColumns(8, 10);
+		}
+	}
+	showWinSymbol = !showWinSymbol;
+}
 
 bool updateDisplay(void *)
 {
 	display.blink(false);
+	displayUpdated = true;
+
 	if(game.currentBet == 0) {
-		display.scrollAll("No bet");
+		display.showCentered("No bet");
 	} else {
 		display.showBet(game.currentBet);
 		display.show(game.nCoins, true);
-		if(game.spinPayoff) {
-			ledMatrix.printChar('\x1f', MX_TEXTPOS);	// Diamond
-		}
 	}
 	return true;
 }
@@ -73,7 +91,7 @@ bool showPull(void *)
 		updateDisplay(NULL);
 		leverFrame = 0;
 	}
-	ledMatrix.printChar(ch, MX_TEXTPOS - 1);
+	ledMatrix.printChar(ch, 0);
 }
 
 bool updateBet(void *)
@@ -100,11 +118,19 @@ void endSpin()
 	if(firstSpin) {
 		display.scroll("Start");
 	} else {
+		if(game.spinPayoff) {
+			showWinSymbol = true;
+			winTimer.every(WINTOGGLE, toggleWinSymbol);
+		} else {
+			winTimer.cancel();
+		}
+
 		updateDisplay(NULL);
 
 		CheerLevel cheerLevel;
 
 		if(game.lastFeature > SpecialFeatures::NONE) {
+			displayUpdated = false;
 			cheerLevel = CheerLevel::BIG_WIN;
 			display.showCentered(feats[(uint16_t)game.lastFeature]);
 			displayTimer.in(DISPLAYTIME, updateDisplay);
@@ -132,6 +158,7 @@ void spin()
 {
 	cheers.Stop();
 	pullTimer.cancel();
+	winTimer.cancel();
 
 	if(game.currentBet == 0) {
 		return;
@@ -239,6 +266,7 @@ void SlotsMain::Loop()
 	updateTimer.tick();
 	displayTimer.tick();
 	pullTimer.tick();
+	winTimer.tick();
 
 	inputLoop();
 	display.loop();

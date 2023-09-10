@@ -65,13 +65,14 @@
    @@
 .CHAR 22
 .NOTE  '6 coins'
+ @@ @@
+ @@ @@
 
-@@ @@ @@
-@@ @@ @@
+ @@ @@
+ @@ @@
 
-
-@@ @@ @@
-@@ @@ @@
+ @@ @@
+ @@ @@
 
 .CHAR 23
 .NOTE  '7 coins'
@@ -104,67 +105,67 @@
 @@ @@ @@
 @@ @@ @@
 .CHAR 26
-.WIDTH 7
+.WIDTH 8
 .NOTE  'Lever 0'
-@@@
-@@@
- @
- @
- @
- @
- @
+ @@@
+ @@@
+  @
+  @
+  @
+  @
+  @
  
 .CHAR 27
 .NOTE  'Lever 1'
- @@@
- @@@
-  @
-  @
- @
- @
- @
- 
-.CHAR 28
-.NOTE  'Lever 2' 
-
   @@@
   @@@
    @
+   @
   @
   @
- @
+  @
+ 
+.CHAR 28
+.NOTE  'Lever 2'  
+
+   @@@
+   @@@
+    @
+   @
+   @
+  @
  
 .CHAR 29
 .NOTE  'Lever 3'
 
-   @@@
-   @@@
+    @@@
+    @@@
+    @
    @
   @
  @
-@
 
 .CHAR 30
 .NOTE  'Lever 4'
 
 
-    @@@
-    @@@
-   @
+     @@@
+     @@@
+    @
+  @
  @
-@
 
 .CHAR 31
 .WIDTH 0
-.NOTE  'Diamond'
-    
-  @@
- @  @
-@    @
- @  @
-  @@
+.NOTE  'Win'
+ @
+@ @
+@@@
 
 
+@@@
+@ @
+ @
 .CHAR 32
 .WIDTH 2
 .NOTE  'Space'

@@ -25,6 +25,7 @@ class SlotsMain
 	public:
 
 		void Setup();
+		void Restart();
 		void Loop();
 };
 

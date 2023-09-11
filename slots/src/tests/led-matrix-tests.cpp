@@ -511,6 +511,37 @@ void wrapText()
 	mxt.wraparound(MD_MAX72XX::OFF);
 }
 
+// Display wrapping text.
+void wrapText2(const char *text)
+{
+	mxt.clear();
+
+	uint8_t charWidth;
+	uint8_t cBuf[8];
+
+	uint8_t length = strlen(text);
+	uint8_t pos = 0;
+	// The buffer must be at least twice the size of the longest string
+	char *buffer = "                                                         ";
+	// Create a copy
+	memcpy(buffer, text, length);
+	// Create a second copy
+	memcpy(buffer + length + 1, text, length);
+
+	while(true) {
+		charWidth = mxt.getChar(buffer[pos++], sizeof(cBuf) / sizeof(cBuf[0]), cBuf);
+		for(uint8_t i = 0; i <= charWidth; i++)	 // allow space between characters
+		{
+			mxt.transform(MD_MAX72XX::TSL);
+			mxt.setColumn(0, (i < charWidth) ? cBuf[i] : 0);
+			delay(DELAYTIME);
+		}
+		if(pos == length) {
+			pos = 0;
+		}
+	}
+}
+
 void showCharset(void)
 // Run through display of the the entire font characters set
 {
@@ -538,6 +569,8 @@ void showCharset(void)
 	mxt.update(MD_MAX72XX::ON);
 }
 
+// -----------------------------------------------------------------------------
+
 void ledMatrixTestsSetup()
 {
 #if DEBUG
@@ -551,22 +584,22 @@ void ledMatrixTestsSetup()
 
 	mxt.clear();
 	mxt.control(MD_MAX72XX::INTENSITY, 1);
+
+	wrapText2("Wrap text demo ... ");
 }
 
 void ledMatrixTestsLoop()
 {
-#if 1
-	scrollText("Graphics");
+	// scrollText("Graphics");
 //   zeroPointSet();
-  rows();
-  columns();
+//   rows();
+//   columns();
 //   cross();
 //   stripe();
 //   checkboard();
 //   bullseye();
 //   bounce();
 //   spiral();
-#endif
 
 	// #if 1
 	//   scrollText("Control");
@@ -583,7 +616,8 @@ void ledMatrixTestsLoop()
 
 	// #if 1
 	//   scrollText("Charset");
-	wrapText();
+	// wrapText();
+	// wrapText2();
 	//   showCharset();
 	// #endif
 }

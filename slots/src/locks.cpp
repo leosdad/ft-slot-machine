@@ -35,8 +35,6 @@ struct Lock
 Lock lock[NREELS];
 auto lockBlink = timer_create_default();
 bool lockBlinkState = false;
-auto lockPwm = timer_create_default();
-uint8_t lockPwmState = 0;
 
 #if LOCKDEBUGINFO
 const static char *StateNames[NREELS] = { "Blocked", "Lockable", "Active" };
@@ -50,15 +48,6 @@ const static char *StateNames[NREELS] = { "Blocked", "Lockable", "Active" };
 bool lockBlinkCallback(void *)
 {
 	lockBlinkState = !lockBlinkState;
-	return true;
-}
-
-/**
- * Called by the lock PWM timer.
- */
-bool lockPwmCallback(void *)
-{
-	lockPwmState++;
 	return true;
 }
 
@@ -114,6 +103,7 @@ uint8_t Locks::getLockedLocks()
 void Locks::setLocked(uint8_t index)
 {
 	lock[index].state = LockState::ACTIVE;
+	pinMode(lockLEDPins[index],OUTPUT);
 	digitalWrite(lockLEDPins[index], HIGH);
 	lastLockedIndex = index;
 }
@@ -129,6 +119,7 @@ void Locks::setUnlocked(uint8_t index)
 void Locks::setBlocked(uint8_t index)
 {
 	lock[index].state = LockState::BLOCKED;
+	pinMode(lockLEDPins[index],OUTPUT);
 	digitalWrite(lockLEDPins[index], LOW);
 }
 
@@ -173,7 +164,6 @@ void Locks::calcLocksAllowed()
 		}
 		lastLocksAllowed = locksAllowed;
 	#endif
-
 }
 
 /**
@@ -247,7 +237,6 @@ void Locks::Setup()
 		initLock(i);
 	}
 	lockBlink.every(LOCKBLINK, lockBlinkCallback);
-	lockPwm.every(LOCKLEDFREQ, lockPwmCallback);
 }
 
 /**
@@ -273,8 +262,13 @@ void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 					toggleLock(i);
 				}
 				if(lock[i].state == LockState::LOCKABLE) {
-					digitalWrite(lockLEDPins[i], lockBlinkState ?
-						!(lockPwmState % LOCKLEDMOD) : LOW);
+					if(lockBlinkState) {
+						// Uses a trick with resistors to dim the LED
+						pinMode(lockLEDPins[i], INPUT_PULLUP);
+					} else {
+						pinMode(lockLEDPins[i],OUTPUT);
+						digitalWrite(lockLEDPins[i], LOW);
+					}
 				}
 			}
 
@@ -291,7 +285,6 @@ void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 		}
 
 		lockBlink.tick();
-		lockPwm.tick();
 
 	} else {
 		for(int i = 0; i < NREELS; i++) {

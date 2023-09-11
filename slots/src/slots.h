@@ -43,9 +43,6 @@
 #define BAUDRATE		57600	// For serial communication
 #define UPDATEBET		80		// Rate of display update timer
 #define LOCKBLINK		300		// Blink frequency for lock LEDs
-#define LOCKBLINKON		2		// Time on for lock LEDs
-#define LOCKLEDFREQ		2		// lock LEDS PWM frequency
-#define LOCKLEDMOD		8		// Time divider for lock LEDs
 #define SIMULATETICKS	50		// Counter used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
@@ -82,7 +79,7 @@
 
 enum class SpecialFeatures {
 	NONE = 0,
-	SWEEPSTAKES,
+	DOUBLEPAY,
 	BONUS,
 	JACKPOT,
 };
@@ -135,12 +132,12 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{5, 5, 3},  60, SpecialFeatures::BONUS},
 	{{8, 8, 3},  45, SpecialFeatures::NONE},
 	{{2, 2, 3},  30, SpecialFeatures::NONE},
-	{{1, 1, 0},  25, SpecialFeatures::SWEEPSTAKES},
+	{{1, 1, 0},  25, SpecialFeatures::DOUBLEPAY},
 	{{8, 8, 8},  22, SpecialFeatures::NONE},
 	{{5, 5, 5},  20, SpecialFeatures::BONUS},
 	{{2, 2, 2},  15, SpecialFeatures::NONE},
-	{{0, 1, 1},  15, SpecialFeatures::SWEEPSTAKES},
-	{{1, 0, 1},  15, SpecialFeatures::SWEEPSTAKES},
+	{{0, 1, 1},  15, SpecialFeatures::DOUBLEPAY},
+	{{1, 0, 1},  15, SpecialFeatures::DOUBLEPAY},
 	{{0, 3, 3},  15, SpecialFeatures::NONE},
 	{{0, 3, 1},  15, SpecialFeatures::NONE},
 	{{0, 4, 4},  15, SpecialFeatures::NONE},

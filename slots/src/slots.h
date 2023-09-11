@@ -22,6 +22,7 @@
 
 #define STARTCOINS		100		// Number of coins upon when game start
 #define MAXCOINS		9999	// Up to 16384
+#define MINLOCKCOINS	9		// Minimum coins for lock feature
 #define MAXCOINDIGITS	4		// Because MAXCOINS is 999
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
@@ -53,6 +54,7 @@
 #define LEVERANIMDELAY	8000	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
 #define WINTOGGLE		600		// Period to toggle win symbol state
+#define WRAPDELAY		30		// Delay for "game over" scrolling text
 
 // Cheering constants
 

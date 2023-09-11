@@ -41,7 +41,7 @@ class Game
 		void Setup();
 		bool Loop();
 		bool StartSpin(bool home);
-		uint8_t ChangeBet(int8_t bet);
+		uint8_t ChangeBet(int8_t bet = 0);
 };
 
 // ------------------------------------------------------------------------- End

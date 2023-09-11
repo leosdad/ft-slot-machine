@@ -27,11 +27,17 @@ void Game::setupReels()
 }
 
 /**
- * Sets the current bet to the amount given.
+ * Sets the current bet to the amount given, according with the
+ * rule `maxbet = int(max(1, (nCoins + 2) / 3))`
  */
 uint8_t Game::setBet(int8_t bet)
 {
-	currentBet = constrain(min(nCoins, bet), 0, MAXBET);
+	if(nCoins == 0) {
+		currentBet = 0;
+	} else {
+		currentBet = constrain(min(max(1, (nCoins + 2) / 3), bet), 0, MAXBET);
+	}
+	
 	return currentBet;
 }
 
@@ -179,11 +185,12 @@ bool Game::StartSpin(bool home)
 }
 
 /**
- * Increments the bet by the amount given.
+ * Increments the bet by the amount given according to the rules in setBet().
+ * If bet is not given, just enforces the maximum bet value.
  */
-uint8_t Game::ChangeBet(int8_t bet)
+uint8_t Game::ChangeBet(int8_t bet = 0)
 {
-	currentBet = constrain(min(nCoins, currentBet + bet), 0, MAXBET);
+	currentBet = setBet(currentBet + bet);
 	return currentBet;
 }
 

@@ -17,12 +17,10 @@ class Game
 	private:
 
 		uint16_t totalSpins = 0;		// Total spins since the beginning
-		uint8_t nBalls = 0;				// Number of balls won
-		bool newBall = false;			// Activated when a new ball is won
 		bool lastSpinning = -1;
 
 		uint8_t setBet(int8_t bet);
-		void init();
+		void init(uint16_t initialCoins);
 		void printDebugData(bool home);
 		void setupReels();
 
@@ -34,11 +32,12 @@ class Game
 		int8_t currentBet = 0;			// Current bet (signed)
 		int16_t nCoins = 0;				// Current number of coins (signed)
 		uint16_t spinPayoff = 0;		// Payoff amount for last spin
+		SpecialFeatures lastFeature = SpecialFeatures::NONE;
+
 		Reel reels[NREELS];				// Game reels
 		Payline paylines[NPAYLINES];	// Game paylines
-		SpecialFeatures lastFeature;
 
-		void Setup();
+		void Setup(uint16_t initialCoins);
 		bool Loop();
 		bool StartSpin(bool home);
 		uint8_t ChangeBet(int8_t bet = 0);

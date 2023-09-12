@@ -20,6 +20,7 @@ class Display
 		void setup();
 		void loop();
 		void clear();
+		void clearAll();
 		void show(const char *msg);
 		void showAll(const char *msg, uint8_t pos = 0);
 		void showCentered(const char* msg);

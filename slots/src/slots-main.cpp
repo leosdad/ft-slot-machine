@@ -7,6 +7,7 @@
 #include <arduino-timer.h>
 #include "drivers/led-matrix.h"
 #include "drivers/pwm-micros.h"
+#include "drivers/ball-feeder.h"
 #include "cheering.h"
 #include "display.h"
 #include "game.h"
@@ -23,6 +24,7 @@ Locks locks;
 LedMatrix ledMatrix;
 Display display;
 Cheering cheers;
+BallFeeder feeder;
 
 auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
@@ -33,13 +35,15 @@ auto winTimer = timer_create_default();
 
 extern SlotsMain slotsMain;
 uint8_t lastBet = 255;
-uint8_t lastCoins = STARTCOINS;
+uint8_t lastCoins = -1;
 bool firstSpin = true;
 bool reelsLocked = false;
 uint8_t leverFrame = 0;
 bool showWinSymbol = true;
 bool displayUpdated = false;
 bool waitingForRestart = false;
+uint16_t startCoins = STARTCOINS;
+uint8_t nBalls = 0;
 
 // ------------------------------------------------------------ Global functions
 
@@ -88,7 +92,7 @@ bool showPull(void *)
 		leverFrame++;
 	} else if(leverFrame == 11) {
 		ch = ' ';
-		pullTimer.in(500, showPull);
+		pullTimer.in(LEVERWAIT, showPull);
 		leverFrame++;
 	} else {
 		pullTimer.in(LEVERANIMDELAY, showPull);
@@ -126,16 +130,18 @@ bool wrapLoop()
  */
 void endSpin()
 {
-	static const char* feats[] = {"", "Sweep", "Bonus", "Jckpot!"};
+	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
 
 	if(firstSpin) {
 		display.scroll("Start");
 	} else {
 
 		if(game.nCoins == 0) {
+
 			waitingForRestart = true;
 			game.playing = false;
-			display.clear();
+			startCoins = STARTCOINS;
+			display.clearAll();
 			ledMatrix.wrapText("Game over. Pull lever to restart ... ", wrapLoop);
 
 		} else {
@@ -151,6 +157,19 @@ void endSpin()
 			}
 
 			updateDisplay(NULL);
+
+			if(game.nCoins >= BALLVALUE) {
+				nBalls++;
+				Serial.println("----------> " + String(game.nCoins));
+				winTimer.cancel();
+				feeder.Feed();
+				waitingForRestart = true;
+				game.playing = false;
+				startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - BALLVALUE) / 2);
+				Serial.println("----------> " + String(startCoins));
+				display.clearAll();
+				ledMatrix.wrapText("Ball won! Pull lever to restart ... ", wrapLoop);
+			}
 
 			CheerLevel cheerLevel;
 
@@ -245,7 +264,7 @@ void SlotsMain::inputLoop()
 
 	if(waitingForRestart) {
 		if(slotsMain.startLever.isReleased()) {
-			display.clear();
+			display.clearAll();
 			slotsMain.Restart();
 			waitingForRestart = false;
 		}
@@ -277,26 +296,29 @@ void SlotsMain::Setup()
 
 	// Sets up objects
 
+	feeder.Setup(servoPin);
+	feeder.Return();
 	ledMatrix.setup();
 	display.setup();
 	display.scroll(" Wait");
 	cheers.Setup();
 	updateTimer.every(UPDATEBET, updateBet);
 	locks.Setup();
-	game.Setup();
+	game.Setup(startCoins);
 
 	// Perform a first (home) spin
 
 	game.StartSpin(true);
 }
 
-
 void SlotsMain::Restart()
 {
+	// TODO: lots of common code with Setup() above
+
 	// Resets variable values
 
 	lastBet = 255;
-	lastCoins = STARTCOINS;
+	lastCoins = -1;
 	firstSpin = true;
 	reelsLocked = false;
 	leverFrame = 0;
@@ -311,6 +333,7 @@ void SlotsMain::Restart()
 	pullTimer = timer_create_default();
 	winTimer = timer_create_default();
 
+	Serial.println();
 	Serial.println("Slots game restarted.");
 	Serial.println();
 
@@ -318,9 +341,12 @@ void SlotsMain::Restart()
 
 	ioSetup();
 
+	// Sets up objects
+
+	feeder.Return();
 	display.scroll(" Wait");
 	updateTimer.every(UPDATEBET, updateBet);
-	game.Setup();
+	game.Setup(startCoins);
 
 	// Perform a first home spin
 
@@ -335,6 +361,7 @@ void SlotsMain::Loop()
 	winTimer.tick();
 
 	inputLoop();
+	feeder.Loop();
 	display.loop();
 	if(game.Loop()) {
 		endSpin();

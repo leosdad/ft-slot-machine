@@ -20,7 +20,8 @@
 
 // Gameplay constants
 
-#define STARTCOINS		100		// Number of coins upon when game start
+#define STARTCOINS		100		// Default number of coins upon game start
+#define MAXSTARTCOINS	150		// Maximum mumber of start coins
 #define MAXCOINS		9999	// Up to 16384
 #define MINLOCKCOINS	9		// Minimum coins for lock feature
 #define MAXCOINDIGITS	4		// Because MAXCOINS is 999
@@ -29,8 +30,7 @@
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	18		// Number of payoff combinations
-// #define MAXBALLS		6		// Up to 7
-// #define BALLVALUE	200		// How much is needed to retrieve a ball
+#define BALLVALUE		500		// How much is needed to win a ball
 
 // Software constants
 
@@ -48,8 +48,9 @@
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
 #define DISPLAYTIME		2000	// Time for showing display messages
 #define JACKPOTBLINK	300		// Blink frequency for jackpot LEDs
-#define LEVERANIMDELAY	8000	// Time before lever animation
+#define LEVERANIMDELAY	8123	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
+#define LEVERWAIT		500		// Wait time before reversing lever animation
 #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 
@@ -132,10 +133,10 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{5, 5, 3},  60, SpecialFeatures::BONUS},
 	{{8, 8, 3},  45, SpecialFeatures::NONE},
 	{{2, 2, 3},  30, SpecialFeatures::NONE},
-	{{1, 1, 0},  25, SpecialFeatures::DOUBLEPAY},
 	{{8, 8, 8},  22, SpecialFeatures::NONE},
 	{{5, 5, 5},  20, SpecialFeatures::BONUS},
 	{{2, 2, 2},  15, SpecialFeatures::NONE},
+	{{1, 1, 0},  15, SpecialFeatures::DOUBLEPAY},
 	{{0, 1, 1},  15, SpecialFeatures::DOUBLEPAY},
 	{{1, 0, 1},  15, SpecialFeatures::DOUBLEPAY},
 	{{0, 3, 3},  15, SpecialFeatures::NONE},

@@ -113,4 +113,9 @@ void Display::clear()
 	scroll("     ");
 }
 
+void Display::clearAll()
+{
+	scrollAll("        ");
+}
+
 // ------------------------------------------------------------------------- End

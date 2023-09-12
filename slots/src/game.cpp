@@ -44,13 +44,22 @@ uint8_t Game::setBet(int8_t bet)
 /**
  * Initializes a new game.
  */
-void Game::init()
+void Game::init(uint16_t initialCoins)
 {
 	for(int l = 0; l < NPAYLINES; l++) {
 		paylines[l].Payoff = 0;
 	}
 
-	nCoins = STARTCOINS;
+	lastSpinning = -1;
+	playing = false;
+	spinning = false;
+	currentBet = 0;
+	nCoins = initialCoins;
+	spinPayoff = 0;
+	lastFeature = SpecialFeatures::NONE;
+
+	Serial.println("+++ nCoins " + String(nCoins));
+
 	setBet(INITIALBET);
 }
 
@@ -96,11 +105,6 @@ void Game::printDebugData(bool home)
 	// 	Serial.print(" ");
 	// }
 	// Serial.println();
-
-	// Serial.print("Balls: ");
-	// Serial.println(nBalls);
-	// Serial.print(" ");
-	// Serial.println(newBall);
 
 	// Print lines and payoffs
 
@@ -153,7 +157,6 @@ bool Game::StartSpin(bool home)
 		return false;
 	}
 
-	newBall = false;
 	uint8_t xtraTurns = 0;
 
 	// Starts each reel
@@ -197,10 +200,10 @@ uint8_t Game::ChangeBet(int8_t bet = 0)
 /**
  * Initializes the game. Must be called from the main Setup() function.
  */
-void Game::Setup()
+void Game::Setup(uint16_t initialCoins)
 {
 	setupReels();
-	init();
+	init(initialCoins);
 }
 
 /**

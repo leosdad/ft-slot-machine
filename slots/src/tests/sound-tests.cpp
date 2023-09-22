@@ -7,31 +7,26 @@
 // -------------------------------------------------------------------- Includes
 
 #include <Arduino.h>
-// #include "src/tests/led-matrix-tests.h"
-// #include "src/tests/motor-driver-tests.h"
-// #include "src/tests/output-tests.h"
-#include "src/tests/sound-tests.h"
+#include "../drivers/sound.h"
+
+Sound _sound;
 
 // ----------------------------------------------------------------------- Setup
 
-void setup()
+void soundTestsSetup()
 {
-	Serial.begin(57600);
-
-	// ledMatrixTestsSetup();
-	// motorDriverTestsSetup();
-	// outputTestsSetup();
-	soundTestsSetup();
+	if(_sound.Setup(10)) {
+		_sound.Play(1);
+		Serial.println("DFPlayer mini player OK.");
+	} else {
+		Serial.println("Error initializing DFPlayer mini player.");
+	}
 }
 
 // ------------------------------------------------------------------- Main loop
 
-void loop()
+void soundTestsLoop()
 {
-	// ledMatrixTestsLoop();
-	// motorDriverTestsLoop();
-	// outputTestsLoop();
-	soundTestsLoop();
 }
 
 // ------------------------------------------------------------------------- End

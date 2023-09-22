@@ -79,23 +79,20 @@ bool updateDisplay(void *)
 	return true;
 }
 
-/**
- * Displays a small animated lever.
- */
-bool showPull(void *)
+bool showAnimLever(void *)
 {
 	char ch;
 
 	if(leverFrame < 10) {
 		ch = '\x1a' + (leverFrame < 5 ? leverFrame : 9 - leverFrame);
-		pullTimer.in(LEVERANIMRATE, showPull);
+		pullTimer.in(LEVERANIMRATE, showAnimLever);
 		leverFrame++;
 	} else if(leverFrame == 11) {
 		ch = ' ';
-		pullTimer.in(LEVERWAIT, showPull);
+		pullTimer.in(LEVERWAIT, showAnimLever);
 		leverFrame++;
 	} else {
-		pullTimer.in(LEVERANIMDELAY, showPull);
+		pullTimer.in(LEVERANIMDELAY, showAnimLever);
 		updateDisplay(NULL);
 		leverFrame = 0;
 	}
@@ -111,7 +108,7 @@ bool updateBet(void *)
 		pullTimer.cancel();
 		updateDisplay(NULL);
 		lastBet = game.currentBet;
-		pullTimer.in(LEVERANIMDELAY, showPull);
+		pullTimer.in(LEVERANIMDELAY, showAnimLever);
 	}
 	return true;
 }
@@ -160,15 +157,18 @@ void endSpin()
 
 			if(game.nCoins >= BALLVALUE) {
 				nBalls++;
-				Serial.println("----------> " + String(game.nCoins));
+				// Serial.println("----------> " + String(game.nCoins));
 				winTimer.cancel();
 				feeder.Feed();
 				waitingForRestart = true;
 				game.playing = false;
 				startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - BALLVALUE) / 2);
-				Serial.println("----------> " + String(startCoins));
+				// Serial.println("----------> " + String(startCoins));
 				display.clearAll();
-				ledMatrix.wrapText("Ball won! Pull lever to restart ... ", wrapLoop);
+
+				char str[60];
+				sprintf(str, "Game won with %d points! Pull lever to restart ... ", game.nCoins);
+				ledMatrix.wrapText(str, wrapLoop);
 			}
 
 			CheerLevel cheerLevel;
@@ -193,7 +193,7 @@ void endSpin()
 		}
 	}
 
-	pullTimer.in(LEVERANIMDELAY, showPull);
+	pullTimer.in(LEVERANIMDELAY, showAnimLever);
 }
 
 /**

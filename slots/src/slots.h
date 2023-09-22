@@ -13,7 +13,7 @@
 #define DEBUGINFO		true	// Send spin debug info to the serial port
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define SPEEDUP			true	// Remove extra reel spins and slow speed
-#define SIMULATE		true	// Simulate gameplay without actually moving anything
+#define SIMULATE		false	// Simulate gameplay without actually moving anything
 #define CALIBRATE		false	// Set to true for reel speed calibration
 
 // --------------------------------------------------------------------- Defines
@@ -30,7 +30,7 @@
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	18		// Number of payoff combinations
-#define BALLVALUE		500		// How much is needed to win a ball
+#define BALLVALUE		1000	//500		// How much is needed to win a ball
 
 // Software constants
 

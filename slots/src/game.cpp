@@ -27,7 +27,7 @@ void Game::setupReels()
 }
 
 /**
- * Sets the current bet to the amount given, according with the
+ * Sets the current bet to the amount given, according to the
  * rule `maxbet = int(max(1, (nCoins + 2) / 3))`
  */
 uint8_t Game::setBet(int8_t bet)
@@ -58,7 +58,7 @@ void Game::init(uint16_t initialCoins)
 	spinPayoff = 0;
 	lastFeature = SpecialFeatures::NONE;
 
-	Serial.println("+++ nCoins " + String(nCoins));
+	// Serial.println("+++ nCoins " + String(nCoins));
 
 	setBet(INITIALBET);
 }

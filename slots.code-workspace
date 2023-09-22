@@ -18,6 +18,7 @@
 			"**/*.rpp": true
 		},
 		"cSpell.enableFiletypes": [
+			"!markdown",
 			"!text"
 		],
 		"search.exclude": {

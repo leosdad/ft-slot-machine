@@ -1,7 +1,7 @@
 
 # Slot machine game with fischertechnik and Arduino Mega
 
-Heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slots machine game that I developed as a demo for my company back in 1998. In fact the symbol graphics are still the same with minor adaptations.
+Heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slots machine game that I developed as a demo for my company back in 1998.
 
 ## Related links
 

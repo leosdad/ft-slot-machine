@@ -17,6 +17,7 @@ class Sound
 		bool Setup(uint8_t volume = 255);
 		void Play(uint8_t soundIndex, uint8_t volume = 255);
 		void Stop();
+		void Reset();
 };
 
 // ------------------------------------------------------------------------- End

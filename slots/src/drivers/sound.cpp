@@ -22,11 +22,12 @@ DFRobotDFPlayerMini myDFPlayer;
 
 // https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299
 // https://github.com/DFRobot/DFRobotDFPlayerMini
+// https://forum.arduino.cc/t/1019399 (how to eliminate "pop" sound)
 
 bool Sound::Setup(uint8_t volume = 255)
 {
 	Serial2.begin(DFPLAYER_BAUDRATE);
-	if(!myDFPlayer.begin(Serial2)) {
+	if(!myDFPlayer.begin(Serial2, true, false)) {
 		return false;
 	}
 
@@ -45,6 +46,11 @@ void Sound::Play(uint8_t soundIndex, uint8_t volume = 255)
 void Sound::Stop()
 {
 	myDFPlayer.stop();
+}
+
+void Sound::Reset()
+{
+	myDFPlayer.reset();
 }
 
 // ------------------------------------------------------------------------- End

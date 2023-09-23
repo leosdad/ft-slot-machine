@@ -58,6 +58,7 @@ class Reel
 
 		void Setup(const uint8_t index);
 		uint8_t Start(bool home, uint8_t previousExtraTurns);
+		void BounceBack();
 		bool Loop();
 };
 

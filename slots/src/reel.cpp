@@ -112,6 +112,16 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
+ * Rotates the motor backwards for a ver short time
+ */
+void Reel::BounceBack()
+{
+	motor.FullRotateCCW();
+	delay(BOUNCEBACK);
+	motor.Brake();
+}
+
+/**
  * Reel state machine. Returns `true` if the reel is spinning.
  */
 bool Reel::Loop()

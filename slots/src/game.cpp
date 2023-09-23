@@ -206,6 +206,13 @@ void Game::Setup(uint16_t initialCoins)
 	init(initialCoins);
 }
 
+bool Game::BounceReels()
+{
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].BounceBack();
+	}
+}
+
 /**
  * Returns `true` once when spinning has ended.
  */

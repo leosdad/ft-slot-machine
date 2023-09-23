@@ -54,6 +54,7 @@
 #define LEVERWAIT		500		// Wait time before reversing lever animation
 #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
+#define BOUNCEBACK		5		// Delay between rotate and brake
 
 // Cheering constants
 

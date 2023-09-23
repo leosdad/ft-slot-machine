@@ -30,7 +30,7 @@ Sound sound;
 
 auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
-auto pullTimer = timer_create_default();
+auto leverTimer = timer_create_default();
 auto winTimer = timer_create_default();
 
 // Global variables
@@ -87,14 +87,14 @@ bool showAnimLever(void *)
 
 	if(leverFrame < 10) {
 		ch = '\x1a' + (leverFrame < 5 ? leverFrame : 9 - leverFrame);
-		pullTimer.in(LEVERANIMRATE, showAnimLever);
+		leverTimer.in(LEVERANIMRATE, showAnimLever);
 		leverFrame++;
 	} else if(leverFrame == 11) {
 		ch = ' ';
-		pullTimer.in(LEVERWAIT, showAnimLever);
+		leverTimer.in(LEVERWAIT, showAnimLever);
 		leverFrame++;
 	} else {
-		pullTimer.in(LEVERANIMDELAY, showAnimLever);
+		leverTimer.in(LEVERANIMDELAY, showAnimLever);
 		updateDisplay(NULL);
 		leverFrame = 0;
 	}
@@ -107,10 +107,10 @@ bool updateBet(void *)
 		if(leverFrame != 0) {
 			ledMatrix.printText(" ", MX_TEXTPOS);
 		}
-		pullTimer.cancel();
+		leverTimer.cancel();
 		updateDisplay(NULL);
 		lastBet = game.currentBet;
-		pullTimer.in(LEVERANIMDELAY, showAnimLever);
+		leverTimer.in(LEVERANIMDELAY, showAnimLever);
 	}
 	return true;
 }
@@ -201,7 +201,7 @@ void endSpin()
 		}
 	}
 
-	pullTimer.in(LEVERANIMDELAY, showAnimLever);
+	leverTimer.in(LEVERANIMDELAY, showAnimLever);
 }
 
 /**
@@ -210,7 +210,7 @@ void endSpin()
 void spin()
 {
 	cheers.Stop();
-	pullTimer.cancel();
+	leverTimer.cancel();
 	winTimer.cancel();
 
 	if(game.nCoins > 0) {
@@ -225,12 +225,12 @@ void spin()
 			}
 		}
 
-		display.scroll("Spin ");
+		// display.scroll("Spin ");
 		sound.Play((uint8_t)Sounds::SPINNING);
 
-		#if !SPEEDUP
-		delay(500);
-		#endif
+		// #if !SPEEDUP
+		// delay(500);
+		// #endif
 		game.StartSpin(false);
 	}
 }
@@ -279,7 +279,9 @@ void SlotsMain::inputLoop()
 		}
 	} else {
 		if(!game.spinning) {
-			if(startLever.isReleased()) {
+			if(startLever.isPressed()) {
+				game.BounceReels();
+			} else if(startLever.isReleased()) {
 				firstSpin = false;
 				spin();
 			} else if(increaseBet.isPressed()) {
@@ -340,7 +342,7 @@ void SlotsMain::Restart()
 
 	updateTimer = timer_create_default();
 	displayTimer = timer_create_default();
-	pullTimer = timer_create_default();
+	leverTimer = timer_create_default();
 	winTimer = timer_create_default();
 
 	Serial.println();
@@ -367,7 +369,7 @@ void SlotsMain::Loop()
 {
 	updateTimer.tick();
 	displayTimer.tick();
-	pullTimer.tick();
+	leverTimer.tick();
 	winTimer.tick();
 
 	inputLoop();

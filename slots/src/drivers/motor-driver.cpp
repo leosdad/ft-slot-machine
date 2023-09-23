@@ -38,8 +38,8 @@ void MotorDriver::Init(const uint8_t motorPort1, const uint8_t motorPort2,
  */
 void MotorDriver::FullRotateCCW()
 {
-	digitalWrite(motorOutA, HIGH);
-	digitalWrite(motorOutB, LOW);
+	digitalWrite(motorOutA, LOW);
+	digitalWrite(motorOutB, HIGH);
 }
 
 /**
@@ -47,8 +47,8 @@ void MotorDriver::FullRotateCCW()
  */
 void MotorDriver::FullRotateCW()
 {
-	digitalWrite(motorOutA, LOW);
-	digitalWrite(motorOutB, HIGH);
+	digitalWrite(motorOutA, HIGH);
+	digitalWrite(motorOutB, LOW);
 }
 
 /**

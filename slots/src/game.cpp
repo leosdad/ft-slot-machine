@@ -206,10 +206,23 @@ void Game::Setup(uint16_t initialCoins)
 	init(initialCoins);
 }
 
-bool Game::BounceReels()
+/**
+ * Rotates all reels backwards for a very short time
+ */
+bool Game::BounceReelsBack()
 {
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].BounceBack();
+	}
+}
+
+/**
+ * Rotates all reels forward for a very short time
+ */
+bool Game::BounceReelsForward()
+{
+	for(int i = 0; i < NREELS; i++) {
+		reels[i].BounceForward();
 	}
 }
 

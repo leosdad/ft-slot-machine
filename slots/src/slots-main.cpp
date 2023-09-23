@@ -280,10 +280,14 @@ void SlotsMain::inputLoop()
 	} else {
 		if(!game.spinning) {
 			if(startLever.isPressed()) {
-				game.BounceReels();
+				game.BounceReelsBack();
 			} else if(startLever.isReleased()) {
-				firstSpin = false;
-				spin();
+				if(game.currentBet) {
+					firstSpin = false;
+					spin();
+				} else {
+					game.BounceReelsForward();
+				}
 			} else if(increaseBet.isPressed()) {
 				game.ChangeBet(1);
 			} else if(decreaseBet.isPressed()) {

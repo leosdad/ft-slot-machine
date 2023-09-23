@@ -9,6 +9,11 @@
 
 #include "slots.h"
 #include "reel.h"
+#include "locks.h"
+
+// ------------------------------------------------------------ Global variables
+
+extern Locks locks;
 
 // ---------------------------------------------------- Private member functions
 
@@ -112,13 +117,27 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 }
 
 /**
- * Rotates the motor backwards for a ver short time
+ * Rotates the motor backwards for a very short time
  */
 void Reel::BounceBack()
 {
-	motor.FullRotateCCW();
-	delay(BOUNCEBACK);
-	motor.Brake();
+	if(!locks.IsLocked(index)) {
+		motor.FullRotateCCW();
+		delay(BOUNCETIME);
+		motor.Brake();
+	}
+}
+
+/**
+ * Rotates the motor forward for a very short time
+ */
+void Reel::BounceForward()
+{
+	if(!locks.IsLocked(index)) {
+		motor.FullRotateCW();
+		delay(BOUNCETIME);
+		motor.Brake();
+	}
 }
 
 /**

@@ -41,7 +41,8 @@ class Game
 		bool Loop();
 		bool StartSpin(bool home);
 		uint8_t ChangeBet(int8_t bet = 0);
-		bool BounceReels();
+		bool BounceReelsBack();
+		bool BounceReelsForward();
 };
 
 // ------------------------------------------------------------------------- End

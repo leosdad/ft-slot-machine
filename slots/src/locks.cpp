@@ -119,7 +119,7 @@ void Locks::setUnlocked(uint8_t index)
 void Locks::setBlocked(uint8_t index)
 {
 	lock[index].state = LockState::BLOCKED;
-	pinMode(lockLEDPins[index],OUTPUT);
+	pinMode(lockLEDPins[index], OUTPUT);
 	digitalWrite(lockLEDPins[index], LOW);
 }
 
@@ -288,6 +288,7 @@ void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 
 	} else {
 		for(int i = 0; i < NREELS; i++) {
+			pinMode(lockLEDPins[i], OUTPUT);
 			digitalWrite(lockLEDPins[i], lock[i].state == LockState::ACTIVE);
 		}
 	}

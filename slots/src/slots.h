@@ -34,6 +34,7 @@
 
 // Software constants
 
+#define VOLUME			10		// Sound volume
 #define MX_BRIGHTNESS	1		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
@@ -92,6 +93,17 @@ struct payoffItem {
 	uint8_t symbol[NREELS];
 	uint16_t payoff;
 	SpecialFeatures feature;
+};
+
+enum class Sounds {
+	HELLO = 1,
+	WAITING,
+	SPINNING,
+	CHEER_WIN,
+	CHEER_DRAW,
+	CHEER_LOT,
+	INVALID,
+	GAME_OVER,
 };
 
 // ------------------------------------------------------------------- Constants

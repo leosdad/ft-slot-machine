@@ -8,6 +8,7 @@
 #include "drivers/led-matrix.h"
 #include "drivers/pwm-micros.h"
 #include "drivers/ball-feeder.h"
+#include "drivers/sound.h"
 #include "cheering.h"
 #include "display.h"
 #include "game.h"
@@ -25,6 +26,7 @@ LedMatrix ledMatrix;
 Display display;
 Cheering cheers;
 BallFeeder feeder;
+Sound sound;
 
 auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
@@ -139,6 +141,7 @@ void endSpin()
 			game.playing = false;
 			startCoins = STARTCOINS;
 			display.clearAll();
+			sound.Play((uint8_t)Sounds::GAME_OVER);
 			ledMatrix.wrapText("Game over. Pull lever to restart ... ", wrapLoop);
 
 		} else {
@@ -180,13 +183,18 @@ void endSpin()
 				displayTimer.in(DISPLAYTIME, updateDisplay);
 				if(game.lastFeature == SpecialFeatures::JACKPOT) {
 					display.blink(true, JACKPOTBLINK);
+					sound.Play((uint8_t)Sounds::CHEER_LOT);
 				}
 			} else if(game.nCoins > lastCoins) {
 				cheerLevel = CheerLevel::WIN;
+				sound.Play((uint8_t)Sounds::CHEER_WIN);
 			} else if(game.nCoins == lastCoins) {
 				cheerLevel = CheerLevel::DRAW;
+				sound.Play((uint8_t)Sounds::CHEER_DRAW);
 			} else {	// game.nCoins < lastCoins
 				cheerLevel = CheerLevel::NONE;
+				// sound.Play((uint8_t)Sounds::WAITING);
+				sound.Stop();
 			}
 
 			cheers.Start(cheerLevel);
@@ -218,6 +226,7 @@ void spin()
 		}
 
 		display.scroll("Spin ");
+		sound.Play((uint8_t)Sounds::SPINNING);
 
 		#if !SPEEDUP
 		delay(500);
@@ -296,6 +305,7 @@ void SlotsMain::Setup()
 
 	// Sets up objects
 
+	sound.Setup(VOLUME);
 	feeder.Setup(servoPin);
 	feeder.Return();
 	ledMatrix.setup();

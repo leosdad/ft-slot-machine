@@ -31,6 +31,7 @@ bool Sound::Setup(uint8_t volume = 255)
 		return false;
 	}
 
+	myDFPlayer.stop();
 	myDFPlayer.volume(volume != 255 ? volume : DEFAULT_VOLUME);
 	return true;
 }

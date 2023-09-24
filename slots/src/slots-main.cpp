@@ -5,12 +5,12 @@
 // -------------------------------------------------------------------- Includes
 
 #include <arduino-timer.h>
-#include "drivers/led-matrix.h"
-#include "drivers/pwm-micros.h"
-#include "drivers/ball-feeder.h"
-#include "drivers/sound.h"
 #include "cheering.h"
 #include "display.h"
+#include "drivers/ball-feeder.h"
+#include "drivers/led-matrix.h"
+#include "drivers/pwm-micros.h"
+#include "drivers/sound.h"
 #include "game.h"
 #include "locks.h"
 #include "reel.h"
@@ -20,32 +20,32 @@
 
 // Global objects
 
-Game game;
-Locks locks;
-LedMatrix ledMatrix;
-Display display;
-Cheering cheers;
 BallFeeder feeder;
+Cheering cheers;
+Display display;
+Game game;
+LedMatrix ledMatrix;
+Locks locks;
 Sound sound;
 
-auto updateTimer = timer_create_default();
 auto displayTimer = timer_create_default();
 auto leverTimer = timer_create_default();
+auto updateTimer = timer_create_default();
 auto winTimer = timer_create_default();
 
 // Global variables
 
+bool displayUpdated = false;
+bool firstSpin = true;
+bool leverPulled = false;
+bool reelsLocked = false;
+bool showWinSymbol = true;
+bool waitingForRestart = false;
 extern SlotsMain slotsMain;
+uint16_t startCoins = STARTCOINS;
 uint8_t lastBet = 255;
 uint8_t lastCoins = -1;
-bool firstSpin = true;
-bool reelsLocked = false;
-bool leverPulled = false;
 uint8_t leverFrame = 0;
-bool showWinSymbol = true;
-bool displayUpdated = false;
-bool waitingForRestart = false;
-uint16_t startCoins = STARTCOINS;
 uint8_t nBalls = 0;
 
 // ------------------------------------------------------------ Global functions

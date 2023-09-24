@@ -18,12 +18,17 @@
 			"**/*.rpp": true
 		},
 		"cSpell.enableFiletypes": [
-			"!markdown",
 			"!text"
 		],
 		"search.exclude": {
 			"locktests": true
-		}
+		},
+		"cSpell.words": [
+			"DIY",
+			"DRV8833",
+			"fischertechnik",
+			"solderless"
+		]
 
 		// Looks awful, but the proportion is similar to the LED matrix
 		// when editing MD_MAX72XX font text files

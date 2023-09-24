@@ -13,11 +13,11 @@ Heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a so
 ## Third-party libraries used
 
 - [arduino-timer](https://github.com/contrem/arduino-timer) Michael Contreras
-- [DFPlayerMini_Fast](https://github.com/PowerBroker2/DFPlayerMini_Fast) by PowerBroker2
-- [ezButton, ezLED](https://github.com/ArduinoGetStarted) by ArduinoGetStarted
+- [DFRobotDFPlayerMini](https://github.com/DFRobot/DFRobotDFPlayerMini) by Angelo qiao
+- [ezButton / ezLED](https://github.com/ArduinoGetStarted) by ArduinoGetStarted
 - [MD_MAX72xx](https://github.com/MajicDesigns/MD_MAX72XX) by Marco Colli
 - [TrueRandom](https://github.com/sirleech/TrueRandom) by sirleech
 
 ## Extras
 
-Includes new fonts for the MD_MAX72xx library in the [fonts](https://github.com/leosdad/ft-slot-machine/tree/master/slots/src/drivers) folder.
+Includes new font for the MD_MAX72xx library in the [fonts](https://github.com/leosdad/ft-slot-machine/tree/master/slots/src/drivers) folder.

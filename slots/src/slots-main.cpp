@@ -40,6 +40,7 @@ uint8_t lastBet = 255;
 uint8_t lastCoins = -1;
 bool firstSpin = true;
 bool reelsLocked = false;
+bool leverPulled = false;
 uint8_t leverFrame = 0;
 bool showWinSymbol = true;
 bool displayUpdated = false;
@@ -201,7 +202,19 @@ void endSpin()
 		}
 	}
 
+	leverPulled = false;
 	leverTimer.in(LEVERANIMDELAY, showAnimLever);
+}
+
+/**
+ * Called when the lever is pulled.
+ */
+void bounceReels()
+{
+	leverPulled = true;
+	leverTimer.cancel();
+	winTimer.cancel();
+	game.BounceReelsBack();
 }
 
 /**
@@ -279,8 +292,9 @@ void SlotsMain::inputLoop()
 		}
 	} else {
 		if(!game.spinning) {
+
 			if(startLever.isPressed()) {
-				game.BounceReelsBack();
+				bounceReels();
 			} else if(startLever.isReleased()) {
 				if(game.currentBet) {
 					firstSpin = false;
@@ -288,10 +302,14 @@ void SlotsMain::inputLoop()
 				} else {
 					game.BounceReelsForward();
 				}
-			} else if(increaseBet.isPressed()) {
-				game.ChangeBet(1);
-			} else if(decreaseBet.isPressed()) {
-				game.ChangeBet(-1);
+			}
+			
+			if(!leverPulled) {
+				if(increaseBet.isPressed()) {
+					game.ChangeBet(1);
+				} else if(decreaseBet.isPressed()) {
+					game.ChangeBet(-1);
+				}
 			}
 		}
 	}
@@ -383,7 +401,7 @@ void SlotsMain::Loop()
 		endSpin();
 	}
 	locks.Loop(
-		!game.spinning,
+		!(game.spinning || leverPulled),
 		!(firstSpin || game.spinPayoff || reelsLocked || game.nCoins <= 9),
 		game.currentBet
 	);

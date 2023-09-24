@@ -1,6 +1,8 @@
 
 # Slot machine game with fischertechnik and Arduino Mega
 
+This is a complex project I was involved with for many months.
+
 ![Close-up of the reels (uncovered)](docs/reels.jpg)
 
 This project is heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slots machine game that I developed as a demo for my company back in 1998. From it I've taken the symbol graphics and the lock reels feature, among other ideas.
@@ -11,7 +13,7 @@ There are several reference images, diagrams and spreadsheets in the [docs](/doc
 
 ## Mechanics
 
-The mechanics are basically composed of fischertechnik parts. I wanted to build a very compact machine, which means everything should fit on a ft 259×187 plate 500 (part # [32985](https://ft-datenbank.de/tickets?fulltext=32985)).
+The slot machine is assembled with [fischertechnik](https://www.fischertechnik.de/en) parts. I was able to fit everything on a ft 259×187 plate 500 (part # [32985](https://ft-datenbank.de/tickets?fulltext=32985)), which resulted in a very compact unit. The machine has three encoder motors [153422](https://ft-datenbank.de/tickets?fulltext=153422) which transmit power to the front reels using perpendicular gears. Below each reel there is an illuminated button which can lock it upon certain conditions, allowing some strategic decisions during the game. There are also two levers: the left one adjusts the bet and the right one spins the reels. Despite the retro look, the entire operation is fully software-based. There is also a small aperture that delivers metal balls [144262](https://ft-datenbank.de/tickets?fulltext=144262) when a special goal is achieved.
 
 _To be continued..._
 
@@ -29,13 +31,13 @@ The componentes used to build the controller were:
 
 ## Electronics and other non-ft parts
 
-Other custom electronic modules are listed below along with their components:
+Other custom-built electronic modules are listed below along with their components:
 
 - **Custom ft speaker module**: 2 × ft sound module [130589](https://ft-datenbank.de/tickets?fulltext=130589) (speakers), ft [128597](https://ft-datenbank.de/tickets?fulltext=128597) or [133009](https://ft-datenbank.de/tickets?fulltext=133009) ultrasonic distance sensor (case and PCB), ft cable, 2 × 1/10" sockets
 - **Power plate:** ft 30×45 red building plate [38248](https://ft-datenbank.de/tickets?fulltext=38248), 2.5 mm power jack, Mini toggle switch
 - **Adapter board**: 170-point mini solderless breadboard, DIY prototype board (approx. 42 × 17), 8 × long (20 mm) ft collar sleeves, 16 × 1/10" pin headers, 3 × 4.7kΩ resistors
-- 3 × **home position sensors**: HC-020K encoder, 3 mm bolt, 3 mm nut, 3 mm plastic washer, TW3 nylon transistor bushing, ft axis adapter [31422](https://ft-datenbank.de/tickets?fulltext=31422)
-- LED matrix module: 24 × 8 MAX7219 LED dot matrix module, transparent red plastic sheet, 2 × ft 15×45 red building plate
+- **Home position sensors** (× 3): HC-020K encoder, 3 mm bolt, 3 mm nut, 3 mm plastic washer, TW3 nylon transistor bushing, ft axis adapter [31422](https://ft-datenbank.de/tickets?fulltext=31422)
+- **LED matrix module**: 24 × 8 MAX7219 LED dot matrix module, transparent red plastic sheet, 2 × ft 15×45 red building plate [38242](https://ft-datenbank.de/tickets?fulltext=38242)
 
 Other non-ft parts used were jumper cables, several wires and cables, 25-point micro breadboards, green plastic sheets, printed paper sheets and strips, plastic strips, double-side adhesive tape, spiral cable wrap, electrician tape, hot glue and solder.
 

@@ -5,7 +5,7 @@ This is a complex project I was involved with for many months.
 
 ![Close-up of the reels (uncovered)](docs/reels.jpg)
 
-This project is heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slots machine game that I developed as a demo for my company back in 1998. From it I've taken the symbol graphics and the lock reels feature, among other ideas.
+This project is heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slot machine game that I developed as a demo for my company back in 1998. From it I've taken the symbol graphics and the lock reels feature, among other ideas.
 
 ![Hypervisual Century](docs/century.png)
 
@@ -47,7 +47,7 @@ Other non-ft parts used were jumper cables, several wires and cables, 25-point m
 
 - [Best hardware approach for complex project?](https://forum.ftcommunity.de/viewtopic.php?f=8&t=7890) in the fischertechnik community
 - [Arduino Mega Controller for fischertechnik](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018) in the fischertechnik community
-- [Hypervisual Century for Windows](http://hypervisual.com/century/files/century_en.zip) (still playable in glorious 640 x 480 pixels with 256-color palette)
+- [Hypervisual Century for Windows](http://hypervisual.com/century/files/century_en.zip) (still playable in glorious 640 × 480 pixels)
 
 ## Third-party libraries used
 

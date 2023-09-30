@@ -71,8 +71,6 @@ void LedMatrix::wrapText(const char *text, bool loopFn())
 			mx.setColumn(0, i < charWidth ? charBuffer[i] : 0);
 			if(loopFn) {
 				if(loopFn()) {
-					// HACK
-					// clearColumns(0, 8 * 4 - 1);
 					goto EXIT;
 				}
 			}

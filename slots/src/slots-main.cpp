@@ -32,7 +32,6 @@ auto displayTimer = timer_create_default();
 auto leverTimer = timer_create_default();
 auto updateTimer = timer_create_default();
 auto winTimer = timer_create_default();
-auto refreshTimer = timer_create_default();
 
 // Global variables
 
@@ -144,7 +143,6 @@ bool updateBet(void *)
 	}
 	
 	if(lockPenalty != lastPenalty) {
-		// Serial.println("Locked " + String(nLocked) + "; Penalty " + String(lockPenalty));
 		lastPenalty = lockPenalty;
 	}
 
@@ -167,9 +165,7 @@ void endSpin()
 {
 	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
 
-	if(firstSpin) {
-		// display.scroll("Start");
-	} else {
+	if(!firstSpin) {
 
 		if(game.nCoins == 0) {
 game_lost:
@@ -177,8 +173,8 @@ game_lost:
 			waitingForRestart = true;
 			game.playing = false;
 			startCoins = STARTCOINS;
-			display.clearAll();
 			sound.Play((uint8_t)Sounds::GAME_LOST);
+			display.clearAll();
 			ledMatrix.wrapText(" Game over. Pull lever to restart ...", wrapLoop);
 
 		} else {
@@ -211,11 +207,11 @@ game_lost:
 				waitingForRestart = true;
 				game.playing = false;
 				startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYVALUE) / 2);
-				display.clearAll();
 				victory = true;
 
 				char str[60];
 				sprintf(str, " Game won with %d points! Pull lever to restart ...", game.nCoins);
+				display.clearAll();
 				ledMatrix.wrapText(str, wrapLoop);
 			} else if(game.totalSpins >= MAXSPINSTOWIN) {
 				goto game_lost;
@@ -241,7 +237,6 @@ game_lost:
 				sound.Play((uint8_t)Sounds::CHEER_DRAW);
 			} else {	// game.nCoins < lastCoins
 				cheerLevel = CheerLevel::NONE;
-				// sound.Play((uint8_t)Sounds::WAITING);
 				sound.Stop();
 			}
 
@@ -258,11 +253,24 @@ game_lost:
  */
 void bounceReels()
 {
-	leverPulled = true;
 	updateTimer.cancel();
 	leverTimer.cancel();
 	winTimer.cancel();
 	game.BounceReelsBack();
+
+	if(!leverPulled && game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+		char str[7];
+		if(game.totalSpins < MAXSPINSTOWIN - REMAINWARNING) {
+			sprintf(str, "%d <<", MAXSPINSTOWIN - game.totalSpins);
+			sound.Play((uint8_t)Sounds::SPIN_START);
+		} else {
+			sprintf(str, "%d !!", MAXSPINSTOWIN - game.totalSpins);
+		}
+		display.scroll(str);
+		delay(PULLWAIT);
+	}
+
+	leverPulled = true;
 }
 
 /**
@@ -275,7 +283,6 @@ void spin()
 	if(game.nCoins > 0 && game.currentBet > 0) {
 
 		game.SetCoins(game.nCoins - lockPenalty);
-		// Serial.println(">>>>>> Coins: " + String(game.nCoins) + "; Penalty " + String(lockPenalty));
 		lastCoins = game.nCoins;
 		lockPenalty = 0;
 		nLocked = 0;
@@ -287,19 +294,10 @@ void spin()
 			}
 		}
 
-		if(game.totalSpins >= MAXSPINSTOWIN - min(9, ENDWARNING)) {
-			char str[8];
-			sprintf(str, " Lft %d", MAXSPINSTOWIN - game.totalSpins);
-			display.scroll(str);
-			refreshTimer.in(REFRESHTIME, updateDisplay);
+		if(game.totalSpins >= MAXSPINSTOWIN - REMAINWARNING) {
 			sound.Play((uint8_t)Sounds::END_IS_NEAR);
-		} else {
-			sound.Play((uint8_t)Sounds::SPINNING);
 		}
 
-		// #if !SPEEDUP
-		// delay(500);
-		// #endif
 		game.StartSpin(false);
 	}
 }
@@ -352,6 +350,9 @@ void SlotsMain::inputLoop()
 			if(startLever.isPressed()) {
 				bounceReels();
 			} else if(startLever.isReleased()) {
+				if(game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+					updateDisplay(NULL);
+				}
 				if(game.currentBet) {
 					firstSpin = false;
 					spin();
@@ -403,8 +404,6 @@ void SlotsMain::Setup()
 
 void SlotsMain::Restart()
 {
-	// TODO: lots of common code with Setup() above
-
 	// Resets variable values
 
 	lastBet = 255;
@@ -449,7 +448,6 @@ void SlotsMain::Loop()
 	displayTimer.tick();
 	leverTimer.tick();
 	winTimer.tick();
-	refreshTimer.tick();
 
 	inputLoop();
 	feeder.Loop();

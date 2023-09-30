@@ -20,9 +20,10 @@
 
 // Gameplay constants
 
-#define VICTORYVALUE	120		// Coins are needed to win a ball (victory)
+#define VICTORYVALUE	170		// Coins are needed to win a ball (victory)
 #define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
-#define ENDWARNING		9		// Spins left to warn the end is near (up to 9)
+#define SHOWREMAINING	10		// Spins left to warn the end is near
+#define REMAINWARNING	5		// Spins left to warn the end is near
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
 #define MAXCOINS		9999	// Up to 16384
@@ -58,7 +59,7 @@
 #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 #define BOUNCETIME		5		// Delay between rotate and brake
-#define REFRESHTIME		1500	// Delay before refreshing the display
+#define PULLWAIT		200		// Delay after lever is pulled
 
 // Cheering constants
 
@@ -104,7 +105,7 @@ struct payoffItem {
 enum class Sounds {
 	HELLO = 1,
 	WAITING,
-	SPINNING,
+	SPIN_START,
 	CHEER_WIN,
 	CHEER_DRAW,
 	CHEER_LOT,

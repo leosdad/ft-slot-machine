@@ -1,7 +1,7 @@
 
 # Slot machine game with fischertechnik and Arduino Mega
 
-This is a complex project I was involved with for many months.
+This is a very complex project I was involved with for many months. This version is the code that has made its way into the actual machine.
 
 ![Close-up of the reels (uncovered)](docs/reels.jpg)
 
@@ -9,7 +9,7 @@ This project is heavily inspired by [Hypervisual Century](http://hypervisual.com
 
 ![Hypervisual Century](docs/century.png)
 
-There are several reference images, diagrams and spreadsheets in the [docs](/docs) folder.
+There are various reference images, diagrams and spreadsheets in the [docs](/docs) folder.
 
 ## Mechanics
 
@@ -19,7 +19,7 @@ _To be continued..._
 
 ## Controller
 
-The electronics for this project were custom made, but . The main controller is an Arduino Mega with two custom shields, one on top of the other, explained in more detail [here](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018).
+The electronics for this project were custom made from standard, readily available modules. The main controller is an Arduino Mega with two custom shields, one on top of the other, explained in more detail [here](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018).
 
 ![Controller](docs/controller.jpg)
 
@@ -27,7 +27,7 @@ The componentes used to build the controller were:
 
 - **Base module**: Arduino Mega 2560, transparent case, 4 × ft building block 5 [37237](https://ft-datenbank.de/tickets?fulltext=37237)
 - **Custom shield**: Mega 2560 proto shield, 3 × DRV8833 motor driver, DFPlayer Mini MP3 player, 1/10" pin headers and sockets
-- **ft power shield**: 20 × 80 DIY prototype board, Mini360 step-down converter, 1N4001 diode,  14 × short ft collar sleeves, 1/10" pin headers
+- **ft power shield**: 20 × 80 DIY prototype board, Mini360 step-down converter, 1N4001 diode, 1/10" pin headers, 14 × short ft collar sleeves
 
 ## Electronics and other non-ft parts
 
@@ -39,7 +39,7 @@ Other custom-built electronic modules are listed below along with their componen
 - **Home position sensors** (× 3): HC-020K encoder, 3 mm bolt, 3 mm nut, 3 mm plastic washer, TW3 nylon transistor bushing, ft axis adapter [31422](https://ft-datenbank.de/tickets?fulltext=31422)
 - **LED matrix module**: 24 × 8 MAX7219 LED dot matrix module, transparent red plastic sheet, 2 × ft 15×45 red building plate [38242](https://ft-datenbank.de/tickets?fulltext=38242)
 
-Other non-ft parts used were jumper cables, several wires and cables, 25-point micro breadboards, green plastic sheets, printed paper sheets and strips, plastic strips, double-side adhesive tape, spiral cable wrap, electrician tape, hot glue and solder.
+Other non-ft parts used were jumper cables, several wires and cables, 25-point micro breadboards, green plastic sheets, inkjet photographic paper, self-adhesive clear vinyl liner, double-side adhesive tape, spiral cable wrap, electrician tape, hot glue and solder.
 
 ## Software
 

@@ -28,6 +28,9 @@
 			"DRV8833",
 			"fischertechnik",
 			"solderless"
+		],
+		"markdown.validate.ignoredLinks": [
+			"/docs"
 		]
 
 		// Looks awful, but the proportion is similar to the LED matrix

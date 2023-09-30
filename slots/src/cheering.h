@@ -13,7 +13,8 @@ enum class CheerLevel {
 	NONE = 0,
 	DRAW,
 	WIN,
-	BIG_WIN
+	BIG_WIN,
+	VICTORY,
 };
 
 // ----------------------------------------------------------- Class declaration

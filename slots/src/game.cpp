@@ -50,6 +50,7 @@ void Game::init(uint16_t initialCoins)
 		paylines[l].Payoff = 0;
 	}
 
+	totalSpins = 0;
 	lastSpinning = -1;
 	playing = false;
 	spinning = false;

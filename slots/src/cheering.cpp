@@ -81,6 +81,13 @@ void Cheering::Loop(bool enable)
 						}
 					}
 					break;
+
+				case CheerLevel::VICTORY:
+					if(active) {
+						leftSignal.blink(CHEER_VICT_TOG, CHEER_VICT_TOG);
+						rightSignal.blink(CHEER_VICT_TOG, CHEER_VICT_TOG);
+					}
+					break;
 			}
 		}
 	} else {

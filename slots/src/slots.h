@@ -20,18 +20,20 @@
 
 // Gameplay constants
 
+#define VICTORYVALUE	120		// Coins are needed to win a ball (victory)
+#define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
+#define ENDWARNING		9		// Spins left to warn the end is near (up to 9)
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
 #define MAXCOINS		9999	// Up to 16384
 #define MINLOCKCOINS	9		// Minimum coins for lock feature
-#define MAXCOINDIGITS	4		// Because MAXCOINS is 999
+#define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	18		// Number of payoff combinations
 #define LOCKPENALTYDIV	150		// Lock penalty divider
-#define BALLVALUE		1000	//500		// How much is needed to win a ball
 
 // Software constants
 
@@ -56,6 +58,7 @@
 #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 #define BOUNCETIME		5		// Delay between rotate and brake
+#define REFRESHTIME		1500	// Delay before refreshing the display
 
 // Cheering constants
 
@@ -70,6 +73,7 @@
 #define CHEER_LOT_RPT	1		// Cheer-a-lot repetitions
 #define CHEER_WIN_RPT	10		// Win repetitions
 #define CHEER_DRAW_RPT	5		// Draw repetitions
+#define CHEER_VICT_TOG	1000	// Blinking frequency for victory
 
 // Model-dependent constants, cannot be changed
 
@@ -105,7 +109,9 @@ enum class Sounds {
 	CHEER_DRAW,
 	CHEER_LOT,
 	INVALID,
-	GAME_OVER,
+	GAME_LOST,
+	GAME_WON,
+	END_IS_NEAR
 };
 
 // ------------------------------------------------------------------- Constants

@@ -116,6 +116,9 @@ void Locks::setUnlocked(uint8_t index)
 	lock[index].state = LockState::LOCKABLE;
 }
 
+/**
+ * Sets the required lock to blocked state.
+ */
 void Locks::setBlocked(uint8_t index)
 {
 	lock[index].state = LockState::BLOCKED;
@@ -169,8 +172,9 @@ void Locks::calcLocksAllowed()
 /**
  * Enable, disable or block locks according to the number of locks allowed and
  * the number of locked locks.
+ * @returns The number of currently locked locks.
  */
-void Locks::setStateAsNeeded()
+uint8_t Locks::setStateAsNeeded()
 {
 	uint8_t lockedLocks = getLockedLocks();
 
@@ -216,6 +220,8 @@ void Locks::setStateAsNeeded()
 			lastLockedIndex = -1;
 		}
 	}
+
+	return lockedLocks;
 }
 
 // ----------------------------------------------------- Public member functions
@@ -241,9 +247,12 @@ void Locks::Setup()
 
 /**
  * Must be called from the main loop.
+ * @returns The number of currently locked locks.
  */
-void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
+uint8_t Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 {
+	uint8_t nLocked = 0;
+
 	if(enable) {
 
 		if(allowLocks) {
@@ -273,7 +282,7 @@ void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 			}
 
 			calcLocksAllowed();
-			setStateAsNeeded();
+			nLocked = setStateAsNeeded();
 
 		} else {
 
@@ -292,6 +301,8 @@ void Locks::Loop(bool enable, bool allowLocks, uint8_t gameBet)
 			digitalWrite(lockLEDPins[i], lock[i].state == LockState::ACTIVE);
 		}
 	}
+
+	return nLocked;
 }
 
 // ------------------------------------------------------------------------- End

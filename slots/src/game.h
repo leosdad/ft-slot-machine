@@ -38,6 +38,7 @@ class Game
 		Payline paylines[NPAYLINES];	// Game paylines
 
 		void Setup(uint16_t initialCoins);
+		void SetCoins(uint16_t nCoins);
 		bool Loop();
 		bool StartSpin(bool home);
 		uint8_t ChangeBet(int8_t bet = 0);

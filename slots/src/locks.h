@@ -25,9 +25,10 @@ class Locks
 		void initLock(uint8_t i);
 		void setBlocked(uint8_t index);
 		void setLocked(uint8_t index);
-		void setStateAsNeeded();
+		uint8_t setStateAsNeeded();
 		void setUnlocked(uint8_t index);
 		void toggleLock(uint8_t index);
+
 		#if LOCKDEBUGINFO
 		void debug(uint8_t index);
 		#endif
@@ -35,7 +36,7 @@ class Locks
 	public:
 
 		bool IsLocked(uint8_t index);
-		void Loop(bool enable, bool allowNext, uint8_t gameBet);
+		uint8_t Loop(bool enable, bool allowNext, uint8_t gameBet);
 		void Setup();
 };
 

@@ -206,6 +206,11 @@ void Game::Setup(uint16_t initialCoins)
 	init(initialCoins);
 }
 
+void Game::SetCoins(uint16_t _nCoins)
+{
+	nCoins = _nCoins;
+}
+
 /**
  * Rotates all reels backwards for a very short time
  */

@@ -47,9 +47,16 @@ uint8_t lastBet = 255;
 uint8_t lastCoins = -1;
 uint8_t leverFrame = 0;
 uint8_t nBalls = 0;
-
+uint8_t nLocked = 0;
+uint8_t lastLocked = 255;
+uint8_t lockPenalty = 0;
+uint8_t lastPenalty = 255;
+// TODO: 255 em 2 lugares
 // ------------------------------------------------------------ Global functions
 
+/**
+ * Displays the flashing "win" symbol.
+ */
 bool toggleWinSymbol(void *)
 {
 	if(displayUpdated && game.currentBet > 0) {
@@ -66,22 +73,34 @@ bool toggleWinSymbol(void *)
 	showWinSymbol = !showWinSymbol;
 }
 
+void calcLockPenalty()
+{
+	if(!nLocked) {
+		lockPenalty = 0;
+	}
+	
+	lockPenalty = nLocked * (game.nCoins * game.currentBet / LOCKPENALTYDIV);
+}
+
 bool updateDisplay(void *)
 {
 	display.blink(false);
 	displayUpdated = true;
 
 	if(game.nCoins > 0) {
-		if(game.currentBet == 0) {
-			display.showCentered("No bet");
-		} else {
+		if(game.currentBet > 0) {
 			display.showBet(game.currentBet);
-			display.show(game.nCoins, true);
+			display.show(game.nCoins - lockPenalty, true);
+		} else {
+			display.showCentered("No bet");
 		}
 	}
 	return true;
 }
 
+/**
+ * Displays the animated lever.
+ */
 bool showAnimLever(void *)
 {
 	char ch;
@@ -102,6 +121,9 @@ bool showAnimLever(void *)
 	ledMatrix.printChar(ch, 0);
 }
 
+/**
+ * Called periodically.
+ */
 bool updateBet(void *)
 {
 	if(game.currentBet != lastBet) {
@@ -109,10 +131,23 @@ bool updateBet(void *)
 			ledMatrix.printText(" ", MX_TEXTPOS);
 		}
 		leverTimer.cancel();
+		calcLockPenalty();
 		updateDisplay(NULL);
-		lastBet = game.currentBet;
 		leverTimer.in(LEVERANIMDELAY, showAnimLever);
+		lastBet = game.currentBet;
 	}
+
+	if(nLocked != lastLocked) {
+		calcLockPenalty();
+		updateDisplay(NULL);
+		lastLocked = nLocked;
+	}
+	
+	if(lockPenalty != lastPenalty) {
+		// Serial.println("Locked " + String(nLocked) + "; Penalty " + String(lockPenalty));
+		lastPenalty = lockPenalty;
+	}
+
 	return true;
 }
 
@@ -146,6 +181,11 @@ void endSpin()
 			ledMatrix.wrapText("Game over. Pull lever to restart ... ", wrapLoop);
 
 		} else {
+
+			lastLocked = 255;
+			lastPenalty = 255;
+
+			updateTimer.every(UPDATEBET, updateBet);
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
@@ -212,6 +252,7 @@ void endSpin()
 void bounceReels()
 {
 	leverPulled = true;
+	updateTimer.cancel();
 	leverTimer.cancel();
 	winTimer.cancel();
 	game.BounceReelsBack();
@@ -223,14 +264,17 @@ void bounceReels()
 void spin()
 {
 	cheers.Stop();
-	leverTimer.cancel();
-	winTimer.cancel();
+	// leverTimer.cancel();
+	// winTimer.cancel();
 
-	if(game.nCoins > 0) {
-		if(game.currentBet == 0) {
-			return;
-		}
+	if(game.nCoins > 0 && game.currentBet > 0) {
+
+		game.SetCoins(game.nCoins - lockPenalty);
+		// Serial.println(">>>>>> Coins: " + String(game.nCoins) + "; Penalty " + String(lockPenalty));
 		lastCoins = game.nCoins;
+		lockPenalty = 0;
+		nLocked = 0;
+
 		reelsLocked = false;
 		for(int i = 0; i < NREELS; i++) {
 			if(locks.IsLocked(i)) {
@@ -400,7 +444,7 @@ void SlotsMain::Loop()
 	if(game.Loop()) {
 		endSpin();
 	}
-	locks.Loop(
+	nLocked = locks.Loop(
 		!(game.spinning || leverPulled),
 		!(firstSpin || game.spinPayoff || reelsLocked || game.nCoins <= 9),
 		game.currentBet

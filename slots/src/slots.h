@@ -30,6 +30,7 @@
 #define PAYMULTIPLIER	1		// Default payoff multiplier
 #define INITIALBET		3		// Initial bet
 #define NCOMBINATIONS	18		// Number of payoff combinations
+#define LOCKPENALTYDIV	150		// Lock penalty divider
 #define BALLVALUE		1000	//500		// How much is needed to win a ball
 
 // Software constants

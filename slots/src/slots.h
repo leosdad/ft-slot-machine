@@ -140,7 +140,7 @@ static const uint8_t payoffMultiplier = PAYMULTIPLIER;
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	{{1, 1, 1}, 180, SpecialFeatures::NONE},
+	{{1, 1, 1}, 120, SpecialFeatures::JACKPOT},
 	{{3, 3, 3},  85, SpecialFeatures::JACKPOT},
 	{{4, 4, 4},  85, SpecialFeatures::JACKPOT},
 	{{5, 5, 3},  60, SpecialFeatures::BONUS},

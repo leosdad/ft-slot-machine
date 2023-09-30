@@ -51,7 +51,7 @@
 #define SIMULATETICKS	50		// Counter used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
-#define DISPLAYTIME		2000	// Time for showing display messages
+#define CHEERENDTIME	2000	// Time to end cheering message
 #define JACKPOTBLINK	300		// Blink frequency for jackpot LEDs
 #define LEVERANIMDELAY	8123	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
@@ -59,7 +59,9 @@
 #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 #define BOUNCETIME		5		// Delay between rotate and brake
-#define PULLWAIT		200		// Delay after lever is pulled
+#define REMAINSTART		800		// Time to show remaining spins
+#define REMAINRESET		600		// Time to go back to regular display
+#define REMAINREPEAT	6017	// Time to repeat show remaining spins
 
 // Cheering constants
 

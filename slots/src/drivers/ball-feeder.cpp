@@ -28,7 +28,7 @@ bool returnServo(void *)
 void BallFeeder::Setup(uint8_t pin)
 {
 	servo1.attach(pin);
-	servo1.write(FEEDER_STARTANGLE);
+	// servo1.write(FEEDER_STARTANGLE);
 }
 
 void BallFeeder::Detach()
@@ -39,6 +39,7 @@ void BallFeeder::Detach()
 void BallFeeder::Loop()
 {
 	feederTimer.tick();
+
 	if(target != current) {
 		if(millis() - previousMillis > interval) {
 			previousMillis = millis();

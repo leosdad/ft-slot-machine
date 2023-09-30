@@ -63,6 +63,14 @@ void Display::show(const char* msg)
 	ledMatrix.printText(msg, MX_TEXTPOS);
 }
 
+void Display::showAt(const char* msg, uint8_t pos, bool clear = false)
+{
+	if(clear) {
+		mx.clear(0, CLEAR_COL);
+	}
+	ledMatrix.printText(msg, pos);
+}
+
 void Display::showAll(const char* msg, uint8_t pos = 0)
 {
 	mx.clear();
@@ -99,7 +107,7 @@ void Display::blink(bool blink, uint32_t interval = 300)
 /**
  * Display a number starting at column TEXTPOS.
  */
-void Display::show(uint16_t value, bool clear)
+void Display::showNumber(uint16_t value, bool clear)
 {
 	if(clear) {
 		ledMatrix.clearColumns(MX_TEXTPOS, MX_NUMPOS);

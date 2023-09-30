@@ -28,7 +28,8 @@ LedMatrix ledMatrix;
 Locks locks;
 Sound sound;
 
-auto displayTimer = timer_create_default();
+auto spinsTimer = timer_create_default();
+auto cheerTimer = timer_create_default();
 auto leverTimer = timer_create_default();
 auto updateTimer = timer_create_default();
 auto winTimer = timer_create_default();
@@ -89,12 +90,24 @@ bool updateDisplay(void *)
 	if(game.nCoins > 0) {
 		if(game.currentBet > 0) {
 			display.showBet(game.currentBet);
-			display.show(game.nCoins - lockPenalty, true);
+			display.showNumber(game.nCoins - lockPenalty, true);
 		} else {
 			display.showCentered("No bet");
 		}
 	}
 	return true;
+}
+
+bool showRemainingSpins(void *)
+{
+	if(game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+		char str[7];
+		uint8_t remaining = MAXSPINSTOWIN - game.totalSpins;
+		display.showNumber(remaining, true);
+		display.showAt(">", MX_NUMPOS);
+	}
+	spinsTimer.in(REMAINRESET, updateDisplay);
+	spinsTimer.in(REMAINREPEAT, showRemainingSpins);
 }
 
 /**
@@ -170,6 +183,7 @@ void endSpin()
 		if(game.nCoins == 0) {
 game_lost:
 			winTimer.cancel();
+			spinsTimer.cancel();
 			waitingForRestart = true;
 			game.playing = false;
 			startCoins = STARTCOINS;
@@ -183,6 +197,7 @@ game_lost:
 			lastPenalty = 255;
 
 			updateTimer.every(UPDATEBET, updateBet);
+			spinsTimer.in(REMAINSTART, showRemainingSpins);
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
@@ -203,6 +218,7 @@ game_lost:
 
 			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= MAXSPINSTOWIN)) {
 				winTimer.cancel();
+				spinsTimer.cancel();
 				feeder.Feed();
 				waitingForRestart = true;
 				game.playing = false;
@@ -224,7 +240,7 @@ game_lost:
 				displayUpdated = false;
 				cheerLevel = CheerLevel::BIG_WIN;
 				display.showCentered(feats[(uint16_t)game.lastFeature]);
-				displayTimer.in(DISPLAYTIME, updateDisplay);
+				cheerTimer.in(CHEERENDTIME, updateDisplay);
 				if(game.lastFeature == SpecialFeatures::JACKPOT) {
 					display.blink(true, JACKPOTBLINK);
 					sound.Play((uint8_t)Sounds::CHEER_LOT);
@@ -256,19 +272,17 @@ void bounceReels()
 	updateTimer.cancel();
 	leverTimer.cancel();
 	winTimer.cancel();
+	spinsTimer.cancel();
 	game.BounceReelsBack();
 
+	uint8_t soundIndex = (uint8_t)Sounds::SPIN_START;
+
 	if(!leverPulled && game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
-		char str[7];
-		if(game.totalSpins < MAXSPINSTOWIN - REMAINWARNING) {
-			sprintf(str, "%d <<", MAXSPINSTOWIN - game.totalSpins);
-			sound.Play((uint8_t)Sounds::SPIN_START);
-		} else {
-			sprintf(str, "%d !!", MAXSPINSTOWIN - game.totalSpins);
+		if(game.totalSpins >= MAXSPINSTOWIN - REMAINWARNING) {
+			soundIndex = (uint8_t)Sounds::END_IS_NEAR;
 		}
-		display.scroll(str);
-		delay(PULLWAIT);
 	}
+	sound.Play(soundIndex);
 
 	leverPulled = true;
 }
@@ -418,7 +432,7 @@ void SlotsMain::Restart()
 	// Re-creates timers
 
 	updateTimer = timer_create_default();
-	displayTimer = timer_create_default();
+	cheerTimer = timer_create_default();
 	leverTimer = timer_create_default();
 	winTimer = timer_create_default();
 
@@ -445,9 +459,10 @@ void SlotsMain::Restart()
 void SlotsMain::Loop()
 {
 	updateTimer.tick();
-	displayTimer.tick();
+	cheerTimer.tick();
 	leverTimer.tick();
 	winTimer.tick();
+	spinsTimer.tick();
 
 	inputLoop();
 	feeder.Loop();

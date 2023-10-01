@@ -43,6 +43,14 @@ uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 // ----------------------------------------------------- Public member functions
 
 /**
+ * Sets the value of the multiplier.
+ */
+bool Payoffs::SetMultiplier(uint8_t multiplier)
+{
+	return payoffMultiplier = multiplier;
+}
+
+/**
  * Returns the highest feature for the latest spin.
  */
 SpecialFeatures Payoffs::GetHighestFeature()

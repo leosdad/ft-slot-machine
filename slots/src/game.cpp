@@ -179,7 +179,12 @@ bool Game::StartSpin(bool home)
 	// At this point the game already knows the results of this spin
 	
 	if(!home) {
+		if(doublePay) {
+			payoffs.SetMultiplier(2);
+		}
 		payoffs.CalculateTotalPayoff(this);
+		payoffs.SetMultiplier(1);
+		doublePay = false;
 		lastFeature = payoffs.GetHighestFeature();
 		playing = true;
 		totalSpins++;

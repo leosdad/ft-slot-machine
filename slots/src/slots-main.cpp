@@ -326,6 +326,8 @@ void endSpin()
 
 			if(game.lastFeature == SpecialFeatures::BONUS) {
 				spinsLeft += BONUSSPINS;
+			} else if(game.lastFeature == SpecialFeatures::DOUBLE) {
+				game.doublePay = true;
 			}
 
 			// Enforces the maximum bet value if needed

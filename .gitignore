@@ -1,2 +1,3 @@
 __*
-slots/src/fonts/txt2font.exe
+*.exe
+*.lnk

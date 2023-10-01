@@ -20,12 +20,20 @@
 
 // Gameplay constants
 
-#define VICTORYVALUE	500		// Coins are needed to win a ball (victory)
-#define MAXSPINSTOWIN	50		// Maximum spins to achieve a victory
-#define SHOWREMAINING	10		// Spins left to display remaining spins
-#define REMAINWARNING	5		// Spins left to warn the end is near
-#define STARTCOINS		100		// Default number of coins upon game start
-#define MAXSTARTCOINS	150		// Maximum mumber of start coins
+#define VICTORYVALUE	100		// Coins are needed to win a ball (victory)
+#define MAXSPINSTOWIN	3		// Maximum spins to achieve a victory
+#define SHOWREMAINING	2		// Spins left to display remaining spins
+#define REMAINWARNING	2		// Spins left to warn the end is near
+#define STARTCOINS		98		// Default number of coins upon game start
+#define MAXSTARTCOINS	99		// Maximum mumber of start coins
+
+// #define VICTORYVALUE	170		// Coins are needed to win a ball (victory)
+// #define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
+// #define SHOWREMAINING	8		// Spins left to display remaining spins
+// #define REMAINWARNING	5		// Spins left to warn the end is near
+// #define STARTCOINS		20		// Default number of coins upon game start
+// #define MAXSTARTCOINS	150		// Maximum mumber of start coins
+
 #define MAXCOINS		9999	// Up to 16384
 #define MINLOCKCOINS	9		// Minimum coins for lock feature
 #define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
@@ -93,6 +101,13 @@ enum class SpecialFeatures {
 	DOUBLEPAY,
 	BONUS,
 	JACKPOT,
+};
+
+enum class GameResult {
+	NONE = 0,
+	VICTORY,
+	NO_COINS_LEFT,
+	NO_SPINS_LEFT,
 };
 
 /**

@@ -28,11 +28,12 @@ LedMatrix ledMatrix;
 Locks locks;
 Sound sound;
 
-auto spinsTimer = timer_create_default();
+auto spinsLeftTimer = timer_create_default();
 auto cheerTimer = timer_create_default();
-auto leverTimer = timer_create_default();
+auto leverAnimTimer = timer_create_default();
 auto updateTimer = timer_create_default();
-auto winTimer = timer_create_default();
+auto winSymbolTimer = timer_create_default();
+auto endGameTimer = timer_create_default();
 
 // Global variables
 
@@ -51,6 +52,7 @@ uint8_t nLocked = 0;
 uint8_t lastLocked = 255;
 uint8_t lockPenalty = 0;
 uint8_t lastPenalty = 255;
+GameResult gameResult = GameResult::NONE;
 
 // ------------------------------------------------------------ Global functions
 
@@ -103,10 +105,10 @@ bool showRemainingSpins(void *)
 		char str[7];
 		uint8_t remaining = MAXSPINSTOWIN - game.totalSpins;
 		display.showNumber(remaining, true);
-		display.showAt(">", MX_NUMPOS);
+		display.showAt(" >", MX_NUMPOS);
 	}
-	spinsTimer.in(REMAINRESET, updateDisplay);
-	spinsTimer.in(REMAINREPEAT, showRemainingSpins);
+	spinsLeftTimer.in(REMAINRESET, updateDisplay);
+	spinsLeftTimer.in(REMAINREPEAT, showRemainingSpins);
 }
 
 /**
@@ -118,14 +120,14 @@ bool showAnimLever(void *)
 
 	if(leverFrame < 10) {
 		ch = '\x1a' + (leverFrame < 5 ? leverFrame : 9 - leverFrame);
-		leverTimer.in(LEVERANIMRATE, showAnimLever);
+		leverAnimTimer.in(LEVERANIMRATE, showAnimLever);
 		leverFrame++;
 	} else if(leverFrame == 11) {
 		ch = ' ';
-		leverTimer.in(LEVERWAIT, showAnimLever);
+		leverAnimTimer.in(LEVERWAIT, showAnimLever);
 		leverFrame++;
 	} else {
-		leverTimer.in(LEVERANIMDELAY, showAnimLever);
+		leverAnimTimer.in(LEVERANIMDELAY, showAnimLever);
 		updateDisplay(NULL);
 		leverFrame = 0;
 	}
@@ -141,10 +143,10 @@ bool updateBet(void *)
 		if(leverFrame != 0) {
 			ledMatrix.printText(" ", MX_TEXTPOS);
 		}
-		leverTimer.cancel();
+		leverAnimTimer.cancel();
 		calcLockPenalty();
 		updateDisplay(NULL);
-		leverTimer.in(LEVERANIMDELAY, showAnimLever);
+		leverAnimTimer.in(LEVERANIMDELAY, showAnimLever);
 		lastBet = game.currentBet;
 	}
 
@@ -161,81 +163,118 @@ bool updateBet(void *)
 	return true;
 }
 
+/**
+ * Callback for the LedMatrix::wrapText function. Yewlds to the main loop.
+ */
 bool wrapLoop()
 {
 	unsigned long timeout = millis() + WRAPDELAY;
 	while(millis() < timeout) {
-		slotsMain.Loop();
+		cheerTimer.tick();
+		cheers.Loop(true);
+		// Quick hack
+		if(!digitalRead(leverButtonPin)) {
+			return true;
+		}
 	}
-	return !waitingForRestart;
+	return false;
 }
 
-void cheerIfNeeded(bool victory)
+bool displayEndGameMessage(void *)
+{
+	char str[80];
+	const char *pullLever = "Pull lever to restart ...";
+
+	display.clearAll();
+
+	switch(gameResult) {
+		case GameResult::VICTORY:
+			sprintf(str, " You won with %d points! %s", game.nCoins, pullLever);
+			break;
+		case GameResult::NO_COINS_LEFT:
+			sprintf(str, " No more coins. %s", pullLever);
+			break;
+		case GameResult::NO_SPINS_LEFT:
+			sprintf(str, " No spins left. %s", pullLever);
+			break;
+	}
+
+	ledMatrix.wrapText(str, wrapLoop);
+}
+
+void cheerIfNeeded()
 {
 	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
-
 	CheerLevel cheerLevel;
 
-	if(victory) {
-		cheerLevel = CheerLevel::VICTORY;
-		sound.Play((uint8_t)Sounds::GAME_WON);
-	} else if(game.lastFeature > SpecialFeatures::NONE) {
-		cheerLevel = CheerLevel::BIG_WIN;
-		displayUpdated = false;
-		display.showCentered(feats[(uint16_t)game.lastFeature]);
-		cheerTimer.in(CHEERENDTIME, updateDisplay);
-		if(game.lastFeature == SpecialFeatures::JACKPOT) {
-			display.blink(true, JACKPOTBLINK);
-			sound.Play((uint8_t)Sounds::CHEER_A_LOT);
-		}
-	} else if(game.nCoins > lastCoins) {
-		cheerLevel = CheerLevel::WIN;
-		sound.Play((uint8_t)Sounds::CHEER_WIN);
-	} else if(game.nCoins == lastCoins) {
-		cheerLevel = CheerLevel::DRAW;
-		sound.Play((uint8_t)Sounds::CHEER_DRAW);
-	} else {	// game.nCoins < lastCoins
-		cheerLevel = CheerLevel::NONE;
-		sound.Stop();
+	switch(gameResult) {
+		case GameResult::VICTORY:
+			cheerLevel = CheerLevel::VICTORY;
+			sound.Play((uint8_t)Sounds::GAME_WON);
+			break;;
+		case GameResult::NO_COINS_LEFT:
+		case GameResult::NO_SPINS_LEFT:
+			cheerLevel = CheerLevel::NONE;
+			sound.Play((uint8_t)Sounds::GAME_WON);
+			break;
+		default:
+			if(game.lastFeature > SpecialFeatures::NONE) {
+				cheerLevel = CheerLevel::BIG_WIN;
+				displayUpdated = false;
+				display.showCentered(feats[(uint16_t)game.lastFeature]);
+				cheerTimer.in(CHEERENDTIME, updateDisplay);
+				if(game.lastFeature == SpecialFeatures::JACKPOT) {
+					display.blink(true, JACKPOTBLINK);
+					sound.Play((uint8_t)Sounds::CHEER_A_LOT);
+				}
+			} else if(game.nCoins > lastCoins) {
+				cheerLevel = CheerLevel::WIN;
+				sound.Play((uint8_t)Sounds::CHEER_WIN);
+			} else if(game.nCoins == lastCoins) {
+				cheerLevel = CheerLevel::DRAW;
+				sound.Play((uint8_t)Sounds::CHEER_DRAW);
+			} else {	// game.nCoins < lastCoins
+				cheerLevel = CheerLevel::NONE;
+				sound.Stop();
+			}
+			break;
 	}
 
 	cheers.Start(cheerLevel);
 }
 
-void endGame(bool victory, bool zeroCoins)
+/**
+ * Called when the game ends.
+ */
+void endGame()
 {
-	winTimer.cancel();
-	spinsTimer.cancel();
+	winSymbolTimer.cancel();
+	spinsLeftTimer.cancel();
+	leverAnimTimer.cancel();
+
 	waitingForRestart = true;
 	game.playing = false;
 
-	if(victory) {
+	if(gameResult == GameResult::VICTORY) {
 		feeder.Feed();
 		startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYVALUE) / 2);
 		sound.Play((uint8_t)Sounds::GAME_WON);
 		#if DEBUGINFO
 		Serial.println("\n--- VICTORY ---\n");
 		#endif
-		// char str[60];
-		// sprintf(str, " Game won with %d points! Pull lever to restart ...", game.nCoins);
-		// display.clearAll();
-		// ledMatrix.wrapText(str, wrapLoop);
 	} else {
 		startCoins = STARTCOINS;
 		sound.Play((uint8_t)Sounds::GAME_LOST);
-		if(zeroCoins) {
-			#if DEBUGINFO
+		#if DEBUGINFO
+		if(gameResult == GameResult::NO_COINS_LEFT) {
 			Serial.println("\n--- NO MORE COINS ---\n");
-			#endif
 		} else {
-			#if DEBUGINFO
 			Serial.println("\n--- NO SPINS LEFT ---\n");
-			#endif
 		}
-		// display.clearAll();
-		// ledMatrix.wrapText(" Game lost. Pull lever to restart ...", wrapLoop);
-		// ledMatrix.wrapText(" No coins. Pull lever to restart ...", wrapLoop);
+		#endif
 	}
+
+	endGameTimer.in(1000, displayEndGameMessage);
 }
 
 /**
@@ -251,41 +290,42 @@ void endSpin()
 			lastPenalty = 255;
 
 			updateTimer.every(UPDATEBET, updateBet);
-			spinsTimer.in(REMAINSTART, showRemainingSpins);
+			spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
 
 			if(game.spinPayoff) {
 				showWinSymbol = true;
-				winTimer.every(WINTOGGLE, toggleWinSymbol);
+				winSymbolTimer.every(WINTOGGLE, toggleWinSymbol);
 			} else {
-				winTimer.cancel();
+				winSymbolTimer.cancel();
 			}
 
 			// updateDisplay(NULL);
 
 			// Game won?
 
-			bool victory = false;
+			gameResult = GameResult::NONE;
 
 			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= MAXSPINSTOWIN)) {
-				victory = true;
-				endGame(true, false);
+				gameResult = GameResult::VICTORY;
+				endGame();
 			} else if(game.totalSpins >= MAXSPINSTOWIN) {
-				endGame(false, false);
+				gameResult = GameResult::NO_SPINS_LEFT;
+				endGame();
 			}
 
-			cheerIfNeeded(victory);
+			cheerIfNeeded();
 
 		} else {
-
-			endGame(false, true);
+			gameResult = GameResult::NO_COINS_LEFT;
+			endGame();
 		}
 	}
 
 	leverPulled = false;
-	leverTimer.in(LEVERANIMDELAY, showAnimLever);
+	leverAnimTimer.in(LEVERANIMDELAY, showAnimLever);
 }
 
 /**
@@ -294,13 +334,14 @@ void endSpin()
 void bounceReels()
 {
 	updateTimer.cancel();
-	leverTimer.cancel();
-	winTimer.cancel();
-	spinsTimer.cancel();
+	leverAnimTimer.cancel();
+	winSymbolTimer.cancel();
+	spinsLeftTimer.cancel();
 
 	sound.Play((uint8_t)Sounds::SPIN_START);
 
-	if(!leverPulled && game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+	if(!waitingForRestart && !leverPulled &&
+		game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
 		updateDisplay(NULL);
 	}
 
@@ -374,7 +415,9 @@ void SlotsMain::inputLoop()
 	// Read ezButtons values
 
 	if(waitingForRestart) {
-		if(slotsMain.startLever.isReleased()) {
+		if(startLever.isPressed()) {
+			bounceReels();
+		} else if(slotsMain.startLever.isReleased()) {
 			display.clearAll();
 			slotsMain.Restart();
 			waitingForRestart = false;
@@ -384,7 +427,7 @@ void SlotsMain::inputLoop()
 
 			if(startLever.isPressed()) {
 				if(game.currentBet) {
-				bounceReels();
+					bounceReels();
 				} else {
 					game.BounceReelsBack();
 				}
@@ -427,7 +470,7 @@ void SlotsMain::Setup()
 	feeder.Return();
 	ledMatrix.setup();
 	display.setup();
-	display.scroll(" Wait");
+	display.scroll(" Wait ");
 	cheers.Setup();
 	updateTimer.every(UPDATEBET, updateBet);
 	locks.Setup();
@@ -451,13 +494,14 @@ void SlotsMain::Restart()
 	showWinSymbol = true;
 	displayUpdated = false;
 	waitingForRestart = false;
+	gameResult = GameResult::NONE;
 
 	// Re-creates timers
 
 	updateTimer = timer_create_default();
 	cheerTimer = timer_create_default();
-	leverTimer = timer_create_default();
-	winTimer = timer_create_default();
+	leverAnimTimer = timer_create_default();
+	winSymbolTimer = timer_create_default();
 
 	Serial.println();
 	Serial.println("Slots game restarted.");
@@ -482,15 +526,19 @@ void SlotsMain::Restart()
 
 void SlotsMain::Loop()
 {
-	updateTimer.tick();
-	cheerTimer.tick();
-	leverTimer.tick();
-	winTimer.tick();
-	spinsTimer.tick();
+	if(!game.spinning) {
+		updateTimer.tick();
+		cheerTimer.tick();
+		leverAnimTimer.tick();
+		winSymbolTimer.tick();
+		spinsLeftTimer.tick();
+		endGameTimer.tick();
 
-	inputLoop();
-	feeder.Loop();
-	display.loop();
+		inputLoop();
+		feeder.Loop();
+		display.loop();
+	}
+
 	if(game.Loop()) {
 		endSpin();
 	}

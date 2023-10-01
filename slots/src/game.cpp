@@ -89,16 +89,19 @@ void Game::printDebugData(bool home)
 
 	// Print spin data, current bet and coins
 
-	Serial.println();
-	Serial.print("---- Spin #");
-	Serial.print(totalSpins);
-	Serial.print(" ----");
-	Serial.println();
+	uint8_t nLocked = 0;
+	for(int i = 0; i < NREELS; i++) {
+		if(locks.IsLocked(i)) {
+			nLocked++;
+		}
+	}	
 
-	Serial.print("Current bet: ");
-	Serial.print(currentBet);
-	Serial.print(" / Coins: ");
-	Serial.println(nCoins);
+	Serial.println();
+	Serial.println("---- Spin #" + String(totalSpins) + " ----");
+	Serial.println("Current bet: " + String(currentBet)
+		+ " / Coins: " + String(nCoins)
+		+ " / Locked: " + String(nLocked)
+	);
 
 	// Serial.print("Extra turns: ");
 	// for(int i = 0; i < NREELS; i++) {
@@ -130,9 +133,11 @@ void Game::printDebugData(bool home)
 		Serial.println("**** Total payoff: " + String(spinPayoff) + " ****");
 
 		if(lastFeature == SpecialFeatures::JACKPOT) {
-			Serial.println("#### JACKPOT! ####");
+			Serial.println("#### Jackpot ####");
 		} else if(lastFeature == SpecialFeatures::BONUS) {
 			Serial.println("#### Bonus ####");
+		} else if(lastFeature == SpecialFeatures::DOUBLEPAY) {
+			Serial.println("#### Double ####");
 		}
 
 		Serial.println("Next coins: " + String(nCoins + spinPayoff));

@@ -78,7 +78,6 @@ void calcLockPenalty()
 	if(!nLocked) {
 		lockPenalty = 0;
 	}
-	
 	lockPenalty = nLocked * (game.nCoins * game.currentBet / LOCKPENALTYDIV);
 }
 
@@ -359,7 +358,11 @@ void SlotsMain::inputLoop()
 		if(!game.spinning) {
 
 			if(startLever.isPressed()) {
+				if(game.currentBet) {
 				bounceReels();
+				} else {
+					game.BounceReelsBack();
+				}
 			} else if(startLever.isReleased()) {
 				if(game.currentBet) {
 					firstSpin = false;

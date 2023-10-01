@@ -22,7 +22,7 @@
 
 #define VICTORYVALUE	170		// Coins are needed to win a ball (victory)
 #define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
-#define SHOWREMAINING	10		// Spins left to warn the end is near
+#define SHOWREMAINING	10		// Spins left to display remaining spins
 #define REMAINWARNING	5		// Spins left to warn the end is near
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
@@ -106,7 +106,7 @@ struct payoffItem {
 
 enum class Sounds {
 	HELLO = 1,
-	WAITING,
+	__,
 	SPIN_START,
 	CHEER_WIN,
 	CHEER_DRAW,

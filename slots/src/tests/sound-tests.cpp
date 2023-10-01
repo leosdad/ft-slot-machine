@@ -16,7 +16,6 @@ Sound _sound;
 void soundTestsSetup()
 {
 	if(_sound.Setup(10)) {
-		_sound.Play(1);
 		Serial.println("DFPlayer mini player OK.");
 	} else {
 		Serial.println("Error initializing DFPlayer mini player.");
@@ -27,6 +26,12 @@ void soundTestsSetup()
 
 void soundTestsLoop()
 {
+	for(uint8_t i = 1; i <= 10; i++) {
+		Serial.println("Playing sound " + String(i));
+		_sound.Play(i);
+		delay(1000);
+	}
+	delay(200);
 }
 
 // ------------------------------------------------------------------------- End

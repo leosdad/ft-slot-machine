@@ -273,17 +273,14 @@ void bounceReels()
 	leverTimer.cancel();
 	winTimer.cancel();
 	spinsTimer.cancel();
-	game.BounceReelsBack();
 
-	uint8_t soundIndex = (uint8_t)Sounds::SPIN_START;
+	sound.Play((uint8_t)Sounds::SPIN_START);
 
 	if(!leverPulled && game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
-		if(game.totalSpins >= MAXSPINSTOWIN - REMAINWARNING) {
-			soundIndex = (uint8_t)Sounds::END_IS_NEAR;
-		}
+		updateDisplay(NULL);
 	}
-	sound.Play(soundIndex);
 
+	game.BounceReelsBack();
 	leverPulled = true;
 }
 
@@ -364,9 +361,6 @@ void SlotsMain::inputLoop()
 			if(startLever.isPressed()) {
 				bounceReels();
 			} else if(startLever.isReleased()) {
-				if(game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
-					updateDisplay(NULL);
-				}
 				if(game.currentBet) {
 					firstSpin = false;
 					spin();
@@ -410,6 +404,7 @@ void SlotsMain::Setup()
 	updateTimer.every(UPDATEBET, updateBet);
 	locks.Setup();
 	game.Setup(startCoins);
+	sound.Play((uint8_t)Sounds::HELLO);
 
 	// Perform a first (home) spin
 
@@ -450,6 +445,7 @@ void SlotsMain::Restart()
 	display.scroll(" Wait");
 	updateTimer.every(UPDATEBET, updateBet);
 	game.Setup(startCoins);
+	sound.Play((uint8_t)Sounds::HELLO);
 
 	// Perform a first home spin
 

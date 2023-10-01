@@ -51,6 +51,7 @@ void Game::init(uint16_t initialCoins)
 	}
 
 	totalSpins = 0;
+	totalWins = 0;
 	lastSpinning = -1;
 	playing = false;
 	spinning = false;
@@ -70,7 +71,7 @@ void Game::init(uint16_t initialCoins)
 void Game::printDebugData(bool home)
 {
 	if(home) {
-		Serial.println("---- Home spin ----");
+		Serial.println("---- Home spin with " + String(nCoins) + " coins ----");
 		Serial.println();
 		return;
 	}

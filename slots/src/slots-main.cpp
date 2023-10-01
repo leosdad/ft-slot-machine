@@ -170,27 +170,82 @@ bool wrapLoop()
 	return !waitingForRestart;
 }
 
+void cheerIfNeeded(bool victory)
+{
+	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
+
+	CheerLevel cheerLevel;
+
+	if(victory) {
+		cheerLevel = CheerLevel::VICTORY;
+		sound.Play((uint8_t)Sounds::GAME_WON);
+	} else if(game.lastFeature > SpecialFeatures::NONE) {
+		cheerLevel = CheerLevel::BIG_WIN;
+		displayUpdated = false;
+		display.showCentered(feats[(uint16_t)game.lastFeature]);
+		cheerTimer.in(CHEERENDTIME, updateDisplay);
+		if(game.lastFeature == SpecialFeatures::JACKPOT) {
+			display.blink(true, JACKPOTBLINK);
+			sound.Play((uint8_t)Sounds::CHEER_A_LOT);
+		}
+	} else if(game.nCoins > lastCoins) {
+		cheerLevel = CheerLevel::WIN;
+		sound.Play((uint8_t)Sounds::CHEER_WIN);
+	} else if(game.nCoins == lastCoins) {
+		cheerLevel = CheerLevel::DRAW;
+		sound.Play((uint8_t)Sounds::CHEER_DRAW);
+	} else {	// game.nCoins < lastCoins
+		cheerLevel = CheerLevel::NONE;
+		sound.Stop();
+	}
+
+	cheers.Start(cheerLevel);
+}
+
+void endGame(bool victory, bool zeroCoins)
+{
+	winTimer.cancel();
+	spinsTimer.cancel();
+	waitingForRestart = true;
+	game.playing = false;
+
+	if(victory) {
+		feeder.Feed();
+		startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYVALUE) / 2);
+		sound.Play((uint8_t)Sounds::GAME_WON);
+		#if DEBUGINFO
+		Serial.println("\n--- VICTORY ---\n");
+		#endif
+		// char str[60];
+		// sprintf(str, " Game won with %d points! Pull lever to restart ...", game.nCoins);
+		// display.clearAll();
+		// ledMatrix.wrapText(str, wrapLoop);
+	} else {
+		startCoins = STARTCOINS;
+		sound.Play((uint8_t)Sounds::GAME_LOST);
+		if(zeroCoins) {
+			#if DEBUGINFO
+			Serial.println("\n--- NO MORE COINS ---\n");
+			#endif
+		} else {
+			#if DEBUGINFO
+			Serial.println("\n--- NO SPINS LEFT ---\n");
+			#endif
+		}
+		// display.clearAll();
+		// ledMatrix.wrapText(" Game lost. Pull lever to restart ...", wrapLoop);
+		// ledMatrix.wrapText(" No coins. Pull lever to restart ...", wrapLoop);
+	}
+}
+
 /**
  * Called once each time a spin ends.
  */
 void endSpin()
 {
-	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
-
 	if(!firstSpin) {
 
-		if(game.nCoins == 0) {
-game_lost:
-			winTimer.cancel();
-			spinsTimer.cancel();
-			waitingForRestart = true;
-			game.playing = false;
-			startCoins = STARTCOINS;
-			sound.Play((uint8_t)Sounds::GAME_LOST);
-			display.clearAll();
-			ledMatrix.wrapText(" Game over. Pull lever to restart ...", wrapLoop);
-
-		} else {
+		if(game.nCoins > 0) {
 
 			lastLocked = 255;
 			lastPenalty = 255;
@@ -208,54 +263,24 @@ game_lost:
 				winTimer.cancel();
 			}
 
-			updateDisplay(NULL);
+			// updateDisplay(NULL);
 
 			// Game won?
 
 			bool victory = false;
-			CheerLevel cheerLevel;
 
 			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= MAXSPINSTOWIN)) {
-				winTimer.cancel();
-				spinsTimer.cancel();
-				feeder.Feed();
-				waitingForRestart = true;
-				game.playing = false;
-				startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYVALUE) / 2);
 				victory = true;
-
-				char str[60];
-				sprintf(str, " Game won with %d points! Pull lever to restart ...", game.nCoins);
-				display.clearAll();
-				ledMatrix.wrapText(str, wrapLoop);
+				endGame(true, false);
 			} else if(game.totalSpins >= MAXSPINSTOWIN) {
-				goto game_lost;
+				endGame(false, false);
 			}
 
-			if(victory) {
-				cheerLevel = CheerLevel::VICTORY;
-				sound.Play((uint8_t)Sounds::GAME_WON);
-			} else if(game.lastFeature > SpecialFeatures::NONE) {
-				displayUpdated = false;
-				cheerLevel = CheerLevel::BIG_WIN;
-				display.showCentered(feats[(uint16_t)game.lastFeature]);
-				cheerTimer.in(CHEERENDTIME, updateDisplay);
-				if(game.lastFeature == SpecialFeatures::JACKPOT) {
-					display.blink(true, JACKPOTBLINK);
-					sound.Play((uint8_t)Sounds::CHEER_LOT);
-				}
-			} else if(game.nCoins > lastCoins) {
-				cheerLevel = CheerLevel::WIN;
-				sound.Play((uint8_t)Sounds::CHEER_WIN);
-			} else if(game.nCoins == lastCoins) {
-				cheerLevel = CheerLevel::DRAW;
-				sound.Play((uint8_t)Sounds::CHEER_DRAW);
-			} else {	// game.nCoins < lastCoins
-				cheerLevel = CheerLevel::NONE;
-				sound.Stop();
-			}
+			cheerIfNeeded(victory);
 
-			cheers.Start(cheerLevel);
+		} else {
+
+			endGame(false, true);
 		}
 	}
 
@@ -450,7 +475,7 @@ void SlotsMain::Restart()
 	game.Setup(startCoins);
 	sound.Play((uint8_t)Sounds::HELLO);
 
-	// Perform a first home spin
+	// Perform a home spin
 
 	game.StartSpin(true);
 }

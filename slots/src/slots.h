@@ -20,8 +20,8 @@
 
 // Gameplay constants
 
-#define VICTORYVALUE	170		// Coins are needed to win a ball (victory)
-#define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
+#define VICTORYVALUE	500		// Coins are needed to win a ball (victory)
+#define MAXSPINSTOWIN	50		// Maximum spins to achieve a victory
 #define SHOWREMAINING	10		// Spins left to display remaining spins
 #define REMAINWARNING	5		// Spins left to warn the end is near
 #define STARTCOINS		100		// Default number of coins upon game start
@@ -110,7 +110,7 @@ enum class Sounds {
 	SPIN_START,
 	CHEER_WIN,
 	CHEER_DRAW,
-	CHEER_LOT,
+	CHEER_A_LOT,
 	INVALID,
 	GAME_LOST,
 	GAME_WON,

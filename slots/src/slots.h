@@ -60,7 +60,7 @@
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
 #define CHEERENDTIME	2000	// Time to end cheering message
-#define JACKPOTBLINK	300		// Blink frequency for jackpot LEDs
+#define TOPSCOREBLINK	300		// Blink frequency for top score LEDs
 #define LEVERANIMDELAY	8123	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
 #define LEVERWAIT		500		// Wait time before reversing lever animation
@@ -98,9 +98,9 @@
 
 enum class SpecialFeatures {
 	NONE = 0,
-	DOUBLEPAY,
+	DOUBLE,
 	BONUS,
-	JACKPOT,
+	TOPSCORE,
 };
 
 enum class GameResult {
@@ -121,11 +121,11 @@ struct payoffItem {
 
 enum class Sounds {
 	HELLO = 1,
-	__,
+	CHEER_BONUS,
 	SPIN_START,
 	CHEER_WIN,
 	CHEER_DRAW,
-	CHEER_A_LOT,
+	CHEER_TOPSCORE,
 	INVALID,
 	GAME_LOST,
 	GAME_WON,

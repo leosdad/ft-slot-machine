@@ -123,7 +123,7 @@ void Display::clear()
 
 void Display::clearAll()
 {
-	scrollAll("        ");
+	scrollAll("       ");
 }
 
 // ------------------------------------------------------------------------- End

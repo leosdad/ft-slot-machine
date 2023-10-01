@@ -13,6 +13,7 @@
 Payoffs payoffs;
 Reel reels[NREELS];
 extern Locks locks;
+extern uint16_t spinsLeft;
 
 // ---------------------------------------------------- Private member functions
 
@@ -133,11 +134,11 @@ void Game::printDebugData(bool home)
 	if(spinPayoff > 0) {
 		Serial.println("**** Total payoff: " + String(spinPayoff) + " ****");
 
-		if(lastFeature == SpecialFeatures::JACKPOT) {
-			Serial.println("#### Jackpot ####");
+		if(lastFeature == SpecialFeatures::TOPSCORE) {
+			Serial.println("#### Top score ####");
 		} else if(lastFeature == SpecialFeatures::BONUS) {
 			Serial.println("#### Bonus ####");
-		} else if(lastFeature == SpecialFeatures::DOUBLEPAY) {
+		} else if(lastFeature == SpecialFeatures::DOUBLE) {
 			Serial.println("#### Double ####");
 		}
 
@@ -149,6 +150,7 @@ void Game::printDebugData(bool home)
 	// Print total wins
 
 	Serial.println("Total wins: " + String(totalWins));
+	Serial.println("Spins left: " + String(spinsLeft - totalSpins));
 }
 
 // ----------------------------------------------------- Public member functions

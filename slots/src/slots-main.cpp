@@ -31,7 +31,7 @@ Sound sound;
 auto spinsLeftTimer = timer_create_default();
 auto cheerTimer = timer_create_default();
 auto leverAnimTimer = timer_create_default();
-auto updateTimer = timer_create_default();
+auto updateBetTimer = timer_create_default();
 auto winSymbolTimer = timer_create_default();
 auto endGameTimer = timer_create_default();
 
@@ -45,6 +45,7 @@ bool showWinSymbol = true;
 bool waitingForRestart = false;
 extern SlotsMain slotsMain;
 uint16_t startCoins = STARTCOINS;
+uint16_t spinsLeft = MAXSPINSTOWIN;
 uint8_t lastBet = 255;
 uint8_t lastCoins = -1;
 uint8_t leverFrame = 0;
@@ -101,9 +102,9 @@ bool updateDisplay(void *)
 
 bool showRemainingSpins(void *)
 {
-	if(game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+	if(game.totalSpins >= spinsLeft - SHOWREMAINING) {
 		char str[7];
-		uint8_t remaining = MAXSPINSTOWIN - game.totalSpins;
+		uint8_t remaining = spinsLeft - game.totalSpins;
 		display.showNumber(remaining, true);
 		display.showAt(" >", MX_NUMPOS);
 	}
@@ -163,6 +164,16 @@ bool updateBet(void *)
 	return true;
 }
 
+bool restartDisplay(void *)
+{
+	// display.clearAll();
+	updateBetTimer.every(UPDATEBET, updateBet);
+	winSymbolTimer.every(WINTOGGLE, toggleWinSymbol);
+	leverAnimTimer.in(LEVERANIMDELAY, showAnimLever);
+	spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
+	updateDisplay(NULL);
+}
+
 /**
  * Callback for the LedMatrix::wrapText function. Yewlds to the main loop.
  */
@@ -202,30 +213,49 @@ bool displayEndGameMessage(void *)
 	ledMatrix.wrapText(str, wrapLoop);
 }
 
+void displayFeature()
+{
+	static const char* feats[] = {"", "Double", "Bonus", "Top"};
+
+	displayUpdated = false;
+	updateBetTimer.cancel();
+	winSymbolTimer.cancel();
+	leverAnimTimer.cancel();
+	spinsLeftTimer.cancel();
+
+	display.showCentered(feats[(uint16_t)game.lastFeature]);
+
+	cheerTimer.in(CHEERENDTIME, restartDisplay);
+}
+
 void cheerIfNeeded()
 {
-	static const char* feats[] = {"", "Double", "Bonus", "Jckpot!"};
 	CheerLevel cheerLevel;
 
 	switch(gameResult) {
+
 		case GameResult::VICTORY:
 			cheerLevel = CheerLevel::VICTORY;
 			sound.Play((uint8_t)Sounds::GAME_WON);
-			break;;
+			break;
+
 		case GameResult::NO_COINS_LEFT:
 		case GameResult::NO_SPINS_LEFT:
 			cheerLevel = CheerLevel::NONE;
 			sound.Play((uint8_t)Sounds::GAME_WON);
 			break;
+
 		default:
 			if(game.lastFeature > SpecialFeatures::NONE) {
+
+				displayFeature();
+
 				cheerLevel = CheerLevel::BIG_WIN;
-				displayUpdated = false;
-				display.showCentered(feats[(uint16_t)game.lastFeature]);
-				cheerTimer.in(CHEERENDTIME, updateDisplay);
-				if(game.lastFeature == SpecialFeatures::JACKPOT) {
-					display.blink(true, JACKPOTBLINK);
-					sound.Play((uint8_t)Sounds::CHEER_A_LOT);
+				if(game.lastFeature == SpecialFeatures::TOPSCORE) {
+					display.blink(true, TOPSCOREBLINK);
+					sound.Play((uint8_t)Sounds::CHEER_TOPSCORE);
+				} else {
+					sound.Play((uint8_t)Sounds::CHEER_BONUS);
 				}
 			} else if(game.nCoins > lastCoins) {
 				cheerLevel = CheerLevel::WIN;
@@ -235,7 +265,7 @@ void cheerIfNeeded()
 				sound.Play((uint8_t)Sounds::CHEER_DRAW);
 			} else {	// game.nCoins < lastCoins
 				cheerLevel = CheerLevel::NONE;
-				sound.Stop();
+				// sound.Stop();
 			}
 			break;
 	}
@@ -289,8 +319,14 @@ void endSpin()
 			lastLocked = 255;
 			lastPenalty = 255;
 
-			updateTimer.every(UPDATEBET, updateBet);
+			updateBetTimer.every(UPDATEBET, updateBet);
 			spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
+
+			// Awards special features
+
+			if(game.lastFeature == SpecialFeatures::BONUS) {
+				spinsLeft += BONUSSPINS;
+			}
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
@@ -302,21 +338,21 @@ void endSpin()
 				winSymbolTimer.cancel();
 			}
 
-			// updateDisplay(NULL);
-
-			// Game won?
+			// Game won? Game lost? Needs cheering?
 
 			gameResult = GameResult::NONE;
 
-			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= MAXSPINSTOWIN)) {
+			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= spinsLeft)) {
 				gameResult = GameResult::VICTORY;
-				endGame();
-			} else if(game.totalSpins >= MAXSPINSTOWIN) {
+			} else if(game.totalSpins >= spinsLeft) {
 				gameResult = GameResult::NO_SPINS_LEFT;
-				endGame();
 			}
 
 			cheerIfNeeded();
+
+			if(gameResult > GameResult::NONE) {
+				endGame();
+			}
 
 		} else {
 			gameResult = GameResult::NO_COINS_LEFT;
@@ -333,7 +369,7 @@ void endSpin()
  */
 void bounceReels()
 {
-	updateTimer.cancel();
+	updateBetTimer.cancel();
 	leverAnimTimer.cancel();
 	winSymbolTimer.cancel();
 	spinsLeftTimer.cancel();
@@ -341,7 +377,7 @@ void bounceReels()
 	sound.Play((uint8_t)Sounds::SPIN_START);
 
 	if(!waitingForRestart && !leverPulled &&
-		game.totalSpins >= MAXSPINSTOWIN - SHOWREMAINING) {
+		game.totalSpins >= spinsLeft - SHOWREMAINING) {
 		updateDisplay(NULL);
 	}
 
@@ -370,7 +406,7 @@ void spin()
 			}
 		}
 
-		if(game.totalSpins >= MAXSPINSTOWIN - REMAINWARNING) {
+		if(game.totalSpins >= spinsLeft - REMAINWARNING) {
 			sound.Play((uint8_t)Sounds::END_IS_NEAR);
 		}
 
@@ -472,7 +508,7 @@ void SlotsMain::Setup()
 	display.setup();
 	display.scroll(" Wait ");
 	cheers.Setup();
-	updateTimer.every(UPDATEBET, updateBet);
+	updateBetTimer.every(UPDATEBET, updateBet);
 	locks.Setup();
 	game.Setup(startCoins);
 	sound.Play((uint8_t)Sounds::HELLO);
@@ -495,13 +531,13 @@ void SlotsMain::Restart()
 	displayUpdated = false;
 	waitingForRestart = false;
 	gameResult = GameResult::NONE;
+	spinsLeft = MAXSPINSTOWIN;
 
 	// Re-creates timers
-
-	updateTimer = timer_create_default();
-	cheerTimer = timer_create_default();
-	leverAnimTimer = timer_create_default();
-	winSymbolTimer = timer_create_default();
+	// updateBetTimer = timer_create_default();
+	// cheerTimer = timer_create_default();
+	// leverAnimTimer = timer_create_default();
+	// winSymbolTimer = timer_create_default();
 
 	Serial.println();
 	Serial.println("Slots game restarted.");
@@ -515,7 +551,7 @@ void SlotsMain::Restart()
 
 	feeder.Return();
 	display.scroll(" Wait");
-	updateTimer.every(UPDATEBET, updateBet);
+	updateBetTimer.every(UPDATEBET, updateBet);
 	game.Setup(startCoins);
 	sound.Play((uint8_t)Sounds::HELLO);
 
@@ -527,7 +563,7 @@ void SlotsMain::Restart()
 void SlotsMain::Loop()
 {
 	if(!game.spinning) {
-		updateTimer.tick();
+		updateBetTimer.tick();
 		cheerTimer.tick();
 		leverAnimTimer.tick();
 		winSymbolTimer.tick();

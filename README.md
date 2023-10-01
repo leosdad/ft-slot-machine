@@ -52,7 +52,7 @@ Other non-ft parts used were jumper cables, several wires and cables, 25-point m
 ## Third-party libraries used
 
 - [arduino-timer](https://github.com/contrem/arduino-timer) Michael Contreras
-- [DFRobotDFPlayerMini](https://github.com/DFRobot/DFRobotDFPlayerMini) by Angelo qiao
+- [DFPlayerMini_Fast](https://github.com/PowerBroker2/DFPlayerMini_Fast) by PowerBroker2
 - [ezButton / ezLED](https://github.com/ArduinoGetStarted) by ArduinoGetStarted
 - [MD_MAX72xx](https://github.com/MajicDesigns/MD_MAX72XX) by Marco Colli
 - [TrueRandom](https://github.com/sirleech/TrueRandom) by sirleech

@@ -99,18 +99,6 @@ bool updateDisplay(void *)
 	return true;
 }
 
-bool showRemainingSpins(void *)
-{
-	if(game.totalSpins >= spinsLeft - SHOWREMAINING) {
-		char str[7];
-		uint8_t remaining = spinsLeft - game.totalSpins;
-		display.showNumber(remaining, true);
-		display.showAt(" >", MX_NUMPOS);
-	}
-	spinsLeftTimer.in(REMAINRESET, updateDisplay);
-	spinsLeftTimer.in(REMAINREPEAT, showRemainingSpins);
-}
-
 /**
  * Displays the animated lever.
  */
@@ -161,6 +149,15 @@ bool updateBet(void *)
 	}
 
 	return true;
+}
+
+bool showRemainingSpins(void *)
+{
+	if(game.spinsLeft <= SHOWREMAINING) {
+		display.showLife(game.spinsLeft);
+	}
+	spinsLeftTimer.in(REMAINRESET, updateDisplay);
+	spinsLeftTimer.in(REMAINREPEAT, showRemainingSpins);
 }
 
 bool restartDisplay(void *)

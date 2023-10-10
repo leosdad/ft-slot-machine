@@ -45,6 +45,20 @@ void Display::showBet(uint16_t value)
 	ledMatrix.printUnsignedInteger(value, 1, 0, NumberPadding::NONE, 16);
 }
 
+void Display::showLife(uint16_t value)
+{
+	// 8 rows
+	value = constrain(value, 0, 8);
+	uint8_t bmp[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+	// cols 1 to 6
+	for(uint8_t i = 1; i < 7; i++) {
+		bmp[i] = (0xff >> value) ^ 0xff;
+	}
+
+	mx.setBuffer(31, 8, bmp);
+}
+
 void Display::scroll(const char* msg)
 {
 	mx.clear(0, CLEAR_COL);

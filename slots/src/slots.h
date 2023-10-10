@@ -20,19 +20,13 @@
 
 // Gameplay constants
 
-#define VICTORYVALUE	100		// Coins are needed to win a ball (victory)
-#define MAXSPINSTOWIN	3		// Maximum spins to achieve a victory
-#define SHOWREMAINING	2		// Spins left to display remaining spins
-#define REMAINWARNING	2		// Spins left to warn the end is near
-#define STARTCOINS		98		// Default number of coins upon game start
-#define MAXSTARTCOINS	99		// Maximum mumber of start coins
-
-// #define VICTORYVALUE	170		// Coins are needed to win a ball (victory)
-// #define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
-// #define SHOWREMAINING	8		// Spins left to display remaining spins
-// #define REMAINWARNING	5		// Spins left to warn the end is near
-// #define STARTCOINS		20		// Default number of coins upon game start
-// #define MAXSTARTCOINS	150		// Maximum mumber of start coins
+#define STARTCOINS		20		// Default number of coins upon game start
+#define MAXSTARTCOINS	150		// Maximum mumber of start coins
+#define VICTORYVALUE	100		// Coins needed to win a ball (victory)
+#define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
+#define BONUSSPINS		3		// Extra spins when a bonus is awarded
+#define SHOWREMAINING	10		// Spins left to display remaining spins
+#define REMAINWARNING	5		// Spins left to warn the end is near
 
 #define MAXCOINS		9999	// Up to 16384
 #define MINLOCKCOINS	9		// Minimum coins for lock feature
@@ -46,7 +40,7 @@
 
 // Software constants
 
-#define VOLUME			10		// Sound volume
+#define VOLUME			10		// Sound volume (0-15)
 #define MX_BRIGHTNESS	1		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
@@ -68,7 +62,7 @@
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 #define BOUNCETIME		5		// Delay between rotate and brake
 #define REMAINSTART		800		// Time to show remaining spins
-#define REMAINRESET		600		// Time to go back to regular display
+#define REMAINRESET		1000	// Time to go back to regular display
 #define REMAINREPEAT	6017	// Time to repeat show remaining spins
 
 // Cheering constants
@@ -159,24 +153,22 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 	{1, 3, 8, 2, 8, 7, 5, 4, 5, 7, 2, 5}
 };
 
-static const uint8_t payoffMultiplier = PAYMULTIPLIER;
-
 /**
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	{{1, 1, 1}, 120, SpecialFeatures::JACKPOT},
-	{{3, 3, 3},  85, SpecialFeatures::JACKPOT},
-	{{4, 4, 4},  85, SpecialFeatures::JACKPOT},
+	{{1, 1, 1}, 120, SpecialFeatures::TOPSCORE},
+	{{3, 3, 3},  85, SpecialFeatures::TOPSCORE},
+	{{4, 4, 4},  85, SpecialFeatures::TOPSCORE},
 	{{5, 5, 3},  60, SpecialFeatures::BONUS},
 	{{8, 8, 3},  45, SpecialFeatures::NONE},
 	{{2, 2, 3},  30, SpecialFeatures::NONE},
 	{{8, 8, 8},  22, SpecialFeatures::NONE},
 	{{5, 5, 5},  20, SpecialFeatures::BONUS},
 	{{2, 2, 2},  15, SpecialFeatures::NONE},
-	{{1, 1, 0},  15, SpecialFeatures::DOUBLEPAY},
-	{{0, 1, 1},  15, SpecialFeatures::DOUBLEPAY},
-	{{1, 0, 1},  15, SpecialFeatures::DOUBLEPAY},
+	{{1, 1, 0},  15, SpecialFeatures::DOUBLE},
+	{{0, 1, 1},  15, SpecialFeatures::DOUBLE},
+	{{1, 0, 1},  15, SpecialFeatures::DOUBLE},
 	{{0, 3, 3},  15, SpecialFeatures::NONE},
 	{{0, 3, 1},  15, SpecialFeatures::NONE},
 	{{0, 4, 4},  15, SpecialFeatures::NONE},

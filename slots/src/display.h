@@ -28,6 +28,7 @@ class Display
 		void blink(bool blink, uint32_t interval = 300);
 		void showNumber(uint16_t value, bool clear);
 		void showBet(uint16_t value);
+		void showLife(uint16_t value);
 		void scroll(const char *msg);
 		void scrollAll(const char *msg);
 };

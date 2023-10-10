@@ -45,7 +45,6 @@ bool showWinSymbol = true;
 bool waitingForRestart = false;
 extern SlotsMain slotsMain;
 uint16_t startCoins = STARTCOINS;
-uint16_t spinsLeft = MAXSPINSTOWIN;
 uint8_t lastBet = 255;
 uint8_t lastCoins = -1;
 uint8_t leverFrame = 0;
@@ -325,7 +324,7 @@ void endSpin()
 			// Awards special features
 
 			if(game.lastFeature == SpecialFeatures::BONUS) {
-				spinsLeft += BONUSSPINS;
+				game.spinsLeft += BONUSSPINS;
 			} else if(game.lastFeature == SpecialFeatures::DOUBLE) {
 				game.doublePay = true;
 			}
@@ -344,9 +343,9 @@ void endSpin()
 
 			gameResult = GameResult::NONE;
 
-			if((game.nCoins >= VICTORYVALUE) && (game.totalSpins <= spinsLeft)) {
+			if((game.nCoins >= VICTORYVALUE) && (game.spinsLeft >= 0)) {
 				gameResult = GameResult::VICTORY;
-			} else if(game.totalSpins >= spinsLeft) {
+			} else if(game.spinsLeft <= 0) {
 				gameResult = GameResult::NO_SPINS_LEFT;
 			}
 
@@ -379,7 +378,7 @@ void bounceReels()
 	sound.Play((uint8_t)Sounds::SPIN_START);
 
 	if(!waitingForRestart && !leverPulled &&
-		game.totalSpins >= spinsLeft - SHOWREMAINING) {
+		game.spinsLeft <= SHOWREMAINING) {
 		updateDisplay(NULL);
 	}
 
@@ -408,7 +407,7 @@ void spin()
 			}
 		}
 
-		if(game.totalSpins >= spinsLeft - REMAINWARNING) {
+		if(game.spinsLeft <= REMAINWARNING) {
 			sound.Play((uint8_t)Sounds::END_IS_NEAR);
 		}
 
@@ -533,7 +532,6 @@ void SlotsMain::Restart()
 	displayUpdated = false;
 	waitingForRestart = false;
 	gameResult = GameResult::NONE;
-	spinsLeft = MAXSPINSTOWIN;
 
 	// Re-creates timers
 	// updateBetTimer = timer_create_default();

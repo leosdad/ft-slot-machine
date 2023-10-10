@@ -13,7 +13,6 @@
 Payoffs payoffs;
 Reel reels[NREELS];
 extern Locks locks;
-extern uint16_t spinsLeft;
 
 // ---------------------------------------------------- Private member functions
 
@@ -51,7 +50,7 @@ void Game::init(uint16_t initialCoins)
 		paylines[l].Payoff = 0;
 	}
 
-	totalSpins = 0;
+	spinsLeft = MAXSPINSTOWIN;
 	totalWins = 0;
 	lastSpinning = -1;
 	playing = false;
@@ -99,7 +98,7 @@ void Game::printDebugData(bool home)
 	}	
 
 	Serial.println();
-	Serial.println("---- Spin #" + String(totalSpins) + " ----");
+	Serial.println("---- Spins left: " + String(spinsLeft) + " ----");
 	Serial.println("Current bet: " + String(currentBet)
 		+ " / Coins: " + String(nCoins)
 		+ " / Locked: " + String(nLocked)
@@ -150,7 +149,6 @@ void Game::printDebugData(bool home)
 	// Print total wins
 
 	Serial.println("Total wins: " + String(totalWins));
-	Serial.println("Spins left: " + String(spinsLeft - totalSpins));
 }
 
 // ----------------------------------------------------- Public member functions
@@ -187,7 +185,7 @@ bool Game::StartSpin(bool home)
 		doublePay = false;
 		lastFeature = payoffs.GetHighestFeature();
 		playing = true;
-		totalSpins++;
+		spinsLeft--;
 	}
 
 	if(playing) {

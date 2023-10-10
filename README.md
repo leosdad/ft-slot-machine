@@ -15,6 +15,7 @@ There are various reference images, diagrams and spreadsheets in the [docs](/doc
 
 The slot machine is assembled with [fischertechnik](https://www.fischertechnik.de/en) parts. I was able to fit everything on a ft 259×187 plate 500 (part # [32985](https://ft-datenbank.de/tickets?fulltext=32985)), which resulted in a very compact unit. The machine has three encoder motors [153422](https://ft-datenbank.de/tickets?fulltext=153422) which transmit power to the front reels using perpendicular gears. Below each reel there is an illuminated button which can lock it upon certain conditions, allowing some strategic decisions during the game. There are also two levers: the left one adjusts the bet and the right one spins the reels. Despite the retro look, the entire operation is fully software-based. There is also a small opening that delivers metal balls [144262](https://ft-datenbank.de/tickets?fulltext=144262) when a special goal is achieved.
 
+<!-- TODO -->
 _To be continued..._
 
 ## Controller
@@ -49,11 +50,13 @@ Other non-ft parts used were jumper cables, several wires and cables, 25-point m
 - [Arduino Mega Controller for fischertechnik](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018) in the fischertechnik community
 - [Hypervisual Century for Windows](http://hypervisual.com/century/files/century_en.zip) (still playable in glorious 640 × 480 pixels)
 
-## Third-party libraries used
+## Third-party libraries and tools
 
 - [arduino-timer](https://github.com/contrem/arduino-timer) Michael Contreras
 - [DFPlayerMini_Fast](https://github.com/PowerBroker2/DFPlayerMini_Fast) by PowerBroker2
-- [ezButton / ezLED](https://github.com/ArduinoGetStarted) by ArduinoGetStarted
+- [DriveSort](http://www.anerty.net/software/file/DriveSort/)
+- [ezButton & ezLED](https://github.com/ArduinoGetStarted) by ArduinoGetStarted
+- [FreeSound](https://freesound.org/)
 - [MD_MAX72xx](https://github.com/MajicDesigns/MD_MAX72XX) by Marco Colli
 - [TrueRandom](https://github.com/sirleech/TrueRandom) by sirleech
 

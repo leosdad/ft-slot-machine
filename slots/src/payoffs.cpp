@@ -71,10 +71,6 @@ uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 		game->spinPayoff += game->paylines[l].Payoff * game->currentBet;
 	}
 
-	if(game->spinPayoff) {
-		game->totalWins++;
-	}
-
 	return game->spinPayoff;
 }
 

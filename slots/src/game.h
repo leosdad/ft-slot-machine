@@ -27,8 +27,7 @@ class Game
 
 		bool playing = false;			// Game status
 		bool spinning = false;
-		bool doublePay = false;
-		uint16_t totalWins = 0;			// Total wins since the beginning
+		uint8_t doublePay = 0;
 		uint16_t spinsLeft = -1;		// Total spins since the beginning
 		int8_t currentBet = 0;			// Current bet (signed)
 		int16_t nCoins = 0;				// Current number of coins (signed)

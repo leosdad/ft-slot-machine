@@ -51,7 +51,6 @@ void Game::init(uint16_t initialCoins)
 	}
 
 	spinsLeft = MAXSPINSTOWIN;
-	totalWins = 0;
 	lastSpinning = -1;
 	playing = false;
 	spinning = false;
@@ -122,7 +121,7 @@ void Game::printDebugData(bool home)
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 2, reels[2])]);
 		Serial.print(" ] ");
 		if(paylines[l].Payoff) {
-			Serial.println("* " + String(paylines[l].Payoff) + " *");
+			Serial.println("* " + String(paylines[l].Payoff));
 		} else {
 			Serial.println();
 		}
@@ -145,10 +144,6 @@ void Game::printDebugData(bool home)
 	} else {
 		Serial.println("(No payoff)");
 	}
-
-	// Print total wins
-
-	Serial.println("Total wins: " + String(totalWins));
 }
 
 // ----------------------------------------------------- Public member functions

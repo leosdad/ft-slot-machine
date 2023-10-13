@@ -11,9 +11,10 @@
 // ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		true	// Send spin debug info to the serial port
-#define LOCKDEBUGINFO	false	// Send debug information about the lock state
+#define DEBUGPAYOFFS	false	// Easy-to-obtain payoff / awards for testing
 #define SPEEDUP			true	// Remove extra reel spins and slow speed
-#define SIMULATE		false	// Simulate gameplay without actually moving anything
+#define SIMULATE		false	// Simulate gameplay without moving anything
+#define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define CALIBRATE		false	// Set to true for reel speed calibration
 
 // --------------------------------------------------------------------- Defines
@@ -95,7 +96,7 @@
 
 // ----------------------------------------------------------- Structs and enums
 
-enum class SpecialFeatures {
+enum class Awards {
 	NONE = 0,
 	DOUBLE,
 	BONUS,
@@ -115,7 +116,7 @@ enum class GameResult {
 struct payoffItem {
 	uint8_t symbol[NREELS];
 	uint16_t payoff;
-	SpecialFeatures feature;
+	Awards feature;
 };
 
 enum class Sounds {
@@ -162,45 +163,51 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
-	// {{1, 1, 1}, 120, SpecialFeatures::TOPSCORE},
-	// {{3, 3, 3},  85, SpecialFeatures::TOPSCORE},
-	// {{4, 4, 4},  85, SpecialFeatures::TOPSCORE},
-	// {{5, 5, 3},  60, SpecialFeatures::BONUS},
-	// {{8, 8, 3},  45, SpecialFeatures::NONE},
-	// {{2, 2, 3},  30, SpecialFeatures::NONE},
-	// {{8, 8, 8},  22, SpecialFeatures::NONE},
-	// {{5, 5, 5},  20, SpecialFeatures::BONUS},
-	// {{2, 2, 2},  15, SpecialFeatures::NONE},
-	// {{1, 1, 0},  15, SpecialFeatures::DOUBLE},
-	// {{0, 1, 1},  15, SpecialFeatures::DOUBLE},
-	// {{1, 0, 1},  15, SpecialFeatures::DOUBLE},
-	// {{0, 3, 3},  15, SpecialFeatures::NONE},
-	// {{0, 3, 1},  15, SpecialFeatures::NONE},
-	// {{0, 4, 4},  15, SpecialFeatures::NONE},
-	// {{6, 6, 0},  12, SpecialFeatures::NONE},
-	// {{3, 3, 0},  12, SpecialFeatures::NONE},
-	// {{0, 0, 3},   1, SpecialFeatures::NONE},
 
-	// Very easy payoff table for testing
+#if !DEBUGPAYOFFS
 
-	{{1, 1, 1}, 120, SpecialFeatures::TOPSCORE},
-	{{3, 3, 3},  85, SpecialFeatures::TOPSCORE},
-	{{4, 4, 4},  85, SpecialFeatures::TOPSCORE},
-	{{5, 5, 3},  60, SpecialFeatures::BONUS},
-	{{8, 8, 3},  45, SpecialFeatures::NONE},
-	{{2, 2, 3},  30, SpecialFeatures::NONE},
-	{{8, 8, 8},  22, SpecialFeatures::NONE},
-	{{5, 5, 5},  20, SpecialFeatures::BONUS},
-	{{6, 0, 0},   1, SpecialFeatures::NONE},	// Orange
-	{{2, 0, 0},   1, SpecialFeatures::DOUBLE},	// Bananas
-	{{0, 2, 0},   1, SpecialFeatures::DOUBLE},
-	{{0, 0, 2},   1, SpecialFeatures::DOUBLE},
-	{{1, 0, 0},   1, SpecialFeatures::NONE},	// Sevens
-	{{0, 1, 0},   1, SpecialFeatures::NONE},
-	{{0, 0, 1},   1, SpecialFeatures::NONE},
-	{{3, 0, 0},   1, SpecialFeatures::NONE},	// Cherries
-	{{0, 3, 0},   1, SpecialFeatures::NONE},
-	{{0, 0, 3},   1, SpecialFeatures::NONE},
+	{{1, 1, 1}, 120, Awards::TOPSCORE},
+	{{3, 3, 3},  85, Awards::TOPSCORE},
+	{{4, 4, 4},  85, Awards::TOPSCORE},
+	{{5, 5, 3},  60, Awards::BONUS},
+	{{8, 8, 3},  45, Awards::NONE},
+	{{2, 2, 3},  30, Awards::NONE},
+	{{8, 8, 8},  22, Awards::NONE},
+	{{5, 5, 5},  20, Awards::BONUS},
+	{{2, 2, 2},  15, Awards::NONE},
+	{{1, 1, 0},  15, Awards::DOUBLE},
+	{{0, 1, 1},  15, Awards::DOUBLE},
+	{{1, 0, 1},  15, Awards::DOUBLE},
+	{{0, 3, 3},  15, Awards::NONE},
+	{{0, 3, 1},  15, Awards::NONE},
+	{{0, 4, 4},  15, Awards::NONE},
+	{{6, 6, 0},  12, Awards::NONE},
+	{{3, 3, 0},  12, Awards::NONE},
+	{{0, 0, 3},   1, Awards::NONE},
+
+#else
+
+	{{1, 1, 1}, 120, Awards::TOPSCORE},
+	{{3, 3, 3},  85, Awards::TOPSCORE},
+	{{4, 4, 4},  85, Awards::TOPSCORE},
+	{{5, 5, 3},  60, Awards::BONUS},
+	{{8, 8, 3},  45, Awards::NONE},
+	{{2, 2, 3},  30, Awards::NONE},
+	{{8, 8, 8},  22, Awards::NONE},
+	{{5, 5, 5},  20, Awards::BONUS},
+	{{6, 0, 0},   1, Awards::NONE},		// Orange
+	{{2, 0, 0},   1, Awards::DOUBLE},	// Bananas
+	{{0, 2, 0},   1, Awards::DOUBLE},
+	{{0, 0, 2},   1, Awards::DOUBLE},
+	{{1, 0, 0},   1, Awards::NONE},		// Sevens
+	{{0, 1, 0},   1, Awards::NONE},
+	{{0, 0, 1},   1, Awards::NONE},
+	{{3, 0, 0},   1, Awards::NONE},		// Cherries
+	{{0, 3, 0},   1, Awards::NONE},
+	{{0, 0, 3},   1, Awards::NONE},
+
+#endif
+
 };
 
 // ---------------------------------------------------------------- Arduino pins

@@ -242,12 +242,12 @@ void cheerIfNeeded()
 			break;
 
 		default:
-			if(game.lastFeature > SpecialFeatures::NONE) {
+			if(game.lastFeature > Awards::NONE) {
 
 				displayFeature();
 
 				cheerLevel = CheerLevel::BIG_WIN;
-				if(game.lastFeature == SpecialFeatures::TOPSCORE) {
+				if(game.lastFeature == Awards::TOPSCORE) {
 					display.blink(true, TOPSCOREBLINK);
 					sound.Play((uint8_t)Sounds::CHEER_TOPSCORE);
 				} else {

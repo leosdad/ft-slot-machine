@@ -57,7 +57,7 @@ void Game::init(uint16_t initialCoins)
 	currentBet = 0;
 	nCoins = initialCoins;
 	spinPayoff = 0;
-	lastFeature = SpecialFeatures::NONE;
+	lastFeature = Awards::NONE;
 
 	// Serial.println("+++ nCoins " + String(nCoins));
 
@@ -135,11 +135,11 @@ void Game::printDebugData(bool home)
 	if(spinPayoff > 0) {
 		Serial.println("**** Total payoff: " + String(spinPayoff * multiplier) + " ****");
 
-		if(lastFeature == SpecialFeatures::TOPSCORE) {
+		if(lastFeature == Awards::TOPSCORE) {
 			Serial.println("#### Top score ####");
-		} else if(lastFeature == SpecialFeatures::BONUS) {
+		} else if(lastFeature == Awards::BONUS) {
 			Serial.println("#### Bonus ####");
-		} else if(lastFeature == SpecialFeatures::DOUBLE) {
+		} else if(lastFeature == Awards::DOUBLE) {
 			Serial.println("#### Double pay ####");
 		}
 
@@ -179,9 +179,9 @@ bool Game::StartSpin(bool home)
 		// Gets highest feature
 
 		lastFeature = payoffs.GetHighestFeature(this);
-		if(lastFeature == SpecialFeatures::BONUS) {
+		if(lastFeature == Awards::BONUS) {
 			spinsLeft += BONUSSPINS;
-		} else if(lastFeature == SpecialFeatures::DOUBLE) {
+		} else if(lastFeature == Awards::DOUBLE) {
 			doublePay = DOUBLESPINS + 1;
 		}
 

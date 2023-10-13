@@ -53,9 +53,9 @@ bool Payoffs::SetMultiplier(uint8_t multiplier)
 /**
  * Returns the highest feature for the latest spin.
  */
-SpecialFeatures Payoffs::GetHighestFeature(Game *game)
+Awards Payoffs::GetHighestFeature(Game *game)
 {
-	highestFeature = SpecialFeatures::NONE;
+	highestFeature = Awards::NONE;
 	for(int l = 0; l < NPAYLINES; l++) {
 		calculatePayline(*game, l);
 	}
@@ -68,7 +68,7 @@ SpecialFeatures Payoffs::GetHighestFeature(Game *game)
 uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 {
 	game->spinPayoff = 0;
-	highestFeature = SpecialFeatures::NONE;
+	highestFeature = Awards::NONE;
 
 	for(int l = 0; l < NPAYLINES; l++) {
 		game->paylines[l].Payoff = calculatePayline(*game, l);

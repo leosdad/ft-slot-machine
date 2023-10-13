@@ -462,10 +462,14 @@ void SlotsMain::inputLoop()
 			if(!leverPulled) {
 				if(increaseBet.isPressed()) {
 					game.ChangeBet(1);
-					updateBet(NULL);
+					if(updateBetTimer.empty()) {
+						updateBetTimer.every(UPDATEBET, updateBet);
+					}
 				} else if(decreaseBet.isPressed()) {
 					game.ChangeBet(-1);
-					updateBet(NULL);
+					if(updateBetTimer.empty()) {
+						updateBetTimer.every(UPDATEBET, updateBet);
+					}
 				}
 			}
 		}

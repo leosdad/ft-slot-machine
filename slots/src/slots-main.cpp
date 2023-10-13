@@ -28,12 +28,12 @@ LedMatrix ledMatrix;
 Locks locks;
 Sound sound;
 
-auto lifeTimer = timer_create_default();
-auto lifeFlashTimer = timer_create_default();
 auto cheerTimer = timer_create_default();
-auto leverAnimTimer = timer_create_default();
-auto updateBetTimer = timer_create_default();
 auto endGameTimer = timer_create_default();
+auto leverAnimTimer = timer_create_default();
+auto lifeFlashTimer = timer_create_default();
+auto lifeTimer = timer_create_default();
+auto updateBetTimer = timer_create_default();
 
 // Global variables
 
@@ -42,6 +42,8 @@ bool firstSpin = true;
 bool leverPulled = false;
 bool reelsLocked = false;
 bool waitingForRestart = false;
+bool showingLife = true;
+bool showLifeValue = true;
 extern SlotsMain slotsMain;
 uint16_t startCoins = STARTCOINS;
 uint8_t lastBet = 255;
@@ -65,6 +67,7 @@ void calcLockPenalty()
 
 bool updateDisplay(void *)
 {
+	showingLife = false;
 	display.blink(false);
 	displayUpdated = true;
 
@@ -77,6 +80,14 @@ bool updateDisplay(void *)
 		}
 	}
 	return true;
+}
+
+bool toggleLifeIndicator(void *)
+{
+	if(showingLife) {
+		showLifeValue = !showLifeValue;
+ 		display.showLife(showLifeValue ? game.spinsLeft : 0);
+	}
 }
 
 /**
@@ -134,6 +145,14 @@ bool updateBet(void *)
 bool showRemainingSpins(void *)
 {
 	if(game.spinsLeft <= SHOWREMAINING) {
+		if(game.spinsLeft <= REMAINWARNING) {
+			lifeFlashTimer.every(LIFETOGGLE, toggleLifeIndicator);
+			showingLife = true;
+		} else {
+			lifeFlashTimer.cancel();
+			showingLife = false;
+			showLifeValue = true;
+		}
 		display.showLife(game.spinsLeft);
 	}
 	lifeTimer.in(REMAINRESET, updateDisplay);
@@ -293,19 +312,13 @@ void endSpin()
 
 			lastLocked = 255;
 			lastPenalty = 255;
+			showLifeValue = true;
 
 			updateBetTimer.every(UPDATEBET, updateBet);
 			lifeTimer.in(REMAINSTART, showRemainingSpins);
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
-
-			// if(!game.spinPayoff) {
-			// 	showWinSymbol = true;
-			// 	lifeFlashTimer.every(WINTOGGLE, toggleWinSymbol);
-			// } else {
-			// 	lifeFlashTimer.cancel();
-			// }
 
 			// Game won? Game lost? Needs cheering?
 
@@ -500,12 +513,6 @@ void SlotsMain::Restart()
 	waitingForRestart = false;
 	gameResult = GameResult::NONE;
 
-	// Re-creates timers
-	// updateBetTimer = timer_create_default();
-	// cheerTimer = timer_create_default();
-	// leverAnimTimer = timer_create_default();
-	// lifeFlashTimer = timer_create_default();
-
 	Serial.println();
 	Serial.println("Slots game restarted.");
 	Serial.println();
@@ -530,12 +537,12 @@ void SlotsMain::Restart()
 void SlotsMain::Loop()
 {
 	if(!game.spinning) {
-		updateBetTimer.tick();
 		cheerTimer.tick();
+		endGameTimer.tick();
 		leverAnimTimer.tick();
 		lifeFlashTimer.tick();
 		lifeTimer.tick();
-		endGameTimer.tick();
+		updateBetTimer.tick();
 
 		inputLoop();
 		feeder.Loop();

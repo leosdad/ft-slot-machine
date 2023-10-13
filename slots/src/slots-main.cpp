@@ -28,11 +28,11 @@ LedMatrix ledMatrix;
 Locks locks;
 Sound sound;
 
-auto spinsLeftTimer = timer_create_default();
+auto lifeTimer = timer_create_default();
+auto lifeFlashTimer = timer_create_default();
 auto cheerTimer = timer_create_default();
 auto leverAnimTimer = timer_create_default();
 auto updateBetTimer = timer_create_default();
-auto winSymbolTimer = timer_create_default();
 auto endGameTimer = timer_create_default();
 
 // Global variables
@@ -41,7 +41,6 @@ bool displayUpdated = false;
 bool firstSpin = true;
 bool leverPulled = false;
 bool reelsLocked = false;
-bool showWinSymbol = true;
 bool waitingForRestart = false;
 extern SlotsMain slotsMain;
 uint16_t startCoins = STARTCOINS;
@@ -55,25 +54,6 @@ uint8_t lastPenalty = 255;
 GameResult gameResult = GameResult::NONE;
 
 // ------------------------------------------------------------ Global functions
-
-/**
- * Displays the flashing "win" symbol.
- */
-bool toggleWinSymbol(void *)
-{
-	if(displayUpdated && game.currentBet > 0) {
-		if(!game.spinning && game.spinPayoff) {
-			if(showWinSymbol) {
-				ledMatrix.printChar('\x1f', COL_SIZE);	// Win symbol
-			} else {
-				ledMatrix.clearColumns(COL_SIZE, 10);	// Width of Win symbol
-			}
-		} else {
-			ledMatrix.clearColumns(COL_SIZE, 10);	// Width of Win symbol
-		}
-	}
-	showWinSymbol = !showWinSymbol;
-}
 
 void calcLockPenalty()
 {
@@ -156,17 +136,16 @@ bool showRemainingSpins(void *)
 	if(game.spinsLeft <= SHOWREMAINING) {
 		display.showLife(game.spinsLeft);
 	}
-	spinsLeftTimer.in(REMAINRESET, updateDisplay);
-	spinsLeftTimer.in(REMAINREPEAT, showRemainingSpins);
+	lifeTimer.in(REMAINRESET, updateDisplay);
+	lifeTimer.in(REMAINREPEAT, showRemainingSpins);
 }
 
 bool restartDisplay(void *)
 {
 	// display.clearAll();
 	updateBetTimer.every(UPDATEBET, updateBet);
-	winSymbolTimer.every(WINTOGGLE, toggleWinSymbol);
 	leverAnimTimer.in(LEVERANIMDELAY, showAnimLever);
-	spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
+	lifeTimer.in(REMAINSTART, showRemainingSpins);
 	updateDisplay(NULL);
 }
 
@@ -215,9 +194,9 @@ void displayFeature()
 
 	displayUpdated = false;
 	updateBetTimer.cancel();
-	winSymbolTimer.cancel();
+	lifeFlashTimer.cancel();
 	leverAnimTimer.cancel();
-	spinsLeftTimer.cancel();
+	lifeTimer.cancel();
 
 	display.showCentered(feats[(uint16_t)game.lastFeature]);
 
@@ -274,8 +253,8 @@ void cheerIfNeeded()
  */
 void endGame()
 {
-	winSymbolTimer.cancel();
-	spinsLeftTimer.cancel();
+	lifeFlashTimer.cancel();
+	lifeTimer.cancel();
 	leverAnimTimer.cancel();
 
 	waitingForRestart = true;
@@ -316,18 +295,17 @@ void endSpin()
 			lastPenalty = 255;
 
 			updateBetTimer.every(UPDATEBET, updateBet);
-			spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
-
+			lifeTimer.in(REMAINSTART, showRemainingSpins);
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();
 
-			if(game.spinPayoff) {
-				showWinSymbol = true;
-				winSymbolTimer.every(WINTOGGLE, toggleWinSymbol);
-			} else {
-				winSymbolTimer.cancel();
-			}
+			// if(!game.spinPayoff) {
+			// 	showWinSymbol = true;
+			// 	lifeFlashTimer.every(WINTOGGLE, toggleWinSymbol);
+			// } else {
+			// 	lifeFlashTimer.cancel();
+			// }
 
 			// Game won? Game lost? Needs cheering?
 
@@ -362,8 +340,8 @@ void bounceReels()
 {
 	updateBetTimer.cancel();
 	leverAnimTimer.cancel();
-	winSymbolTimer.cancel();
-	spinsLeftTimer.cancel();
+	lifeFlashTimer.cancel();
+	lifeTimer.cancel();
 
 	sound.Play((uint8_t)Sounds::SPIN_START);
 
@@ -518,7 +496,6 @@ void SlotsMain::Restart()
 	firstSpin = true;
 	reelsLocked = false;
 	leverFrame = 0;
-	showWinSymbol = true;
 	displayUpdated = false;
 	waitingForRestart = false;
 	gameResult = GameResult::NONE;
@@ -527,7 +504,7 @@ void SlotsMain::Restart()
 	// updateBetTimer = timer_create_default();
 	// cheerTimer = timer_create_default();
 	// leverAnimTimer = timer_create_default();
-	// winSymbolTimer = timer_create_default();
+	// lifeFlashTimer = timer_create_default();
 
 	Serial.println();
 	Serial.println("Slots game restarted.");
@@ -556,8 +533,8 @@ void SlotsMain::Loop()
 		updateBetTimer.tick();
 		cheerTimer.tick();
 		leverAnimTimer.tick();
-		winSymbolTimer.tick();
-		spinsLeftTimer.tick();
+		lifeFlashTimer.tick();
+		lifeTimer.tick();
 		endGameTimer.tick();
 
 		inputLoop();

@@ -64,7 +64,7 @@
 #define LEVERANIMDELAY	8123	// Time before lever animation
 #define LEVERANIMRATE	50		// Lever animation timer frame rate
 #define LEVERWAIT		500		// Wait time before reversing lever animation
-#define WINTOGGLE		600		// Period to toggle win symbol state
+// #define WINTOGGLE		600		// Period to toggle win symbol state
 #define WRAPDELAY		30		// Delay for "game over" scrolling text
 #define BOUNCETIME		5		// Delay between rotate and brake
 #define REMAINSTART		800		// Time to show remaining spins

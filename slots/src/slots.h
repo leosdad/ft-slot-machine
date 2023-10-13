@@ -51,7 +51,7 @@
 // Software constants
 
 #define VOLUME			13		// Sound volume (0-15)
-#define MX_BRIGHTNESS	2		// LED matrix brightness (0-15; zero emits light)
+#define MX_BRIGHTNESS	4		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
 

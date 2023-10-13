@@ -5,9 +5,9 @@
 // -------------------------------------------------------------------- Includes
 
 #include <arduino-timer.h>
+#include "ball-feeder.h"
 #include "cheering.h"
 #include "display.h"
-#include "drivers/ball-feeder.h"
 #include "drivers/led-matrix.h"
 #include "drivers/pwm-micros.h"
 #include "drivers/sound.h"

@@ -10,7 +10,8 @@
 // #include "src/tests/led-matrix-tests.h"
 // #include "src/tests/motor-driver-tests.h"
 // #include "src/tests/output-tests.h"
-#include "src/tests/sound-tests.h"
+// #include "src/tests/sound-tests.h"
+#include "src/tests/ball-feeder-tests.h"
 
 // ----------------------------------------------------------------------- Setup
 
@@ -18,20 +19,22 @@ void setup()
 {
 	Serial.begin(57600);
 
+	ballFeederTestsSetup();
 	// ledMatrixTestsSetup();
 	// motorDriverTestsSetup();
 	// outputTestsSetup();
-	soundTestsSetup();
+	// soundTestsSetup();
 }
 
 // ------------------------------------------------------------------- Main loop
 
 void loop()
 {
+	ballFeederTestsLoop();
 	// ledMatrixTestsLoop();
 	// motorDriverTestsLoop();
 	// outputTestsLoop();
-	soundTestsLoop();
+	// soundTestsLoop();
 }
 
 // ------------------------------------------------------------------------- End

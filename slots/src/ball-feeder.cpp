@@ -28,7 +28,6 @@ bool returnServo(void *)
 void BallFeeder::Setup(uint8_t pin)
 {
 	servo1.attach(pin);
-	// servo1.write(FEEDER_STARTANGLE);
 }
 
 void BallFeeder::Detach()
@@ -65,7 +64,6 @@ void BallFeeder::Feed()
 
 void BallFeeder::Return()
 {
-	// current = FEEDER_STARTANGLE;
 	target = FEEDER_ENDANGLE;
 	increment = FEEDER_BACKINCREMENT;
 	interval = FEEDER_BACKINTERVAL;

@@ -14,7 +14,7 @@
 #define FEEDER_FWDINCREMENT		3		// Forward increment
 #define FEEDER_BACKINTERVAL		5		// Backwards delay
 #define FEEDER_BACKINCREMENT	2		// Backwards delay
-#define FEEDER_STARTANGLE		170		// Start angle
+#define FEEDER_STARTANGLE		140		// Start angle
 #define FEEDER_ENDANGLE			20		// End angle
 #define FEEDER_RETURNTIME		600		// Return time, in ms
 

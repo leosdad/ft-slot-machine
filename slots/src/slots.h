@@ -20,14 +20,19 @@
 
 // Gameplay constants
 
+// #define STARTCOINS		100		// Default number of coins upon game start
+// #define MAXSTARTCOINS	150		// Maximum mumber of start coins
+// #define DEFSPINSLEFT	50		// Maximum spins to achieve a victory
+#define VICTORYVALUE	800		// Coins needed to win a ball (victory)
+#define BONUSSPINS		5		// Extra spins when a bonus is awarded
+#define DOUBLESPINS		3		// Max spins for which double pay is enabled
+
 #define STARTCOINS		20		// Default number of coins upon game start
-#define MAXSTARTCOINS	150		// Maximum mumber of start coins
-#define VICTORYVALUE	100		// Coins needed to win a ball (victory)
-#define MAXSPINSTOWIN	12		// Maximum spins to achieve a victory
-#define BONUSSPINS		3		// Extra spins when a bonus is awarded
+#define MAXSTARTCOINS	25		// Maximum mumber of start coins
+#define DEFSPINSLEFT	12		// Maximum spins to achieve a victory
+
 #define SHOWREMAINING	10		// Spins left to display remaining spins
 #define REMAINWARNING	5		// Spins left to warn the end is near
-
 #define MAXCOINS		9999	// Up to 16384
 #define MINLOCKCOINS	9		// Minimum coins for lock feature
 #define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
@@ -157,6 +162,27 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
  * 0 (zero) here means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
+	// {{1, 1, 1}, 120, SpecialFeatures::TOPSCORE},
+	// {{3, 3, 3},  85, SpecialFeatures::TOPSCORE},
+	// {{4, 4, 4},  85, SpecialFeatures::TOPSCORE},
+	// {{5, 5, 3},  60, SpecialFeatures::BONUS},
+	// {{8, 8, 3},  45, SpecialFeatures::NONE},
+	// {{2, 2, 3},  30, SpecialFeatures::NONE},
+	// {{8, 8, 8},  22, SpecialFeatures::NONE},
+	// {{5, 5, 5},  20, SpecialFeatures::BONUS},
+	// {{2, 2, 2},  15, SpecialFeatures::NONE},
+	// {{1, 1, 0},  15, SpecialFeatures::DOUBLE},
+	// {{0, 1, 1},  15, SpecialFeatures::DOUBLE},
+	// {{1, 0, 1},  15, SpecialFeatures::DOUBLE},
+	// {{0, 3, 3},  15, SpecialFeatures::NONE},
+	// {{0, 3, 1},  15, SpecialFeatures::NONE},
+	// {{0, 4, 4},  15, SpecialFeatures::NONE},
+	// {{6, 6, 0},  12, SpecialFeatures::NONE},
+	// {{3, 3, 0},  12, SpecialFeatures::NONE},
+	// {{0, 0, 3},   1, SpecialFeatures::NONE},
+
+	// Very easy payoff table for testing
+
 	{{1, 1, 1}, 120, SpecialFeatures::TOPSCORE},
 	{{3, 3, 3},  85, SpecialFeatures::TOPSCORE},
 	{{4, 4, 4},  85, SpecialFeatures::TOPSCORE},
@@ -165,15 +191,15 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{2, 2, 3},  30, SpecialFeatures::NONE},
 	{{8, 8, 8},  22, SpecialFeatures::NONE},
 	{{5, 5, 5},  20, SpecialFeatures::BONUS},
-	{{2, 2, 2},  15, SpecialFeatures::NONE},
-	{{1, 1, 0},  15, SpecialFeatures::DOUBLE},
-	{{0, 1, 1},  15, SpecialFeatures::DOUBLE},
-	{{1, 0, 1},  15, SpecialFeatures::DOUBLE},
-	{{0, 3, 3},  15, SpecialFeatures::NONE},
-	{{0, 3, 1},  15, SpecialFeatures::NONE},
-	{{0, 4, 4},  15, SpecialFeatures::NONE},
-	{{6, 6, 0},  12, SpecialFeatures::NONE},
-	{{3, 3, 0},  12, SpecialFeatures::NONE},
+	{{6, 0, 0},   1, SpecialFeatures::NONE},	// Orange
+	{{2, 0, 0},   1, SpecialFeatures::DOUBLE},	// Bananas
+	{{0, 2, 0},   1, SpecialFeatures::DOUBLE},
+	{{0, 0, 2},   1, SpecialFeatures::DOUBLE},
+	{{1, 0, 0},   1, SpecialFeatures::NONE},	// Sevens
+	{{0, 1, 0},   1, SpecialFeatures::NONE},
+	{{0, 0, 1},   1, SpecialFeatures::NONE},
+	{{3, 0, 0},   1, SpecialFeatures::NONE},	// Cherries
+	{{0, 3, 0},   1, SpecialFeatures::NONE},
 	{{0, 0, 3},   1, SpecialFeatures::NONE},
 };
 

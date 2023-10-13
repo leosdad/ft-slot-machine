@@ -17,7 +17,7 @@ class Game
 	private:
 
 		bool lastSpinning = -1;
-
+		uint8_t multiplier = 1;
 		uint8_t setBet(int8_t bet);
 		void init(uint16_t initialCoins);
 		void printDebugData(bool home);

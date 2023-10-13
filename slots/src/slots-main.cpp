@@ -318,13 +318,6 @@ void endSpin()
 			updateBetTimer.every(UPDATEBET, updateBet);
 			spinsLeftTimer.in(REMAINSTART, showRemainingSpins);
 
-			// Awards special features
-
-			if(game.lastFeature == SpecialFeatures::BONUS) {
-				game.spinsLeft += BONUSSPINS;
-			} else if(game.lastFeature == SpecialFeatures::DOUBLE) {
-				game.doublePay = true;
-			}
 
 			// Enforces the maximum bet value if needed
 			game.ChangeBet();

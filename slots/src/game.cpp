@@ -50,7 +50,7 @@ void Game::init(uint16_t initialCoins)
 		paylines[l].Payoff = 0;
 	}
 
-	spinsLeft = MAXSPINSTOWIN;
+	spinsLeft = DEFSPINSLEFT;
 	lastSpinning = -1;
 	playing = false;
 	spinning = false;
@@ -71,7 +71,6 @@ void Game::printDebugData(bool home)
 {
 	if(home) {
 		Serial.println("---- Home spin with " + String(nCoins) + " coins ----");
-		Serial.println();
 		return;
 	}
 
@@ -129,18 +128,22 @@ void Game::printDebugData(bool home)
 
 	// Print payoff data
 
+	if(doublePay > 0) {
+		Serial.println("Double pay for next " + String(doublePay) + " spin(s)");
+	}
+
 	if(spinPayoff > 0) {
-		Serial.println("**** Total payoff: " + String(spinPayoff) + " ****");
+		Serial.println("**** Total payoff: " + String(spinPayoff * multiplier) + " ****");
 
 		if(lastFeature == SpecialFeatures::TOPSCORE) {
 			Serial.println("#### Top score ####");
 		} else if(lastFeature == SpecialFeatures::BONUS) {
 			Serial.println("#### Bonus ####");
 		} else if(lastFeature == SpecialFeatures::DOUBLE) {
-			Serial.println("#### Double ####");
+			Serial.println("#### Double pay ####");
 		}
 
-		Serial.println("Next coins: " + String(nCoins + spinPayoff));
+		Serial.println("Next coins: " + String(nCoins + spinPayoff * multiplier));
 	} else {
 		Serial.println("(No payoff)");
 	}
@@ -172,13 +175,33 @@ bool Game::StartSpin(bool home)
 	// At this point the game already knows the results of this spin
 	
 	if(!home) {
-		if(doublePay) {
-			payoffs.SetMultiplier(2);
+
+		// Gets highest feature
+
+		lastFeature = payoffs.GetHighestFeature(this);
+		if(lastFeature == SpecialFeatures::BONUS) {
+			spinsLeft += BONUSSPINS;
+		} else if(lastFeature == SpecialFeatures::DOUBLE) {
+			doublePay = DOUBLESPINS + 1;
 		}
-		payoffs.CalculateTotalPayoff(this);
-		payoffs.SetMultiplier(1);
-		doublePay = false;
-		lastFeature = payoffs.GetHighestFeature();
+
+		// Calculates payoff
+
+		if(doublePay == DOUBLESPINS + 1) {
+			// Just awarded a double payment, so doesn't pay double right now
+			payoffs.SetMultiplier(1);
+			payoffs.CalculateTotalPayoff(this);
+			doublePay--;
+		} else if(doublePay > 0) {
+			// Awarded a double pay. If the spin doesn't pay off, try next
+			payoffs.SetMultiplier(2);
+			payoffs.CalculateTotalPayoff(this);
+			doublePay = spinPayoff > 0 ? 0 : doublePay - 1;
+		} else {	// doublePay == 0
+			payoffs.SetMultiplier(1);
+			payoffs.CalculateTotalPayoff(this);
+		}
+
 		playing = true;
 		spinsLeft--;
 	}
@@ -256,7 +279,7 @@ bool Game::Loop()
 	if(spinning != lastSpinning) {
 		if(!spinning) {
 			endSpin = true;
-			nCoins += spinPayoff;
+			nCoins += spinPayoff * multiplier;
 		}
 		lastSpinning = spinning;
 	}

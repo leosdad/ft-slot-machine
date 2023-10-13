@@ -22,7 +22,7 @@ class Payoffs
 
 	public:
 		bool SetMultiplier(uint8_t multiplier);
-		SpecialFeatures GetHighestFeature();
+		SpecialFeatures GetHighestFeature(Game *game);
 		uint16_t CalculateTotalPayoff(Game *game);
 };
 

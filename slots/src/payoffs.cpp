@@ -33,7 +33,7 @@ uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 		// Found a winning combination: get payoff value and exits
 		if(isValidCombination) {
 			highestFeature = max(highestFeature, payoffTable[c].feature);
-			return payoffTable[c].payoff * payoffMultiplier;
+			return payoffTable[c].payoff;
 		}
 	}
 
@@ -53,8 +53,12 @@ bool Payoffs::SetMultiplier(uint8_t multiplier)
 /**
  * Returns the highest feature for the latest spin.
  */
-SpecialFeatures Payoffs::GetHighestFeature()
+SpecialFeatures Payoffs::GetHighestFeature(Game *game)
 {
+	highestFeature = SpecialFeatures::NONE;
+	for(int l = 0; l < NPAYLINES; l++) {
+		calculatePayline(*game, l);
+	}
 	return highestFeature;
 }
 
@@ -68,7 +72,7 @@ uint16_t Payoffs::CalculateTotalPayoff(Game *game)
 
 	for(int l = 0; l < NPAYLINES; l++) {
 		game->paylines[l].Payoff = calculatePayline(*game, l);
-		game->spinPayoff += game->paylines[l].Payoff * game->currentBet;
+		game->spinPayoff += game->paylines[l].Payoff * game->currentBet * payoffMultiplier;
 	}
 
 	return game->spinPayoff;

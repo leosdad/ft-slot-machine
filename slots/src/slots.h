@@ -141,8 +141,8 @@ enum class Sounds {
 // Speed for each motor. Similar motors may behave differently, mainly at slow speeds.
 
 #if !SPEEDUP
-static const uint8_t normalSpeeds[NREELS] = {90, 90, 85};
-static const uint8_t slowSpeeds[NREELS] = {55, 67, 62};
+static const uint8_t normalSpeeds[NREELS] = {74, 93, 80};
+static const uint8_t slowSpeeds[NREELS] = {42, 63, 44};
 #else
 static const uint8_t normalSpeeds[NREELS] = {90, 110, 100};
 static const uint8_t slowSpeeds[NREELS] = {90, 110, 100};

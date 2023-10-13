@@ -357,8 +357,6 @@ void bounceReels()
 	lifeFlashTimer.cancel();
 	lifeTimer.cancel();
 
-	sound.Play((uint8_t)Sounds::SPIN_START);
-
 	if(!waitingForRestart && !leverPulled &&
 		game.spinsLeft <= SHOWREMAINING) {
 		updateDisplay(NULL);

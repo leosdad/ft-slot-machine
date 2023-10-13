@@ -55,7 +55,6 @@ void BallFeeder::Loop()
 
 void BallFeeder::Feed()
 {
-	// current = FEEDER_ENDANGLE;
 	target = FEEDER_STARTANGLE;
 	interval = FEEDER_FWDINTERVAL;
 	increment = FEEDER_FWDINCREMENT;

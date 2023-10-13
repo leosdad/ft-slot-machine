@@ -11,8 +11,8 @@
 // ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		true	// Send spin debug info to the serial port
-#define DEBUGPAYOFFS	true	// Easy-to-obtain payoffs, awards for testing
-#define SPEEDUP			true	// Remove extra reel spins, rotate reels faster
+#define DEBUGPAYOFFS	false	// Easy-to-obtain payoffs, awards for testing
+#define SPEEDUP			false	// Remove extra reel spins, rotate reels faster
 #define SIMULATE		false	// Simulate gameplay without moving anything
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define CALIBRATE		false	// Set to true for reel speed calibration
@@ -25,11 +25,11 @@
 #if DEBUGPAYOFFS
 #define STARTCOINS		25		// Default number of coins upon game start
 #define MAXSTARTCOINS	29		// Maximum mumber of start coins
-#define DEFSPINSLEFT	12		// Default spins per game
+#define DEFSPINSLEFT	12		// Default remaining spins per game
 #else
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
-#define DEFSPINSLEFT	50		// Default spins per game
+#define DEFSPINSLEFT	50		// Default remaining spins per game
 #endif
 #define SHOWREMAINING	10		// Spins to start displaying remaining spins
 #define REMAINWARNING	5		// Spins to start displaying game end warning
@@ -127,11 +127,11 @@ struct payoffItem {
 enum class Sounds {
 	HELLO = 1,
 	CHEER_BONUS,
-	SPIN_START,
+	__SPARE1,
 	CHEER_WIN,
 	CHEER_DRAW,
 	CHEER_TOPSCORE,
-	INVALID,
+	__SPARE2,
 	GAME_LOST,
 	GAME_WON,
 	END_IS_NEAR

@@ -37,6 +37,7 @@ class Locks
 
 		bool IsLocked(uint8_t index);
 		uint8_t Loop(bool enable, bool allowNext, uint8_t gameBet);
+		void Reset();
 		void Setup();
 };
 

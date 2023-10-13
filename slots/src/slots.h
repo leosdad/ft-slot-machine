@@ -21,28 +21,25 @@
 
 // Gameplay constants
 
-// #define STARTCOINS		100		// Default number of coins upon game start
-// #define MAXSTARTCOINS	150		// Maximum mumber of start coins
-// #define DEFSPINSLEFT	50		// Maximum spins to achieve a victory
-#define VICTORYVALUE	800		// Coins needed to win a ball (victory)
-#define BONUSSPINS		5		// Extra spins when a bonus is awarded
-#define DOUBLESPINS		3		// Max spins for which double pay is enabled
-
-#define STARTCOINS		20		// Default number of coins upon game start
-#define MAXSTARTCOINS	25		// Maximum mumber of start coins
-#define DEFSPINSLEFT	12		// Maximum spins to achieve a victory
-
+#define STARTCOINS		20/*100*/		// Default number of coins upon game start
+#define MAXSTARTCOINS	150		// Maximum mumber of start coins
+#define DEFSPINSLEFT	12 /* 50*/		// Default spins per game
 #define SHOWREMAINING	10		// Spins left to display remaining spins
-#define REMAINWARNING	5		// Spins left to warn the end is near
-#define MAXCOINS		9999	// Up to 16384
-#define MINLOCKCOINS	9		// Minimum coins for lock feature
+#define REMAINWARNING	5		// Spins left to warn the game is about to end
+#define VICTORYVALUE	800		// Coins needed to earn a ball (victory)
+#define BONUSSPINS		5		// Extra spins when a bonus is awarded
+#define DOUBLESPINS		3		// No. of spins for which double pay is enabled
+#define LOCKPENALTYDIV	150		// Divider used to calculate lock penalty
+
+// Gameplay constants that won't change
+
+#define MAXCOINS		9999	// Up to 16384, but display is 4-digit only
 #define MAXCOINDIGITS	4		// Because MAXCOINS is 9999
+#define MINLOCKCOINS	9		// Minimum coins for lock feature
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
-#define PAYMULTIPLIER	1		// Default payoff multiplier
-#define INITIALBET		3		// Initial bet
+#define INITIALBET		3		// Default bet upon game start
 #define NCOMBINATIONS	18		// Number of payoff combinations
-#define LOCKPENALTYDIV	150		// Lock penalty divider
 
 // Software constants
 

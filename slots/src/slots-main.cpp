@@ -217,7 +217,7 @@ void displayFeature()
 	leverAnimTimer.cancel();
 	lifeTimer.cancel();
 
-	display.showCentered(feats[(uint16_t)game.lastFeature]);
+	display.showCentered(feats[(uint16_t)game.lastAward]);
 
 	cheerTimer.in(CHEERENDTIME, restartDisplay);
 }
@@ -240,12 +240,12 @@ void cheerIfNeeded()
 			break;
 
 		default:
-			if(game.lastFeature > Awards::NONE) {
+			if(game.lastAward > Awards::NONE) {
 
 				displayFeature();
 
 				cheerLevel = CheerLevel::BIG_WIN;
-				if(game.lastFeature == Awards::TOPSCORE) {
+				if(game.lastAward == Awards::TOPSCORE) {
 					display.blink(true, TOPSCOREBLINK);
 					sound.Play((uint8_t)Sounds::CHEER_TOPSCORE);
 				} else {
@@ -526,6 +526,7 @@ void SlotsMain::Restart()
 	feeder.Return();
 	display.scroll(" Wait");
 	updateBetTimer.every(UPDATEBET, updateBet);
+	locks.Reset();
 	game.Setup(startCoins);
 	sound.Play((uint8_t)Sounds::HELLO);
 

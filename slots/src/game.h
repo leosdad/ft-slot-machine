@@ -32,7 +32,7 @@ class Game
 		int8_t currentBet = 0;			// Current bet (signed)
 		int16_t nCoins = 0;				// Current number of coins (signed)
 		uint16_t spinPayoff = 0;		// Payoff amount for last spin
-		Awards lastFeature = Awards::NONE;
+		Awards lastAward = Awards::NONE;
 
 		Reel reels[NREELS];				// Game reels
 		Payline paylines[NPAYLINES];	// Game paylines

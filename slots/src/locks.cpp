@@ -227,6 +227,16 @@ uint8_t Locks::setStateAsNeeded()
 // ----------------------------------------------------- Public member functions
 
 /**
+ * Resets all locks.
+ */
+void Locks::Reset()
+{
+	for(int i = 0; i < NREELS; i++) {
+		setUnlocked(i);
+	}
+}
+
+/**
  * Returns the state of the requested lock.
  */
 bool Locks::IsLocked(uint8_t index)

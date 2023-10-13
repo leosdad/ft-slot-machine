@@ -555,7 +555,7 @@ void SlotsMain::Loop()
 	}
 	nLocked = locks.Loop(
 		!(game.spinning || leverPulled),
-		!(firstSpin || game.spinPayoff || reelsLocked || game.nCoins <= 9),
+		!(firstSpin || game.spinPayoff || reelsLocked),
 		game.currentBet
 	);
 	cheers.Loop(!game.spinning && game.spinPayoff);

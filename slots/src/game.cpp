@@ -73,7 +73,6 @@ void Game::printDebugData(bool home)
 {
 	if(home) {
 		Serial.println("---- Home spin with " + String(nCoins) + " coins ----");
-		return;
 	}
 
 	static const char *symbolNames[NSYMBOLS + 1] = {
@@ -104,12 +103,12 @@ void Game::printDebugData(bool home)
 		+ " / Locked: " + String(nLocked)
 	);
 
-	// Serial.print("Extra turns: ");
-	// for(int i = 0; i < NREELS; i++) {
-	// 	Serial.print(reels[i].extraTurns);
-	// 	Serial.print(" ");
-	// }
-	// Serial.println();
+	Serial.print("Extra turns: ");
+	for(int i = 0; i < NREELS; i++) {
+		Serial.print(reels[i].extraTurns);
+		Serial.print(" ");
+	}
+	Serial.println();
 
 	// Print lines and payoffs
 

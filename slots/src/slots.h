@@ -11,8 +11,8 @@
 // ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		true	// Send spin debug info to the serial port
-#define DEBUGPAYOFFS	false	// Easy-to-obtain payoff / awards for testing
-#define SPEEDUP			true	// Remove extra reel spins and slow speed
+#define DEBUGPAYOFFS	false	// Easy-to-obtain payoffs, awards for testing
+#define SPEEDUP			false	// Remove extra reel spins and slow speed
 #define SIMULATE		false	// Simulate gameplay without moving anything
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define CALIBRATE		false	// Set to true for reel speed calibration
@@ -21,14 +21,20 @@
 
 // Gameplay constants
 
-#define STARTCOINS		20/*100*/		// Default number of coins upon game start
+#if DEBUGPAYOFFS
+#define STARTCOINS		20		// Default number of coins upon game start
+#define MAXSTARTCOINS	25		// Maximum mumber of start coins
+#define DEFSPINSLEFT	12		// Default spins per game
+#else
+#define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
-#define DEFSPINSLEFT	12 /* 50*/		// Default spins per game
-#define SHOWREMAINING	10		// Spins left to display remaining spins
-#define REMAINWARNING	5		// Spins left to warn the game is about to end
-#define VICTORYVALUE	800		// Coins needed to earn a ball (victory)
+#define DEFSPINSLEFT	50		// Default spins per game
+#endif
+#define SHOWREMAINING	10		// Spins to start displaying remaining spins
+#define REMAINWARNING	5		// Spins to start displaying game end warning
+#define DOUBLESPINS		3		// Spins during which double pay is enabled
 #define BONUSSPINS		5		// Extra spins when a bonus is awarded
-#define DOUBLESPINS		3		// No. of spins for which double pay is enabled
+#define VICTORYVALUE	800		// Coins needed to earn a ball (victory)
 #define LOCKPENALTYDIV	150		// Divider used to calculate lock penalty
 
 // Gameplay constants that won't change
@@ -43,8 +49,8 @@
 
 // Software constants
 
-#define VOLUME			10		// Sound volume (0-15)
-#define MX_BRIGHTNESS	1		// LED matrix brightness (0-15; zero emits light)
+#define VOLUME			13		// Sound volume (0-15)
+#define MX_BRIGHTNESS	2		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
 
@@ -56,6 +62,7 @@
 #define SIMULATETICKS	50		// Counter used in simulation mode
 #define EZBTNDEBOUNCE	10		// Default debounce value for ezButtons
 #define ENCODERDEBOUNCE	1000	// For encoders, in μs (microseconds)
+#define HOMEDEBOUNCE	1000	// For home sensors, in μs (microseconds)
 #define CHEERENDTIME	2000	// Time to end cheering message
 #define TOPSCOREBLINK	300		// Blink frequency for top score LEDs
 #define LEVERANIMDELAY	8123	// Time before lever animation
@@ -108,12 +115,12 @@ enum class GameResult {
 };
 
 /**
- * Defines winning combinations, payoff values and special features.
+ * Defines winning combinations, payoff values and special awards.
  */
 struct payoffItem {
 	uint8_t symbol[NREELS];
 	uint16_t payoff;
-	Awards feature;
+	Awards award;
 };
 
 enum class Sounds {
@@ -134,8 +141,8 @@ enum class Sounds {
 // Speed for each motor. Similar motors may behave differently, mainly at slow speeds.
 
 #if !SPEEDUP
-static const uint8_t normalSpeeds[NREELS] = {70, 90, 83};
-static const uint8_t slowSpeeds[NREELS] = {45, 55, 52};
+static const uint8_t normalSpeeds[NREELS] = {90, 90, 85};
+static const uint8_t slowSpeeds[NREELS] = {55, 67, 62};
 #else
 static const uint8_t normalSpeeds[NREELS] = {90, 110, 100};
 static const uint8_t slowSpeeds[NREELS] = {90, 110, 100};
@@ -192,7 +199,7 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{2, 2, 3},  30, Awards::NONE},
 	{{8, 8, 8},  22, Awards::NONE},
 	{{5, 5, 5},  20, Awards::BONUS},
-	{{6, 0, 0},   1, Awards::NONE},		// Orange
+	{{6, 0, 0},   1, Awards::TOPSCORE},	// Orange
 	{{2, 0, 0},   1, Awards::DOUBLE},	// Bananas
 	{{0, 2, 0},   1, Awards::DOUBLE},
 	{{0, 0, 2},   1, Awards::DOUBLE},

@@ -4,12 +4,17 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include <ezButton.h>
-#include <TrueRandom.h>
-
-#include "slots.h"
 #include "reel.h"
+
+#include <TrueRandom.h>
+#include <ezButton.h>
+
 #include "locks.h"
+#include "slots.h"
+
+// -------------------------------------------------------------------- Defines
+
+#define DEBUGREELS	false
 
 // ------------------------------------------------------------ Global variables
 
@@ -25,6 +30,10 @@ bool Reel::idle()
 bool Reel::start()
 {
 	rotations = extraTurns;
+	reachedHome = false;
+	#if DEBUGREELS
+	Serial.println("  Reel #" + String(index) + " started with " + String(rotations) + " rotations");
+	#endif
 	motor.RotateCW(normalSpeed);
 	reelState = ReelState::SENSING;
 }
@@ -34,14 +43,33 @@ bool Reel::start()
  */
 bool Reel::sensing()
 {
-	if(digitalRead(homePin)) {
-		if(rotations > 0) {
-			rotations--;
-		} else {
-			nSteps = finalSteps;
-			currentSignal = digitalRead(encoderPin);
-			motor.RotateCW(slowSpeed);
-			reelState = ReelState::COUNTING;
+	if(micros() - lastHome > HOMEDEBOUNCE) {
+
+		bool isHome = digitalRead(homePin);
+
+		if(isHome && !reachedHome) {
+			lastHome = micros();
+			reachedHome = true;
+
+			if(rotations == 0) {
+				nSteps = finalSteps;
+				pulseSignal = digitalRead(encoderPin);
+				#if DEBUGREELS
+				Serial.println("  Reel #" + String(index) + " slowed down");
+				#endif
+				motor.RotateCW(slowSpeed);
+				reelState = ReelState::COUNTING;
+			} else if(rotations > 0) {
+				rotations--;
+				#if DEBUGREELS
+				Serial.println("  Reel #" + String(index) + ": " + String(rotations) + " rotations");
+				#endif
+			}
+
+		} else if(!isHome) {
+
+			reachedHome = false;
+
 		}
 	}
 }
@@ -51,11 +79,14 @@ bool Reel::sensing()
  */
 bool Reel::counting()
 {
-	if(((micros() - lastChange) > ENCODERDEBOUNCE) && (digitalRead(encoderPin) != currentSignal)) {
-		lastChange = micros();
-		currentSignal = !currentSignal;
-		if(currentSignal) {	// RISING flank
+	if((micros() - lastPulse > ENCODERDEBOUNCE) && (digitalRead(encoderPin) != pulseSignal)) {
+		lastPulse = micros();
+		pulseSignal = !pulseSignal;
+		if(pulseSignal) {  // RISING flank
 			if(nSteps-- + HOMEOFFSET == 0) {
+				#if DEBUGREELS
+				Serial.println("  Reel #" + String(index) + " stopped");
+				#endif
 				motor.Brake();
 				reelState = ReelState::IDLE;
 			}
@@ -87,22 +118,17 @@ void Reel::Setup(const uint8_t reelIndex)
 
 /**
  * Does the necessary calculations, draws a symbol and starts the reel.
- * @returns Returns the number of additional turns for this reel.
+ * @returns Returns the number of additional turns for next reel.
  */
-uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
+uint8_t Reel::Start(bool home, const uint8_t prevExtraTurns)
 {
 	if(home) {
-
-		// Move reel to home position
-
 		extraTurns = 0;
 		symbolPos = 0;
 
 	} else {
-
 		// Sets the amount of initial full turns per reel
-		extraTurns = SPEEDUP || CALIBRATE ? 0 :
-			previousExtraTurns + TrueRandom.random(0, 3);
+		extraTurns = SPEEDUP || CALIBRATE ? 0 : prevExtraTurns;
 
 		// Draws the final position for this wheel
 		symbolPos = CALIBRATE ? 0 : TrueRandom.random(NREELSYMBOLS);
@@ -113,7 +139,7 @@ uint8_t Reel::Start(bool home, uint8_t previousExtraTurns)
 	finalSteps = stepOffsets[symbolPos];
 	reelState = ReelState::START;
 
-	return extraTurns;
+	return home || SPEEDUP || CALIBRATE ? 0 : extraTurns + 1;
 }
 
 /**
@@ -147,45 +173,42 @@ bool Reel::Loop()
 {
 	// State machine for this reel
 
-	#if SIMULATE
+#if SIMULATE
 
-		switch(reelState) {
+	switch(reelState) {
+		case ReelState::IDLE:
+			nSimTicks = SIMULATETICKS;
+			break;
 
-			case ReelState::IDLE:
-				nSimTicks = SIMULATETICKS;
-				break;
+		case ReelState::START:
+			if(nSimTicks--) {
+			} else {
+				reelState = ReelState::IDLE;
+			}
+			break;
+	}
 
-			case ReelState::START:
-				if(nSimTicks--) {
+#else
 
-				} else {
-					reelState = ReelState::IDLE;
-				}
-				break;
-		}
+	switch(reelState) {
+		case ReelState::IDLE:
+			idle();
+			break;
 
-	#else
+		case ReelState::START:
+			start();
+			break;
 
-		switch(reelState) {
+		case ReelState::SENSING:
+			sensing();
+			break;
 
-			case ReelState::IDLE:
-				idle();
-				break;
+		case ReelState::COUNTING:
+			counting();
+			break;
+	}
 
-			case ReelState::START:
-				start();
-				break;
-
-			case ReelState::SENSING:
-				sensing();
-				break;
-
-			case ReelState::COUNTING:
-				counting();
-				break;
-		}
-
-	#endif
+#endif
 
 	return reelState != ReelState::IDLE;
 }

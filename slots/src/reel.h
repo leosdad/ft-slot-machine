@@ -26,13 +26,15 @@ class Reel
 		// Private fields
 
 		ReelState reelState = ReelState::IDLE;	// Machine state
-		byte currentSignal;			// Used for debouncing
-		unsigned long lastChange; 	// Used for debouncing
+		byte pulseSignal;			// Used for debouncing motor encoder
+		unsigned long lastPulse; 	// Used for debouncing motor encoder
+		unsigned long lastHome; 	// Used for debouncing home sensor
 		uint8_t index;				// Reel index
 		uint16_t nSteps;			// Steps counter
 		uint16_t finalSteps;		// Steps after sensor is triggered
 		uint8_t rotations;			// Rotation counter
 		uint8_t nSimTicks;			// Used for spin simulation
+		bool reachedHome = false;
 
 		// Must be initialized and won't ever change
 
@@ -57,7 +59,7 @@ class Reel
 		// Public member functions
 
 		void Setup(const uint8_t index);
-		uint8_t Start(bool home, uint8_t previousExtraTurns);
+		uint8_t Start(bool home, const uint8_t prevExtraTurns);
 		void BounceBack();
 		void BounceForward();
 		bool Loop();

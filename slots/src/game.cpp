@@ -50,10 +50,12 @@ void Game::init(uint16_t initialCoins)
 		paylines[l].Payoff = 0;
 	}
 
-	spinsLeft = DEFSPINSLEFT;
 	lastSpinning = -1;
+	multiplier = 1;
 	playing = false;
 	spinning = false;
+	doublePay = 0;
+	spinsLeft = DEFSPINSLEFT;
 	currentBet = 0;
 	nCoins = initialCoins;
 	spinPayoff = 0;

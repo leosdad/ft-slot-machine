@@ -212,6 +212,7 @@ void displayAward()
 	static const char* feats[] = {"", "Double", "Bonus", "Top"};
 
 	displayUpdated = false;
+	cheerTimer.cancel();
 	updateBetTimer.cancel();
 	lifeFlashTimer.cancel();
 	leverAnimTimer.cancel();
@@ -461,8 +462,10 @@ void SlotsMain::inputLoop()
 			if(!leverPulled) {
 				if(increaseBet.isPressed()) {
 					game.ChangeBet(1);
+					updateBet(NULL);
 				} else if(decreaseBet.isPressed()) {
 					game.ChangeBet(-1);
+					updateBet(NULL);
 				}
 			}
 		}

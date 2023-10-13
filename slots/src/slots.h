@@ -11,19 +11,20 @@
 // ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		true	// Send spin debug info to the serial port
-#define DEBUGPAYOFFS	false	// Easy-to-obtain payoffs, awards for testing
-#define SPEEDUP			false	// Remove extra reel spins and slow speed
+#define DEBUGPAYOFFS	true	// Easy-to-obtain payoffs, awards for testing
+#define SPEEDUP			true	// Remove extra reel spins, rotate reels faster
 #define SIMULATE		false	// Simulate gameplay without moving anything
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
 #define CALIBRATE		false	// Set to true for reel speed calibration
+#define DEBUGREELS		false	// Show info about reels state and rotation
 
 // --------------------------------------------------------------------- Defines
 
 // Gameplay constants
 
 #if DEBUGPAYOFFS
-#define STARTCOINS		20		// Default number of coins upon game start
-#define MAXSTARTCOINS	25		// Maximum mumber of start coins
+#define STARTCOINS		25		// Default number of coins upon game start
+#define MAXSTARTCOINS	29		// Maximum mumber of start coins
 #define DEFSPINSLEFT	12		// Default spins per game
 #else
 #define STARTCOINS		100		// Default number of coins upon game start

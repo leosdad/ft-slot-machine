@@ -71,10 +71,6 @@ void Game::init(uint16_t initialCoins)
  */
 void Game::printDebugData(bool home)
 {
-	if(home) {
-		Serial.println("---- Home spin with " + String(nCoins) + " coins ----");
-	}
-
 	static const char *symbolNames[NSYMBOLS + 1] = {
 		"Any",
 		"Seven",
@@ -86,6 +82,10 @@ void Game::printDebugData(bool home)
 		"Lemon",
 		"Grapes"
 	};
+
+	if(home) {
+		Serial.println("---- Home spin with " + String(nCoins) + " coins ----");
+	}
 
 	// Print spin data, current bet and coins
 

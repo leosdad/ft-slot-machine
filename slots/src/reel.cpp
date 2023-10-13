@@ -12,10 +12,6 @@
 #include "locks.h"
 #include "slots.h"
 
-// -------------------------------------------------------------------- Defines
-
-#define DEBUGREELS	false
-
 // ------------------------------------------------------------ Global variables
 
 extern Locks locks;
@@ -122,24 +118,35 @@ void Reel::Setup(const uint8_t reelIndex)
  */
 uint8_t Reel::Start(bool home, const uint8_t prevExtraTurns)
 {
-	if(home) {
-		extraTurns = 0;
-		symbolPos = 0;
+	uint8_t nextReelExtraTurns = 0;
 
-	} else {
-		// Sets the amount of initial full turns per reel
-		extraTurns = SPEEDUP || CALIBRATE ? 0 : prevExtraTurns;
+	#if CALIBRATE
+		extraTurns = 5;
+		symbolPos = 2;
+		nextReelExtraTurns = 0;
+	#else
+		if(home) {
+			extraTurns = 0;
+			symbolPos = 0;
+			nextReelExtraTurns = 0;
+		} else {
 
-		// Draws the final position for this wheel
-		symbolPos = CALIBRATE ? 0 : TrueRandom.random(NREELSYMBOLS);
-	}
+			// Sets the amount of initial full turns per reel
+			extraTurns = SPEEDUP ? 0 : prevExtraTurns;
+
+			// Draws the final position for this wheel
+			symbolPos = TrueRandom.random(NREELSYMBOLS);
+
+			nextReelExtraTurns = 1;
+		}
+	#endif
 
 	// Calculates the number of steps necessary to reach the end position
 
 	finalSteps = stepOffsets[symbolPos];
 	reelState = ReelState::START;
 
-	return home || SPEEDUP || CALIBRATE ? 0 : extraTurns + 1;
+	return extraTurns + nextReelExtraTurns;
 }
 
 /**

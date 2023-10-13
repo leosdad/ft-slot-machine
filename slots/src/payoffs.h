@@ -15,14 +15,14 @@ class Payoffs
 {
 	private:
 		Payline payline;
-		Awards highestFeature;
+		Awards highestAward;
 		uint8_t payoffMultiplier = 1;
 
 		uint16_t calculatePayline(Game game, int paylineIndex);
 
 	public:
 		bool SetMultiplier(uint8_t multiplier);
-		Awards GetHighestFeature(Game *game);
+		Awards GetHighestAward(Game *game);
 		uint16_t CalculateTotalPayoff(Game *game);
 };
 

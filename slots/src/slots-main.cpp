@@ -207,7 +207,7 @@ bool displayEndGameMessage(void *)
 	ledMatrix.wrapText(str, wrapLoop);
 }
 
-void displayFeature()
+void displayAward()
 {
 	static const char* feats[] = {"", "Double", "Bonus", "Top"};
 
@@ -242,7 +242,7 @@ void cheerIfNeeded()
 		default:
 			if(game.lastAward > Awards::NONE) {
 
-				displayFeature();
+				displayAward();
 
 				cheerLevel = CheerLevel::BIG_WIN;
 				if(game.lastAward == Awards::TOPSCORE) {

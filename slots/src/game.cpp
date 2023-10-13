@@ -176,9 +176,9 @@ bool Game::StartSpin(bool home)
 	
 	if(!home) {
 
-		// Gets highest feature
+		// Gets highest award
 
-		lastAward = payoffs.GetHighestFeature(this);
+		lastAward = payoffs.GetHighestAward(this);
 		if(lastAward == Awards::BONUS) {
 			spinsLeft += BONUSSPINS;
 		} else if(lastAward == Awards::DOUBLE) {

@@ -126,15 +126,13 @@ struct payoffItem {
 
 enum class Sounds {
 	HELLO = 1,
-	CHEER_BONUS,
-	__SPARE1,
-	CHEER_WIN,
-	CHEER_DRAW,
-	CHEER_TOPSCORE,
-	__SPARE2,
 	GAME_LOST,
 	GAME_WON,
-	END_IS_NEAR
+	END_IS_NEAR,
+	CHEER_WIN,
+	CHEER_DRAW,
+	CHEER_BONUS,
+	CHEER_TOPSCORE
 };
 
 // ------------------------------------------------------------------- Constants

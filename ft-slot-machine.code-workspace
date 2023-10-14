@@ -24,10 +24,10 @@
 			"locktests": true
 		},
 		"cSpell.words": [
-			"DIY",
 			"DRV8833",
 			"fischertechnik",
-			"solderless"
+			"gameplay",
+			"payline"
 		],
 		"markdown.validate.ignoredLinks": [
 			"/docs"

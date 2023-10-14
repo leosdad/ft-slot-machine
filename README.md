@@ -7,11 +7,13 @@ This is a very complex project I designed, built and developed for many months i
 
 ![Close-up of the reels (uncovered)](docs/reels.jpg)
 
-The slot machine is assembled with [fischertechnik](https://www.fischertechnik.de/en) parts. It has three reels and one payline. A very special feature is the ability to lock one or two reels upon certain conditions. This is combined with the ability to adjust the bet value, allowing some strategic decisions to achieve the goal which is to win 800 points in up to 50 spins. Despite the retro look, the entire operation is fully software-based.
+The slot machine is assembled with [fischertechnik](https://www.fischertechnik.de/en) parts. It has three reels and one payline. In addition to the ability to adjust the bet value, the player can lock one or two reels prior to a spin upon certain conditions. This introduces strategy elements that help to achieve the goal, which is to win hundreds of points in a finite number of spins.
+
+Despite the retro look, all operations are fully software-based.
 
 ## Controller
 
-The main controller is an Arduino Mega with two custom shields, one on top of the other. It is explained in more detail in the [fischertechnik community forum](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018). Additional information is available in the [docs](/docs) folder.
+The main controller is an Arduino Mega with two custom shields, one on top of the other. This arrangement is explained in more detail in the [fischertechnik community forum](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018). Additional information is available in the [docs](/docs) folder.
 
 ![Controller](docs/controller.jpg)
 

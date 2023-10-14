@@ -26,16 +26,18 @@
 #define STARTCOINS		25		// Default number of coins upon game start
 #define MAXSTARTCOINS	29		// Maximum mumber of start coins
 #define DEFSPINSLEFT	12		// Default remaining spins per game
+#define VICTORYPOINTS	30		// Coins needed to win a ball (victory)
 #else
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
-#define DEFSPINSLEFT	50		// Default remaining spins per game
+#define DEFSPINSLEFT	40		// Default remaining spins per game
+#define VICTORYPOINTS	400		// Coins needed to win a ball (victory)
 #endif
+
 #define SHOWREMAINING	10		// Spins to start displaying remaining spins
 #define REMAINWARNING	5		// Spins to start displaying game end warning
 #define DOUBLESPINS		3		// Spins during which double pay is enabled
 #define BONUSSPINS		5		// Extra spins when a bonus is awarded
-#define VICTORYVALUE	800		// Coins needed to earn a ball (victory)
 #define LOCKPENALTYDIV	150		// Divider used to calculate lock penalty
 
 // Gameplay constants that won't change
@@ -51,7 +53,7 @@
 // Software constants
 
 #define VOLUME			13		// Sound volume (0-15)
-#define MX_BRIGHTNESS	4		// LED matrix brightness (0-15; zero emits light)
+#define MX_BRIGHTNESS	3		// LED matrix brightness (0-15; zero emits light)
 #define MX_TEXTPOS		9		// Offset for displaying text
 #define MX_NUMPOS		12		// Offset for displaying numbers
 
@@ -140,8 +142,8 @@ enum class Sounds {
 // Speed for each motor. Similar motors may behave differently, mainly at slow speeds.
 
 #if !SPEEDUP
-static const uint8_t normalSpeeds[NREELS] = {74, 93, 80};
-static const uint8_t slowSpeeds[NREELS] = {42, 63, 44};
+static const uint8_t normalSpeeds[NREELS] = {90, 110, 100};
+static const uint8_t slowSpeeds[NREELS] = {55, 75, 58};
 #else
 static const uint8_t normalSpeeds[NREELS] = {90, 110, 100};
 static const uint8_t slowSpeeds[NREELS] = {90, 110, 100};
@@ -202,12 +204,12 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{2, 0, 0},   1, Awards::DOUBLE},	// Bananas
 	{{0, 2, 0},   1, Awards::DOUBLE},
 	{{0, 0, 2},   1, Awards::DOUBLE},
-	{{1, 0, 0},   1, Awards::NONE},		// Sevens
-	{{0, 1, 0},   1, Awards::NONE},
-	{{0, 0, 1},   1, Awards::NONE},
-	{{3, 0, 0},   1, Awards::NONE},		// Cherries
-	{{0, 3, 0},   1, Awards::NONE},
-	{{0, 0, 3},   1, Awards::NONE},
+	{{1, 0, 0},   2, Awards::BONUS},	// Sevens
+	{{0, 1, 0},   2, Awards::BONUS},
+	{{0, 0, 1},   2, Awards::BONUS},
+	{{3, 0, 0},   2, Awards::NONE},		// Cherries
+	{{0, 3, 0},   2, Awards::NONE},
+	{{0, 0, 3},   2, Awards::NONE},
 
 #endif
 

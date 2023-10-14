@@ -103,12 +103,12 @@ void Game::printDebugData(bool home)
 		+ " / Locked: " + String(nLocked)
 	);
 
-	Serial.print("Extra turns: ");
-	for(int i = 0; i < NREELS; i++) {
-		Serial.print(reels[i].extraTurns);
-		Serial.print(" ");
-	}
-	Serial.println();
+	// Serial.print("Extra turns: ");
+	// for(int i = 0; i < NREELS; i++) {
+	// 	Serial.print(reels[i].extraTurns);
+	// 	Serial.print(" ");
+	// }
+	// Serial.println();
 
 	// Print lines and payoffs
 

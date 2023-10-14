@@ -260,7 +260,7 @@ void cheerIfNeeded()
 				sound.Play((uint8_t)Sounds::CHEER_DRAW);
 			} else {	// game.nCoins < lastCoins
 				cheerLevel = CheerLevel::NONE;
-				// sound.Stop();
+				sound.Stop();
 			}
 			break;
 	}
@@ -282,7 +282,7 @@ void endGame()
 
 	if(gameResult == GameResult::VICTORY) {
 		feeder.Feed();
-		startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYVALUE) / 2);
+		startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYPOINTS) / 2);
 		sound.Play((uint8_t)Sounds::GAME_WON);
 		#if DEBUGINFO
 		Serial.println("\n--- VICTORY ---\n");
@@ -325,7 +325,7 @@ void endSpin()
 
 			gameResult = GameResult::NONE;
 
-			if((game.nCoins >= VICTORYVALUE) && (game.spinsLeft >= 0)) {
+			if((game.nCoins >= VICTORYPOINTS) && (game.spinsLeft >= 0)) {
 				gameResult = GameResult::VICTORY;
 			} else if(game.spinsLeft <= 0) {
 				gameResult = GameResult::NO_SPINS_LEFT;

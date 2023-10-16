@@ -240,7 +240,7 @@ void cheerIfNeeded()
 			sound.Play((uint8_t)Sounds::GAME_WON);
 			break;
 
-		default:
+		default:	// GameResult::NONE
 			if(game.lastAward > Awards::NONE) {
 
 				displayAward();
@@ -252,6 +252,7 @@ void cheerIfNeeded()
 				} else {
 					sound.Play((uint8_t)Sounds::CHEER_BONUS);
 				}
+
 			} else if(game.nCoins > lastCoins) {
 				cheerLevel = CheerLevel::WIN;
 				sound.Play((uint8_t)Sounds::CHEER_WIN);
@@ -281,7 +282,9 @@ void endGame()
 	game.playing = false;
 
 	if(gameResult == GameResult::VICTORY) {
+		#if !SIMULATE
 		feeder.Feed();
+		#endif
 		startCoins = min(MAXSTARTCOINS, STARTCOINS + (game.nCoins - VICTORYPOINTS) / 2);
 		sound.Play((uint8_t)Sounds::GAME_WON);
 		#if DEBUGINFO
@@ -324,7 +327,6 @@ void endSpin()
 			// Game won? Game lost? Needs cheering?
 
 			gameResult = GameResult::NONE;
-
 			if((game.nCoins >= VICTORYPOINTS) && (game.spinsLeft >= 0)) {
 				gameResult = GameResult::VICTORY;
 			} else if(game.spinsLeft <= 0) {
@@ -489,8 +491,10 @@ void SlotsMain::Setup()
 	// Sets up objects
 
 	sound.Setup(VOLUME);
+	#if !SIMULATE
 	feeder.Setup(servoPin);
 	feeder.Return();
+	#endif
 	ledMatrix.setup();
 	display.setup();
 	display.scroll(" Wait ");
@@ -528,7 +532,9 @@ void SlotsMain::Restart()
 
 	// Sets up objects
 
+	#if !SIMULATE
 	feeder.Return();
+	#endif
 	display.scroll(" Wait");
 	updateBetTimer.every(UPDATEBET, updateBet);
 	locks.Reset();

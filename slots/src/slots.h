@@ -171,6 +171,8 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 
 #if !DEBUGPAYOFFS
 
+	// These should match the spreadsheet and the printed table.
+
 	{{1, 1, 1}, 120, Awards::TOPSCORE},
 	{{3, 3, 3},  85, Awards::TOPSCORE},
 	{{4, 4, 4},  85, Awards::TOPSCORE},
@@ -191,6 +193,8 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{0, 0, 3},   1, Awards::NONE},
 
 #else
+
+	// These are for testing purposes.
 
 	{{1, 1, 1}, 120, Awards::TOPSCORE},
 	{{3, 3, 3},  85, Awards::TOPSCORE},

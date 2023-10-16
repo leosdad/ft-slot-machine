@@ -180,6 +180,7 @@ bool Game::StartSpin(bool home)
 		// Gets highest award
 
 		lastAward = payoffs.GetHighestAward(this);
+
 		if(lastAward == Awards::BONUS) {
 			spinsLeft += BONUSSPINS;
 		} else if(lastAward == Awards::DOUBLE) {
@@ -247,9 +248,11 @@ void Game::SetCoins(uint16_t _nCoins)
  */
 bool Game::BounceReelsBack()
 {
+	#if !SIMULATE
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].BounceBack();
 	}
+	#endif
 }
 
 /**
@@ -257,9 +260,11 @@ bool Game::BounceReelsBack()
  */
 bool Game::BounceReelsForward()
 {
+	#if !SIMULATE
 	for(int i = 0; i < NREELS; i++) {
 		reels[i].BounceForward();
 	}
+	#endif
 }
 
 /**

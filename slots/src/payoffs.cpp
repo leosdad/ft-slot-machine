@@ -56,9 +56,11 @@ bool Payoffs::SetMultiplier(uint8_t multiplier)
 Awards Payoffs::GetHighestAward(Game *game)
 {
 	highestAward = Awards::NONE;
+
 	for(int l = 0; l < NPAYLINES; l++) {
 		calculatePayline(*game, l);
 	}
+
 	return highestAward;
 }
 

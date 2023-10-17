@@ -165,7 +165,7 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 };
 
 /**
- * 0 (zero) here means any symbol.
+ * 0 (zero) below means any symbol.
  */
 static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 

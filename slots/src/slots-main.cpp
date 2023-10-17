@@ -47,7 +47,7 @@ bool showLifeValue = true;
 extern SlotsMain slotsMain;
 uint16_t startCoins = STARTCOINS;
 uint8_t lastBet = 255;
-uint8_t lastCoins = -1;
+uint16_t lastCoins = -1;
 uint8_t leverFrame = 0;
 uint8_t nLocked = 0;
 uint8_t lastLocked = 255;
@@ -231,13 +231,11 @@ void cheerIfNeeded()
 
 		case GameResult::VICTORY:
 			cheerLevel = CheerLevel::VICTORY;
-			sound.Play((uint8_t)Sounds::GAME_WON);
 			break;
 
 		case GameResult::NO_COINS_LEFT:
 		case GameResult::NO_SPINS_LEFT:
 			cheerLevel = CheerLevel::NONE;
-			sound.Play((uint8_t)Sounds::GAME_WON);
 			break;
 
 		default:	// GameResult::NONE

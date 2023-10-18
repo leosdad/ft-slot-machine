@@ -1,7 +1,7 @@
 
 # Slot machine game with fischertechnik and Arduino Mega
 
-This is a very complex project I designed, built and developed for many months in 2023. This is the code that has made its way into the actual machine. This project is heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slot machine game that I developed as a demo for my company back in 1998.
+This slot machine game is a very complex project I designed, built and developed during many months. This repo contains the code that has made its way into the actual machine. This project is heavily inspired by [Hypervisual Century](http://hypervisual.com/century/), a software slot machine game that I developed as a demo for my company back in 1998.
 
 ## Mechanics and gameplay
 
@@ -9,11 +9,11 @@ This is a very complex project I designed, built and developed for many months i
 
 The slot machine is assembled with [fischertechnik](https://www.fischertechnik.de/en) parts. It has three reels and one payline. In addition to the ability to adjust the bet value, the player can lock one or two reels prior to a spin upon certain conditions. This introduces strategy elements that help to achieve the goal, which is to win hundreds of points in a finite number of spins.
 
-Despite the retro look, all operations are fully software-based.
+Despite the retro look, all operations are fully motorized and software-based.
 
 ## Controller
 
-The main controller is an Arduino Mega with two custom shields, one on top of the other. This arrangement is explained in more detail in the [fischertechnik community forum](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018). Additional information is available in the [docs](/docs) folder.
+The main controller is an Arduino Mega with a custom two-layer shield. This arrangement is explained in more detail in the [fischertechnik community forum](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8018). Additional information is available in the [docs](/docs) folder.
 
 ![Controller](docs/controller.jpg)
 

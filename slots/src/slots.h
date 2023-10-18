@@ -30,13 +30,13 @@
 #else
 #define STARTCOINS		100		// Default number of coins upon game start
 #define MAXSTARTCOINS	150		// Maximum mumber of start coins
-#define DEFSPINSLEFT	40		// Default remaining spins per game
+#define DEFSPINSLEFT	50		// Default remaining spins per game
 #define VICTORYPOINTS	400		// Coins needed to win a ball (victory)
 #endif
 
 #define SHOWREMAINING	10		// Spins to start displaying remaining spins
 #define REMAINWARNING	5		// Spins to start displaying game end warning
-#define DOUBLESPINS		3		// Spins during which double pay is enabled
+#define DOUBLESPINS		5		// Spins during which double pay is enabled
 #define BONUSSPINS		5		// Extra spins when a bonus is awarded
 #define LOCKPENALTYDIV	150		// Divider used to calculate lock penalty
 
@@ -176,15 +176,15 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{1, 1, 1}, 120, Awards::TOPSCORE},
 	{{3, 3, 3},  85, Awards::TOPSCORE},
 	{{4, 4, 4},  85, Awards::TOPSCORE},
-	{{5, 5, 3},  60, Awards::BONUS},
+	{{5, 5, 3},  60, Awards::DOUBLE},
 	{{8, 8, 3},  45, Awards::NONE},
 	{{2, 2, 3},  30, Awards::NONE},
 	{{8, 8, 8},  22, Awards::NONE},
-	{{5, 5, 5},  20, Awards::BONUS},
+	{{5, 5, 5},  20, Awards::DOUBLE},
 	{{2, 2, 2},  15, Awards::NONE},
-	{{1, 1, 0},  15, Awards::DOUBLE},
-	{{0, 1, 1},  15, Awards::DOUBLE},
-	{{1, 0, 1},  15, Awards::DOUBLE},
+	{{1, 1, 0},  15, Awards::BONUS},
+	{{0, 1, 1},  15, Awards::BONUS},
+	{{1, 0, 1},  15, Awards::BONUS},
 	{{0, 3, 3},  15, Awards::NONE},
 	{{0, 3, 1},  15, Awards::NONE},
 	{{0, 4, 4},  15, Awards::NONE},
@@ -199,18 +199,18 @@ static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
 	{{1, 1, 1}, 120, Awards::TOPSCORE},
 	{{3, 3, 3},  85, Awards::TOPSCORE},
 	{{4, 4, 4},  85, Awards::TOPSCORE},
-	{{5, 5, 3},  60, Awards::BONUS},
+	{{5, 5, 3},  60, Awards::DOUBLE},
 	{{8, 8, 3},  45, Awards::NONE},
 	{{2, 2, 3},  30, Awards::NONE},
 	{{8, 8, 8},  22, Awards::NONE},
-	{{5, 5, 5},  20, Awards::BONUS},
+	{{5, 5, 5},  20, Awards::DOUBLE},
 	{{6, 0, 0},   1, Awards::TOPSCORE},	// Orange
-	{{2, 0, 0},   1, Awards::DOUBLE},	// Bananas
-	{{0, 2, 0},   1, Awards::DOUBLE},
-	{{0, 0, 2},   1, Awards::DOUBLE},
-	{{1, 0, 0},   2, Awards::BONUS},	// Sevens
-	{{0, 1, 0},   2, Awards::BONUS},
-	{{0, 0, 1},   2, Awards::BONUS},
+	{{2, 0, 0},   1, Awards::BONUS},	// Bananas
+	{{0, 2, 0},   1, Awards::BONUS},
+	{{0, 0, 2},   1, Awards::BONUS},
+	{{1, 0, 0},   2, Awards::DOUBLE},	// Sevens
+	{{0, 1, 0},   2, Awards::DOUBLE},
+	{{0, 0, 1},   2, Awards::DOUBLE},
 	{{3, 0, 0},   2, Awards::NONE},		// Cherries
 	{{0, 3, 0},   2, Awards::NONE},
 	{{0, 0, 3},   2, Awards::NONE},

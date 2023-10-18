@@ -5,12 +5,12 @@
 // -------------------------------------------------------------------- Includes
 
 #include "game.h"
-#include "payoffs.h"
+#include "payouts.h"
 #include "locks.h"
 
 // ------------------------------------------------------------ Global variables
 
-Payoffs payoffs;
+Payouts payouts;
 Reel reels[NREELS];
 extern Locks locks;
 
@@ -47,7 +47,7 @@ uint8_t Game::setBet(int8_t bet)
 void Game::init(uint16_t initialCoins)
 {
 	for(int l = 0; l < NPAYLINES; l++) {
-		paylines[l].Payoff = 0;
+		paylines[l].Payout = 0;
 	}
 
 	lastSpinning = -1;
@@ -58,7 +58,7 @@ void Game::init(uint16_t initialCoins)
 	spinsLeft = DEFSPINSLEFT;
 	currentBet = 0;
 	nCoins = initialCoins;
-	spinPayoff = 0;
+	spinPayout = 0;
 	lastAward = Awards::NONE;
 
 	// Serial.println("+++ nCoins " + String(nCoins));
@@ -110,7 +110,7 @@ void Game::printDebugData(bool home)
 	// }
 	// Serial.println();
 
-	// Print lines and payoffs
+	// Print lines and payouts
 
 	for(int l = 0; l < NPAYLINES; l++) {
 		Serial.print("[ ");
@@ -120,21 +120,21 @@ void Game::printDebugData(bool home)
 		Serial.print(" ");
 		Serial.print(symbolNames[paylines[l].GetLineSymbol(l, 2, reels[2])]);
 		Serial.print(" ] ");
-		if(paylines[l].Payoff) {
-			Serial.println("* " + String(paylines[l].Payoff));
+		if(paylines[l].Payout) {
+			Serial.println("* " + String(paylines[l].Payout));
 		} else {
 			Serial.println();
 		}
 	}
 
-	// Print payoff data
+	// Print payout data
 
 	if(doublePay > 0) {
 		Serial.println("Double pay for next " + String(doublePay) + " spin(s)");
 	}
 
-	if(spinPayoff > 0) {
-		Serial.println("**** Total payoff: " + String(spinPayoff * multiplier) + " ****");
+	if(spinPayout > 0) {
+		Serial.println("**** Total payout: " + String(spinPayout * multiplier) + " ****");
 
 		if(lastAward == Awards::TOPSCORE) {
 			Serial.println("#### Top score ####");
@@ -144,9 +144,9 @@ void Game::printDebugData(bool home)
 			Serial.println("#### Double pay ####");
 		}
 
-		Serial.println("Next coins: " + String(nCoins + spinPayoff * multiplier));
+		Serial.println("Next coins: " + String(nCoins + spinPayout * multiplier));
 	} else {
-		Serial.println("(No payoff)");
+		Serial.println("(No payout)");
 	}
 }
 
@@ -179,7 +179,7 @@ bool Game::StartSpin(bool home)
 
 		// Gets highest award
 
-		lastAward = payoffs.GetHighestAward(this);
+		lastAward = payouts.GetHighestAward(this);
 
 		if(lastAward == Awards::BONUS) {
 			spinsLeft += BONUSSPINS;
@@ -187,21 +187,21 @@ bool Game::StartSpin(bool home)
 			doublePay = DOUBLESPINS + 1;
 		}
 
-		// Calculates payoff
+		// Calculates payout
 
 		if(doublePay == DOUBLESPINS + 1) {
 			// Just awarded a double payment, so doesn't pay double right now
-			payoffs.SetMultiplier(1);
-			payoffs.CalculateTotalPayoff(this);
+			payouts.SetMultiplier(1);
+			payouts.CalculateTotalPayout(this);
 			doublePay--;
 		} else if(doublePay > 0) {
 			// Awarded a double pay. If the spin doesn't pay off, try next
-			payoffs.SetMultiplier(2);
-			payoffs.CalculateTotalPayoff(this);
-			doublePay = spinPayoff > 0 ? 0 : doublePay - 1;
+			payouts.SetMultiplier(2);
+			payouts.CalculateTotalPayout(this);
+			doublePay = spinPayout > 0 ? 0 : doublePay - 1;
 		} else {	// doublePay == 0
-			payoffs.SetMultiplier(1);
-			payoffs.CalculateTotalPayoff(this);
+			payouts.SetMultiplier(1);
+			payouts.CalculateTotalPayout(this);
 		}
 
 		playing = true;
@@ -285,7 +285,7 @@ bool Game::Loop()
 	if(spinning != lastSpinning) {
 		if(!spinning) {
 			endSpin = true;
-			nCoins += spinPayoff * multiplier;
+			nCoins += spinPayout * multiplier;
 		}
 		lastSpinning = spinning;
 	}

@@ -564,10 +564,10 @@ void SlotsMain::Loop()
 	}
 	nLocked = locks.Loop(
 		!(game.spinning || leverPulled),
-		!(firstSpin || game.spinPayoff || reelsLocked),
+		!(firstSpin || game.spinPayout || reelsLocked),
 		game.currentBet
 	);
-	cheers.Loop(!game.spinning && game.spinPayoff);
+	cheers.Loop(!game.spinning && game.spinPayout);
 }
 
 #pragma endregion

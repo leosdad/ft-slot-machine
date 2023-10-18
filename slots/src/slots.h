@@ -11,7 +11,7 @@
 // ----------------------------------------------------------------- Debug flags
 
 #define DEBUGINFO		true	// Send spin debug info to the serial port
-#define DEBUGPAYOFFS	false	// Easy-to-obtain payoffs, awards for testing
+#define DEBUGPAYOUTS	false	// Easy-to-obtain payouts, awards for testing
 #define SPEEDUP			false	// Remove extra reel spins, rotate reels faster
 #define SIMULATE		false	// Simulate gameplay without moving anything
 #define LOCKDEBUGINFO	false	// Send debug information about the lock state
@@ -22,7 +22,7 @@
 
 // Gameplay constants
 
-#if DEBUGPAYOFFS
+#if DEBUGPAYOUTS
 #define STARTCOINS		25		// Default number of coins upon game start
 #define MAXSTARTCOINS	29		// Maximum mumber of start coins
 #define DEFSPINSLEFT	12		// Default remaining spins per game
@@ -48,7 +48,7 @@
 #define MAXBET			9		// 6 to 12
 #define NPAYLINES       1		// 1 to 3
 #define INITIALBET		3		// Default bet upon game start
-#define NCOMBINATIONS	18		// Number of payoff combinations
+#define NCOMBINATIONS	18		// Number of payout combinations
 
 // Software constants
 
@@ -118,11 +118,11 @@ enum class GameResult {
 };
 
 /**
- * Defines winning combinations, payoff values and special awards.
+ * Defines winning combinations, payout values and special awards.
  */
-struct payoffItem {
+struct payoutItem {
 	uint8_t symbol[NREELS];
-	uint16_t payoff;
+	uint16_t payout;
 	Awards award;
 };
 
@@ -167,9 +167,9 @@ static const int reelComposition[NREELS][NREELSYMBOLS] = {
 /**
  * 0 (zero) below means any symbol.
  */
-static constexpr payoffItem payoffTable[NCOMBINATIONS] = {
+static constexpr payoutItem payoutTable[NCOMBINATIONS] = {
 
-#if !DEBUGPAYOFFS
+#if !DEBUGPAYOUTS
 
 	// These should match the spreadsheet and the printed table.
 

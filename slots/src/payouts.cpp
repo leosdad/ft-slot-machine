@@ -4,36 +4,36 @@
 
 // -------------------------------------------------------------------- Includes
 
-#include "payoffs.h"
+#include "payouts.h"
 
 // ---------------------------------------------------- Private member functions
 
 /**
- * Looks for a payoff combination from the reel positions. If found, returns the
- * respective payoff times the multiplier. If not, returns zero.
+ * Looks for a payout combination from the reel positions. If found, returns the
+ * respective payout times the multiplier. If not, returns zero.
  * @param paylineIndex Index of the desired payline.
  * @param symbolPositions Array of symbol positions to be displayed (0-11).
  */
-uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
+uint16_t Payouts::calculatePayline(Game game, int paylineIndex)
 {
 	for(int c = 0; c < NCOMBINATIONS; c++) {
 
 		bool isValidCombination = true;
 
 		for(int i = 0; i < NREELS; i++) {
-			if(payoffTable[c].symbol[i] != 0 &&
+			if(payoutTable[c].symbol[i] != 0 &&
 				payline.GetLineSymbol(paylineIndex, i, game.reels[i]) !=
-				(int16_t)(payoffTable[c].symbol[i])) {
+				(int16_t)(payoutTable[c].symbol[i])) {
 
 				isValidCombination = false;
 				break;
 			}
 		}
 
-		// Found a winning combination: get payoff value and exits
+		// Found a winning combination: get payout value and exits
 		if(isValidCombination) {
-			highestAward = max(highestAward, payoffTable[c].award);
-			return payoffTable[c].payoff;
+			highestAward = max(highestAward, payoutTable[c].award);
+			return payoutTable[c].payout;
 		}
 	}
 
@@ -45,15 +45,15 @@ uint16_t Payoffs::calculatePayline(Game game, int paylineIndex)
 /**
  * Sets the value of the multiplier.
  */
-bool Payoffs::SetMultiplier(uint8_t multiplier)
+bool Payouts::SetMultiplier(uint8_t multiplier)
 {
-	return payoffMultiplier = multiplier;
+	return payoutMultiplier = multiplier;
 }
 
 /**
  * Returns the highest award for the latest spin.
  */
-Awards Payoffs::GetHighestAward(Game *game)
+Awards Payouts::GetHighestAward(Game *game)
 {
 	highestAward = Awards::NONE;
 
@@ -65,19 +65,19 @@ Awards Payoffs::GetHighestAward(Game *game)
 }
 
 /**
- * Calculates the payoff for all paylines.
+ * Calculates the payout for all paylines.
  */
-uint16_t Payoffs::CalculateTotalPayoff(Game *game)
+uint16_t Payouts::CalculateTotalPayout(Game *game)
 {
-	game->spinPayoff = 0;
+	game->spinPayout = 0;
 	highestAward = Awards::NONE;
 
 	for(int l = 0; l < NPAYLINES; l++) {
-		game->paylines[l].Payoff = calculatePayline(*game, l);
-		game->spinPayoff += game->paylines[l].Payoff * game->currentBet * payoffMultiplier;
+		game->paylines[l].Payout = calculatePayline(*game, l);
+		game->spinPayout += game->paylines[l].Payout * game->currentBet * payoutMultiplier;
 	}
 
-	return game->spinPayoff;
+	return game->spinPayout;
 }
 
 // ------------------------------------------------------------------------- End

@@ -31,7 +31,7 @@ class Game
 		uint16_t spinsLeft = -1;		// Number of spins left in game
 		int8_t currentBet = 0;			// Current bet (signed)
 		int16_t nCoins = 0;				// Current number of coins (signed)
-		uint16_t spinPayoff = 0;		// Payoff amount for last spin
+		uint16_t spinPayout = 0;		// Payout amount for last spin
 		Awards lastAward = Awards::NONE;
 
 		Reel reels[NREELS];				// Game reels
